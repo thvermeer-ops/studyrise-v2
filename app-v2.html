@@ -246,9 +246,6 @@
       </div>
       <ul>
         <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
-        const SUPABASE_URL = 'https://tnvdybovafzwryrwdfup.supabase.co'; const
-        SUPABASE_KEY = 'sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG'; const
-        _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         <li><a href="#" onclick="showPage('tasks')">Tasks</a></li>
         <li><a href="#" onclick="showPage('grades')">Grades</a></li>
         <li><a href="#" onclick="showPage('settings')">Settings</a></li>
@@ -672,6 +669,9 @@
     </main>
 
     <script>
+      const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
+      const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       async function checkAuth() {
         const {
           data: { session },
