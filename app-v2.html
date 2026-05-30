@@ -246,6 +246,9 @@
       </div>
       <ul>
         <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+        const SUPABASE_URL = 'https://tnvdybovafzwryrwdfup.supabase.co'; const
+        SUPABASE_KEY = 'sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG'; const
+        _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         <li><a href="#" onclick="showPage('tasks')">Tasks</a></li>
         <li><a href="#" onclick="showPage('grades')">Grades</a></li>
         <li><a href="#" onclick="showPage('settings')">Settings</a></li>
@@ -669,9 +672,17 @@
     </main>
 
     <script>
-      if (!localStorage.getItem("sr_user")) {
-        window.location.href = "login.html";
+      async function checkAuth() {
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) {
+          window.location.href = "login.html";
+          return;
+        }
+        localStorage.setItem("sr_user", session.user.email);
       }
+      checkAuth();
       function showPage(id) {
         document
           .querySelectorAll("#pages > div")
@@ -686,7 +697,33 @@
       }
       showPage("dashboard");
 
-      let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      let tasks = [];
+
+      async function loadTasks() {
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) return;
+        const { data } = await _sb
+          .from("tasks")
+          .select("*")
+          .eq("user-id", session.user.email);
+        if (data && data.length > 0) {
+          tasks = data.map((t) => ({
+            id: t.id,
+            title: t.title,
+            subject: t.subject,
+            date: t.date,
+            priority: t.priority,
+            done: t.done,
+            notes: t.notes || "",
+          }));
+        } else {
+          tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+        }
+        renderAll();
+      }
+      loadTasks();
       let grades = JSON.parse(localStorage.getItem("grades") || "[]");
       let currentFilter = "all";
       let currentSort = "date";
@@ -742,7 +779,7 @@
           .map(
             (t) => `
         <li class="${t.done ? "done" : ""}">
-          <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleTask(${t.id})"/>
+          <span onclick="toggleTask(${t.id})" style="width:20px;height:20px;border-radius:6px;border:2px solid ${t.done ? "#22c55e" : "rgba(255,255,255,.2)"};background:${t.done ? "#22c55e" : "transparent"};display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">${t.done ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}</span>
           <strong>${t.title}</strong> — ${t.subject} — ${t.date || "No date"} — <span class="priority-${t.priority}">${t.priority}</span>
           <button onclick="deleteTask(${t.id})">✕</button>
         </li>`,
@@ -762,8 +799,26 @@
         saveTasks();
         renderAll();
       }
-      function saveTasks() {
+      async function saveTasks() {
         localStorage.setItem("tasks", JSON.stringify(tasks));
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) return;
+        const email = session.user.email;
+        await _sb.from("tasks").delete().eq("user-id", email);
+        if (tasks.length > 0) {
+          const rows = tasks.map((t) => ({
+            "user-id": email,
+            title: t.title,
+            subject: t.subject || "",
+            date: t.date || "",
+            priority: t.priority || "medium",
+            done: t.done || false,
+            notes: t.notes || "",
+          }));
+          await _sb.from("tasks").insert(rows);
+        }
       }
       function filterTasks(btn, filter) {
         currentFilter = filter;
