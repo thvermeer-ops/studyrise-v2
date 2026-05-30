@@ -282,7 +282,34 @@
             oninput="searchTasks(this.value)"
             style="width: 100%; margin-bottom: 24px"
           />
-          <div id="stats">
+          <div id="stats" class="pro-only" style="display: none">
+            <div
+              class="pro-lock"
+              style="
+                background: #111;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 24px;
+                text-align: center;
+              "
+            >
+              <div style="font-size: 1.5rem; margin-bottom: 8px">📊</div>
+              <div style="font-weight: 600; margin-bottom: 4px">Statistics</div>
+              <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
+                Upgrade to Pro to see your stats
+              </div>
+              <button
+                onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
+                style="
+                  background: #2563eb;
+                  padding: 8px 20px;
+                  font-size: 0.85rem;
+                "
+              >
+                Upgrade to Pro ⚡
+              </button>
+            </div>
             <div class="stat-card blue">
               <div class="stat-label">Total Tasks</div>
               <div class="stat-value" id="stat-total">0</div>
@@ -730,6 +757,33 @@
       let calDate = new Date();
       let gradeSystem = "nl";
       let isDark = true;
+      let isPro = false;
+
+      async function checkPro() {
+        const email = localStorage.getItem("sr_user");
+        if (!email) return;
+        try {
+          const res = await fetch(
+            `https://studyflow-backend1.onrender.com/check-pro?email=${encodeURIComponent(email)}`,
+          );
+          const data = await res.json();
+          isPro = data.isPro;
+          applyProUI();
+        } catch (e) {
+          isPro = false;
+        }
+      }
+
+      function applyProUI() {
+        const proElements = document.querySelectorAll(".pro-only");
+        proElements.forEach((el) => {
+          el.style.display = isPro ? "" : "none";
+        });
+        const lockElements = document.querySelectorAll(".pro-lock");
+        lockElements.forEach((el) => {
+          el.style.display = isPro ? "none" : "";
+        });
+      }
       const letterToNum = {
         "A+": 10,
         A: 9.3,
@@ -747,6 +801,12 @@
       function addTask() {
         const title = document.getElementById("taskInput").value.trim();
         if (!title) return;
+        if (!isPro && tasks.length >= 5) {
+          showToast(
+            "⚠️ Free plan limit reached! Upgrade to Pro for unlimited tasks.",
+          );
+          return;
+        }
         tasks.push({
           id: Date.now(),
           title,
@@ -1112,6 +1172,7 @@
       }
 
       renderAll();
+      checkPro();
     </script>
   </body>
 </html>
