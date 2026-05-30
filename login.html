@@ -202,14 +202,19 @@
         } = await _sb.auth.getSession();
         if (session) {
           localStorage.setItem("sr_user", session.user.email);
-          window.location.href = "app-v2.html";
+          window.location.href =
+            "https://thvermeer-ops.github.io/studyrise-v2/app-v2.html";
         }
       }
       checkSession();
       async function signInWithGoogle() {
         const { error } = await _sb.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: window.location.origin + "/app-v2.html" },
+          options: {
+            redirectTo:
+              window.location.origin +
+              "/https://thvermeer-ops.github.io/studyrise-v2/app-v2.html",
+          },
         });
         if (error) showError(error.message);
       }
