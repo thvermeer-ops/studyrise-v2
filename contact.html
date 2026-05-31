@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — StudyRise</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #080808; --surface: #0f0f0f; --surface2: #161616; --border: rgba(255,255,255,0.1); --text: #f0f0f0; --muted: #a0a0a0; --blue: #2563eb; --blue-dim: rgba(37,99,235,0.12); --blue-border: rgba(37,99,235,0.35); --green: #22c55e; --red: #ef4444; --radius: 10px; --radius-sm: 6px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 48px 24px; }
+    .container { max-width: 560px; margin: 0 auto; }
+    .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 0.875rem; margin-bottom: 40px; transition: color 0.15s; }
+    .back:hover { color: var(--text); }
+    .logo { font-size: 1rem; font-weight: 600; margin-bottom: 32px; }
+    .logo span { color: var(--blue); }
+    h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 36px; line-height: 1.6; }
+    .form-field { margin-bottom: 14px; }
+    .form-field label { display: block; font-size: 0.775rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+    .form-field input, .form-field select, .form-field textarea {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text);
+      font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--blue); }
+    .form-field textarea { resize: vertical; min-height: 120px; }
+    .form-field select { cursor: pointer; }
+    .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .category-btn {
+      padding: 10px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--surface); color: var(--muted); font-size: 0.825rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; text-align: center; font-family: inherit;
+    }
+    .category-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .category-btn.active { background: var(--blue-dim); border-color: var(--blue-border); color: var(--blue); }
+    .category-icon { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+    .submit-btn {
+      width: 100%; background: var(--blue); color: #fff; border: none;
+      border-radius: var(--radius-sm); padding: 12px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; transition: background 0.15s;
+      font-family: inherit; margin-top: 8px;
+    }
+    .submit-btn:hover { background: #1d4ed8; }
+    .success {
+      display: none; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+      border-radius: var(--radius); padding: 16px 20px; text-align: center;
+      font-size: 0.9rem; color: var(--green); margin-top: 16px;
+    }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    .footer { font-size: 0.775rem; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="app-v2.html" class="back">&#8592; Back to app</a>
+    <div class="logo">Study<span>Rise</span></div>
+    <h1>Contact</h1>
+    <p class="subtitle">Have a question, found a bug or want to share feedback? Fill in the form below and we'll get back to you.</p>
+
+    <div class="form-field">
+      <label>Category</label>
+      <div class="category-grid">
+        <button class="category-btn active" onclick="selectCategory(this, 'Bug report')" type="button">
+          <span class="category-icon">🐛</span>Bug report
+        </button>
+        <button class="category-btn" onclick="selectCategory(this, 'Question')" type="button">
+          <span class="category-icon">💬</span>Question
+        </button>
+        <button class="category-btn" onclick="selectCategory(this, 'Feedback')" type="button">
+          <span class="category-icon">💡</span>Feedback
+        </button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label>Your name</label>
+      <input type="text" id="contactName" placeholder="Your name..." />
+    </div>
+
+    <div class="form-field">
+      <label>Your email</label>
+      <input type="email" id="contactEmail" placeholder="your@email.com" />
+    </div>
+
+    <div class="form-field">
+      <label>Subject</label>
+      <input type="text" id="contactSubject" placeholder="Short description..." />
+    </div>
+
+    <div class="form-field">
+      <label>Message</label>
+      <textarea id="contactMessage" placeholder="Describe your question, bug or feedback in detail..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="sendContact()">Send message</button>
+
+    <div class="success" id="successMsg">
+      ✅ Your email client has opened with your message. Thank you for reaching out!
+    </div>
+
+    <hr class="divider" />
+    <div class="footer">
+      <a href="app-v2.html">Back to app</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms</a>
+    </div>
+  </div>
+
+  <script>
+    let selectedCategory = "Bug report";
+
+    function selectCategory(btn, category) {
+      document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCategory = category;
+    }
+
+    function sendContact() {
+      const name = document.getElementById("contactName").value.trim();
+      const email = document.getElementById("contactEmail").value.trim();
+      const subject = document.getElementById("contactSubject").value.trim();
+      const message = document.getElementById("contactMessage").value.trim();
+
+      if (!name || !email || !subject || !message) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const emailSubject = "[StudyRise] " + selectedCategory + ": " + subject;
+      const body = "Category: " + selectedCategory
+        + "\nName: " + name
+        + "\nEmail: " + email
+        + "\n\n" + message;
+
+      window.location.href = "mailto:studyrise6@gmail.com"
+        + "?subject=" + encodeURIComponent(emailSubject)
+        + "&body=" + encodeURIComponent(body);
+
+      document.getElementById("successMsg").style.display = "block";
+    }
+  </script>
+</body>
+</html>
