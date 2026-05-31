@@ -1299,7 +1299,9 @@
         async function registerServiceWorker() {
           if (!("serviceWorker" in navigator)) return;
           try {
-            const reg = await navigator.serviceWorker.register("/sw.js");
+            const reg = await navigator.serviceWorker.register(
+              "/studyrise-v2/sw.js",
+            );
 
             // Probeer periodieke sync aan te vragen (Chrome/Android)
             if ("periodicSync" in reg) {
