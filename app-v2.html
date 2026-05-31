@@ -18,6 +18,10 @@
       #pages > div {
         display: none;
       }
+      /* Pro-only elementen zijn standaard VERBORGEN via CSS — niet via JS */
+      .pro-only {
+        display: none !important;
+      }
       body {
         font-family: "Plus Jakarta Sans", system-ui, sans-serif;
         background: #0a0a0a;
@@ -230,9 +234,35 @@
         width: auto;
         margin-bottom: 8px;
       }
+      .pro-badge {
+        display: inline-block;
+        background: #2563eb;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 6px;
+      }
+      #pro-loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: #0a0a0a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-size: 0.9rem;
+        color: #888;
+      }
     </style>
   </head>
   <body>
+    <!-- Laadscherm: verbergt de app totdat Pro-status bekend is -->
+    <div id="pro-loading-overlay">StudyRise laden...</div>
+
     <nav id="sidebar">
       <div
         style="
@@ -270,7 +300,6 @@
     </nav>
 
     <main id="content">
-      <div id="topbar"></div>
       <div id="pages">
         <!-- DASHBOARD -->
         <div id="page-dashboard">
@@ -282,34 +311,9 @@
             oninput="searchTasks(this.value)"
             style="width: 100%; margin-bottom: 24px"
           />
-          <div id="stats" class="pro-only" style="display: none">
-            <div
-              class="pro-lock"
-              style="
-                background: #111;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                border-radius: 10px;
-                padding: 20px;
-                margin-bottom: 24px;
-                text-align: center;
-              "
-            >
-              <div style="font-size: 1.5rem; margin-bottom: 8px">📊</div>
-              <div style="font-weight: 600; margin-bottom: 4px">Statistics</div>
-              <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
-                Upgrade to Pro to see your stats
-              </div>
-              <button
-                onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
-                style="
-                  background: #2563eb;
-                  padding: 8px 20px;
-                  font-size: 0.85rem;
-                "
-              >
-                Upgrade to Pro ⚡
-              </button>
-            </div>
+
+          <!-- Stats: standaard verborgen via CSS .pro-only -->
+          <div id="stats" class="pro-only">
             <div class="stat-card blue">
               <div class="stat-label">Total Tasks</div>
               <div class="stat-value" id="stat-total">0</div>
@@ -323,6 +327,28 @@
               <div class="stat-value" id="stat-pending">0</div>
             </div>
           </div>
+
+          <!-- Stats upsell voor gratis gebruikers -->
+          <div
+            id="stats-lock"
+            class="dashboard-card"
+            style="text-align: center; padding: 24px"
+          >
+            <div style="font-size: 1.5rem; margin-bottom: 8px">📊</div>
+            <div style="font-weight: 600; margin-bottom: 4px">
+              Statistics <span class="pro-badge">Pro</span>
+            </div>
+            <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
+              Upgrade naar Pro om je stats te zien
+            </div>
+            <button
+              onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
+              style="background: #2563eb; padding: 8px 20px; font-size: 0.85rem"
+            >
+              Upgrade to Pro ⚡
+            </button>
+          </div>
+
           <div class="dashboard-card">
             <h2>Due Today</h2>
             <ul id="dueTodayList"></ul>
@@ -434,6 +460,28 @@
             <option value="urgent">Urgent</option>
           </select>
           <button onclick="addTask()">Add</button>
+          <!-- Taak-limiet melding voor gratis gebruikers -->
+          <div
+            id="task-limit-banner"
+            style="
+              display: none;
+              margin-top: 16px;
+              background: rgba(37, 99, 235, 0.1);
+              border: 1px solid rgba(37, 99, 235, 0.3);
+              border-radius: 8px;
+              padding: 14px 16px;
+              font-size: 0.88rem;
+            "
+          >
+            Je hebt 5 van 5 gratis taken gebruikt.
+            <a
+              href="https://vermeerist.gumroad.com/l/srygsx"
+              target="_blank"
+              style="color: #60a5fa; font-weight: 600"
+              >Upgrade naar Pro</a
+            >
+            voor onbeperkt.
+          </div>
           <ul id="taskList"></ul>
         </div>
 
@@ -493,17 +541,17 @@
                 step="0.1"
               />
               <select id="gradeLetterInput" style="display: none">
-                <option value="A+">A+</option>
-                <option value="A">A</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B">B</option>
-                <option value="B-">B-</option>
-                <option value="C+">C+</option>
-                <option value="C">C</option>
-                <option value="C-">C-</option>
-                <option value="D">D</option>
-                <option value="F">F</option>
+                <option>A+</option>
+                <option>A</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B</option>
+                <option>B-</option>
+                <option>C+</option>
+                <option>C</option>
+                <option>C-</option>
+                <option>D</option>
+                <option>F</option>
               </select>
             </div>
             <button onclick="addGrade()" style="margin-top: 8px; width: 100%">
@@ -604,19 +652,17 @@
               "
             >
               <div>
-                <div style="font-weight: 500">Export Tasks</div>
+                <div style="font-weight: 500">
+                  Export Tasks <span class="pro-badge">Pro</span>
+                </div>
                 <div style="font-size: 0.8rem; color: #888">
                   Download your tasks as JSON
                 </div>
               </div>
-              <button
-                class="filter-btn pro-only"
-                onclick="exportData()"
-                style="display: none"
-              >
+              <button class="filter-btn pro-only" onclick="exportData()">
                 Export
               </button>
-              <span class="pro-lock" style="font-size: 0.8rem; color: #888"
+              <span id="export-lock" style="font-size: 0.8rem; color: #888"
                 >🔒 Pro only</span
               >
             </div>
@@ -682,7 +728,7 @@
                 justify-content: space-between;
               "
             >
-              <span style="color: #888">Version</span><span>1.0.0</span>
+              <span style="color: #888">Version</span><span>2.0.0</span>
             </div>
             <div
               style="padding: 12px 0; font-size: 0.75rem; text-align: center"
@@ -705,483 +751,625 @@
     </main>
 
     <script>
-      const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
-      const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
-      const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      async function checkAuth() {
-        const {
-          data: { session },
-        } = await _sb.auth.getSession();
-        if (!session) {
-          window.location.href = "login.html";
-          return;
-        }
-        localStorage.setItem("sr_user", session.user.email);
-      }
-      checkAuth();
-      function showPage(id) {
-        document
-          .querySelectorAll("#pages > div")
-          .forEach((p) => (p.style.display = "none"));
-        document.getElementById("page-" + id).style.display = "block";
-        document
-          .querySelectorAll("#sidebar a")
-          .forEach((a) => a.classList.remove("active"));
-        document
-          .querySelector(`#sidebar a[onclick="showPage('${id}')"]`)
-          .classList.add("active");
-      }
-      showPage("dashboard");
+      // =====================================================================
+      // IIFE: alles staat in een closure zodat isPro NIET via de console
+      // te manipuleren is. Probeer maar: isPro geeft ReferenceError.
+      // =====================================================================
+      (function () {
+        const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
+        const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      let tasks = [];
+        // isPro is PRIVE — niet bereikbaar via de console
+        let _isPro = false;
 
-      async function loadTasks() {
-        const {
-          data: { session },
-        } = await _sb.auth.getSession();
-        if (!session) return;
-        const { data } = await _sb
-          .from("tasks")
-          .select("*")
-          .eq("user-id", session.user.email);
-        if (data && data.length > 0) {
-          tasks = data.map((t) => ({
-            id: t.id,
-            title: t.title,
-            subject: t.subject,
-            date: t.date,
-            priority: t.priority,
-            done: t.done,
-            notes: t.notes || "",
-          }));
-        } else {
-          tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-        }
-        renderAll();
-      }
-      loadTasks();
-      let grades = JSON.parse(localStorage.getItem("grades") || "[]");
-      let currentFilter = "all";
-      let currentSort = "date";
-      let calDate = new Date();
-      let gradeSystem = "nl";
-      let isDark = true;
-      let isPro = false;
+        const FREE_TASK_LIMIT = 5;
+        const FREE_GRADE_LIMIT = 10;
 
-      async function checkPro() {
-        const email = localStorage.getItem("sr_user");
-        if (!email) return;
-        try {
-          const res = await fetch(
-            `https://studyflow-backend1.onrender.com/check-pro?email=${encodeURIComponent(email)}`,
-          );
-          const data = await res.json();
-          isPro = data.isPro;
-          applyProUI();
-        } catch (e) {
-          isPro = false;
-        }
-      }
-
-      function applyProUI() {
-        const proElements = document.querySelectorAll(".pro-only");
-        proElements.forEach((el) => {
-          el.style.display = isPro ? "" : "none";
-        });
-        const lockElements = document.querySelectorAll(".pro-lock");
-        lockElements.forEach((el) => {
-          el.style.display = isPro ? "none" : "";
-        });
-      }
-      const letterToNum = {
-        "A+": 10,
-        A: 9.3,
-        "A-": 9,
-        "B+": 8.3,
-        B: 8,
-        "B-": 7.7,
-        "C+": 7.3,
-        C: 7,
-        "C-": 6.7,
-        D: 5,
-        F: 3,
-      };
-
-      function addTask() {
-        const title = document.getElementById("taskInput").value.trim();
-        if (!title) return;
-        if (!isPro && tasks.length >= 5) {
-          showToast(
-            "⚠️ Free plan limit reached! Upgrade to Pro for unlimited tasks.",
-          );
-          return;
-        }
-        tasks.push({
-          id: Date.now(),
-          title,
-          subject: document.getElementById("taskSubject").value,
-          date: document.getElementById("taskDate").value,
-          priority: document.getElementById("taskPriority").value,
-          done: false,
-        });
-        document.getElementById("taskInput").value = "";
-        saveTasks();
-        renderAll();
-      }
-
-      function renderTasks() {
-        const list = document.getElementById("taskList");
-        const filtered =
-          currentFilter === "all"
-            ? tasks
-            : tasks.filter((t) => t.subject === currentFilter);
-        const sorted = [...filtered].sort((a, b) => {
-          if (currentSort === "priority") {
-            const p = { urgent: 0, medium: 1, low: 2 };
-            return p[a.priority] - p[b.priority];
+        // ---- Auth check ----
+        async function checkAuth() {
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) {
+            window.location.href = "login.html";
+            return null;
           }
-          if (currentSort === "subject")
-            return a.subject.localeCompare(b.subject);
-          return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
-        });
-        list.innerHTML = sorted
-          .map(
-            (t) => `
-        <li class="${t.done ? "done" : ""}">
-          <span onclick="toggleTask(${t.id})" style="width:20px;height:20px;border-radius:6px;border:2px solid ${t.done ? "#22c55e" : "rgba(255,255,255,.2)"};background:${t.done ? "#22c55e" : "transparent"};display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">${t.done ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}</span>
-          <strong>${t.title}</strong> — ${t.subject} — ${t.date || "No date"} — <span class="priority-${t.priority}">${t.priority}</span>
-          <button onclick="deleteTask(${t.id})">✕</button>
-        </li>`,
-          )
-          .join("");
-      }
-
-      function toggleTask(id) {
-        const t = tasks.find((t) => t.id === id);
-        if (t) t.done = !t.done;
-        saveTasks();
-        renderAll();
-      }
-      function deleteTask(id) {
-        if (!confirm("Delete this task?")) return;
-        tasks = tasks.filter((t) => t.id !== id);
-        saveTasks();
-        renderAll();
-      }
-      async function saveTasks() {
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        const {
-          data: { session },
-        } = await _sb.auth.getSession();
-        if (!session) return;
-        const email = session.user.email;
-        await _sb.from("tasks").delete().eq("user-id", email);
-        if (tasks.length > 0) {
-          const rows = tasks.map((t) => ({
-            "user-id": email,
-            title: t.title,
-            subject: t.subject || "",
-            date: t.date || "",
-            priority: t.priority || "medium",
-            done: t.done || false,
-            notes: t.notes || "",
-          }));
-          await _sb.from("tasks").insert(rows);
+          localStorage.setItem("sr_user", session.user.email);
+          return session;
         }
-      }
-      function filterTasks(btn, filter) {
-        currentFilter = filter;
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderTasks();
-      }
-      function sortTasks(sort) {
-        currentSort = sort;
-        renderTasks();
-      }
 
-      function renderStats() {
-        const done = tasks.filter((t) => t.done).length;
-        document.getElementById("stat-total").textContent = tasks.length;
-        document.getElementById("stat-done").textContent = done;
-        document.getElementById("stat-pending").textContent =
-          tasks.length - done;
-      }
+        // ---- Pro check — altijd server-side, nooit alleen localStorage ----
+        async function checkPro() {
+          const email = localStorage.getItem("sr_user");
+          if (!email) {
+            hideOverlay();
+            return;
+          }
+          try {
+            const res = await fetch(
+              "https://studyflow-backend1.onrender.com/check-pro?email=" +
+                encodeURIComponent(email),
+            );
+            const data = await res.json();
+            _isPro = data.isPro === true; // strict boolean check
+          } catch (e) {
+            _isPro = false;
+          }
+          applyProUI();
+          hideOverlay();
+        }
 
-      function renderDueToday() {
-        const today = new Date().toISOString().slice(0, 10);
-        const due = tasks.filter((t) => t.date === today && !t.done);
-        const list = document.getElementById("dueTodayList");
-        list.innerHTML = due.length
-          ? due
+        function hideOverlay() {
+          const overlay = document.getElementById("pro-loading-overlay");
+          if (overlay) overlay.remove();
+        }
+
+        // ---- Pro UI toepassen ----
+        function applyProUI() {
+          // .pro-only: via CSS standaard verborgen, alleen tonen als Pro
+          document.querySelectorAll(".pro-only").forEach((el) => {
+            el.style.setProperty("display", _isPro ? "" : "none", "important");
+          });
+          // Stats blok
+          document
+            .getElementById("stats")
+            .style.setProperty(
+              "display",
+              _isPro ? "grid" : "none",
+              "important",
+            );
+          document.getElementById("stats-lock").style.display = _isPro
+            ? "none"
+            : "";
+          // Export lock
+          const exportLock = document.getElementById("export-lock");
+          if (exportLock) exportLock.style.display = _isPro ? "none" : "";
+          // Taak limiet banner
+          updateTaskLimitBanner();
+        }
+
+        function updateTaskLimitBanner() {
+          const banner = document.getElementById("task-limit-banner");
+          if (banner)
+            banner.style.display =
+              !_isPro && tasks.length >= FREE_TASK_LIMIT ? "" : "none";
+        }
+
+        // ---- Exportfunctie: checkt Pro server-side voor gebruik ----
+        window.exportData = function () {
+          if (!_isPro) {
+            showToast("⚠️ Export is een Pro feature. Upgrade op gumroad.com");
+            return;
+          }
+          const a = document.createElement("a");
+          a.href =
+            "data:application/json," +
+            encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
+          a.download = "studyrise-export.json";
+          a.click();
+        };
+
+        // =====================================================================
+        // App state
+        // =====================================================================
+        let tasks = [];
+        let grades = JSON.parse(localStorage.getItem("grades") || "[]");
+        let currentFilter = "all";
+        let currentSort = "date";
+        let calDate = new Date();
+        let gradeSystem = "nl";
+        let isDark = true;
+
+        const letterToNum = {
+          "A+": 10,
+          A: 9.3,
+          "A-": 9,
+          "B+": 8.3,
+          B: 8,
+          "B-": 7.7,
+          "C+": 7.3,
+          C: 7,
+          "C-": 6.7,
+          D: 5,
+          F: 3,
+        };
+
+        // =====================================================================
+        // Taken
+        // =====================================================================
+        window.addTask = function () {
+          const title = document.getElementById("taskInput").value.trim();
+          if (!title) return;
+          if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
+            showToast(
+              "⚠️ Gratis limiet bereikt! Upgrade naar Pro voor onbeperkte taken.",
+            );
+            return;
+          }
+          tasks.push({
+            id: Date.now(),
+            title,
+            subject: document.getElementById("taskSubject").value,
+            date: document.getElementById("taskDate").value,
+            priority: document.getElementById("taskPriority").value,
+            done: false,
+          });
+          document.getElementById("taskInput").value = "";
+          saveTasks();
+          renderAll();
+        };
+
+        window.toggleTask = function (id) {
+          const t = tasks.find((t) => t.id === id);
+          if (t) t.done = !t.done;
+          saveTasks();
+          renderAll();
+        };
+
+        window.deleteTask = function (id) {
+          if (!confirm("Delete this task?")) return;
+          tasks = tasks.filter((t) => t.id !== id);
+          saveTasks();
+          renderAll();
+        };
+
+        async function saveTasks() {
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) return;
+          const email = session.user.email;
+          await _sb.from("tasks").delete().eq("user-id", email);
+          if (tasks.length > 0) {
+            const rows = tasks.map((t) => ({
+              "user-id": email,
+              title: t.title,
+              subject: t.subject || "",
+              date: t.date || "",
+              priority: t.priority || "medium",
+              done: t.done || false,
+              notes: t.notes || "",
+            }));
+            await _sb.from("tasks").insert(rows);
+          }
+        }
+
+        async function loadTasks() {
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) return;
+          const { data } = await _sb
+            .from("tasks")
+            .select("*")
+            .eq("user-id", session.user.email);
+          if (data && data.length > 0) {
+            tasks = data.map((t) => ({
+              id: t.id,
+              title: t.title,
+              subject: t.subject,
+              date: t.date,
+              priority: t.priority,
+              done: t.done,
+              notes: t.notes || "",
+            }));
+          } else {
+            tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+          }
+          renderAll();
+        }
+
+        function renderTasks() {
+          const list = document.getElementById("taskList");
+          const filtered =
+            currentFilter === "all"
+              ? tasks
+              : tasks.filter((t) => t.subject === currentFilter);
+          const sorted = [...filtered].sort((a, b) => {
+            if (currentSort === "priority") {
+              const p = { urgent: 0, medium: 1, low: 2 };
+              return p[a.priority] - p[b.priority];
+            }
+            if (currentSort === "subject")
+              return a.subject.localeCompare(b.subject);
+            return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
+          });
+          list.innerHTML = sorted
+            .map(
+              (t) => `
+          <li class="${t.done ? "done" : ""}">
+            <span onclick="toggleTask(${t.id})" style="width:20px;height:20px;border-radius:6px;
+              border:2px solid ${t.done ? "#22c55e" : "rgba(255,255,255,.2)"};
+              background:${t.done ? "#22c55e" : "transparent"};
+              display:inline-flex;align-items:center;justify-content:center;
+              cursor:pointer;flex-shrink:0">
+              ${t.done ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}
+            </span>
+            <strong>${t.title}</strong> — ${t.subject} — ${t.date || "No date"} —
+            <span class="priority-${t.priority}">${t.priority}</span>
+            <button onclick="deleteTask(${t.id})">✕</button>
+          </li>`,
+            )
+            .join("");
+          updateTaskLimitBanner();
+        }
+
+        window.filterTasks = function (btn, filter) {
+          currentFilter = filter;
+          document
+            .querySelectorAll(".filter-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderTasks();
+        };
+
+        window.sortTasks = function (sort) {
+          currentSort = sort;
+          renderTasks();
+        };
+
+        // =====================================================================
+        // Statistieken
+        // =====================================================================
+        function renderStats() {
+          const done = tasks.filter((t) => t.done).length;
+          document.getElementById("stat-total").textContent = tasks.length;
+          document.getElementById("stat-done").textContent = done;
+          document.getElementById("stat-pending").textContent =
+            tasks.length - done;
+        }
+
+        // =====================================================================
+        // Dashboard
+        // =====================================================================
+        function renderDueToday() {
+          const today = new Date().toISOString().slice(0, 10);
+          const due = tasks.filter((t) => t.date === today && !t.done);
+          const list = document.getElementById("dueTodayList");
+          list.innerHTML = due.length
+            ? due
+                .map(
+                  (t) =>
+                    `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
+                )
+                .join("")
+            : "<li>Nothing due today! 🎉</li>";
+        }
+
+        function renderUpcoming() {
+          const today = new Date();
+          const in7 = new Date();
+          in7.setDate(today.getDate() + 7);
+          const upcoming = tasks
+            .filter((t) => {
+              if (!t.date || t.done) return false;
+              const d = new Date(t.date);
+              return d > today && d <= in7;
+            })
+            .sort((a, b) => (a.date > b.date ? 1 : -1));
+          const list = document.getElementById("upcomingList");
+          list.innerHTML = upcoming.length
+            ? upcoming
+                .map(
+                  (t) =>
+                    `<li><span class="priority-${t.priority}">●</span> <strong>${t.title}</strong> — ${t.subject} — ${t.date}</li>`,
+                )
+                .join("")
+            : '<li style="color:#444">No upcoming tasks 🎉</li>';
+        }
+
+        window.searchTasks = function (query) {
+          const q = query.toLowerCase();
+          const list = document.getElementById("dueTodayList");
+          if (!query) {
+            renderDueToday();
+            return;
+          }
+          const filtered = tasks.filter(
+            (t) =>
+              t.title.toLowerCase().includes(q) ||
+              t.subject.toLowerCase().includes(q),
+          );
+          list.innerHTML =
+            filtered
               .map(
                 (t) =>
                   `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
               )
-              .join("")
-          : "<li>Nothing due today! 🎉</li>";
-      }
+              .join("") || "<li>No results found</li>";
+        };
 
-      function renderUpcoming() {
-        const today = new Date();
-        const in7 = new Date();
-        in7.setDate(today.getDate() + 7);
-        const upcoming = tasks
-          .filter((t) => {
-            if (!t.date || t.done) return false;
-            const d = new Date(t.date);
-            return d > today && d <= in7;
-          })
-          .sort((a, b) => (a.date > b.date ? 1 : -1));
-        const list = document.getElementById("upcomingList");
-        list.innerHTML = upcoming.length
-          ? upcoming
-              .map(
-                (t) =>
-                  `<li><span class="priority-${t.priority}">●</span> <strong>${t.title}</strong> — ${t.subject} — ${t.date}</li>`,
-              )
-              .join("")
-          : '<li style="color:#444">No upcoming tasks 🎉</li>';
-      }
-
-      function searchTasks(query) {
-        const q = query.toLowerCase();
-        const list = document.getElementById("dueTodayList");
-        if (!query) {
-          renderDueToday();
-          return;
-        }
-        const filtered = tasks.filter(
-          (t) =>
-            t.title.toLowerCase().includes(q) ||
-            t.subject.toLowerCase().includes(q),
-        );
-        list.innerHTML =
-          filtered
+        // =====================================================================
+        // Kalender
+        // =====================================================================
+        function renderCalendar() {
+          const y = calDate.getFullYear(),
+            m = calDate.getMonth();
+          document.getElementById("calLabel").textContent =
+            calDate.toLocaleDateString("en", {
+              month: "long",
+              year: "numeric",
+            });
+          const taskDates = new Set(
+            tasks.filter((t) => !t.done).map((t) => t.date),
+          );
+          const today = new Date().toISOString().slice(0, 10);
+          const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+          let html = days
             .map(
-              (t) =>
-                `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
+              (d) =>
+                `<div style="font-size:.7rem;color:#555;padding:6px 0;font-weight:600">${d}</div>`,
             )
-            .join("") || "<li>No results found</li>";
-      }
-
-      function renderCalendar() {
-        const y = calDate.getFullYear(),
-          m = calDate.getMonth();
-        document.getElementById("calLabel").textContent =
-          calDate.toLocaleDateString("en", { month: "long", year: "numeric" });
-        const taskDates = new Set(
-          tasks.filter((t) => !t.done).map((t) => t.date),
-        );
-        const today = new Date().toISOString().slice(0, 10);
-        const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-        let html = days
-          .map(
-            (d) =>
-              `<div style="font-size:.7rem;color:#555;padding:6px 0;font-weight:600">${d}</div>`,
-          )
-          .join("");
-        const first = new Date(y, m, 1);
-        let startDay = first.getDay() === 0 ? 6 : first.getDay() - 1;
-        for (let i = 0; i < startDay; i++) html += "<div></div>";
-        const dim = new Date(y, m + 1, 0).getDate();
-        for (let d = 1; d <= dim; d++) {
-          const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-          const isToday = ds === today,
-            hasTask = taskDates.has(ds);
-          html += `<div style="padding:8px 4px;border-radius:8px;font-size:.82rem;font-weight:${isToday ? "700" : "400"};background:${isToday ? "#2563eb" : hasTask ? "rgba(37,99,235,.15)" : "transparent"};color:${isToday ? "#fff" : hasTask ? "#60a5fa" : "#888"};border:${hasTask && !isToday ? "1px solid rgba(37,99,235,.3)" : "1px solid transparent"}">${d}</div>`;
-        }
-        document.getElementById("calGrid").innerHTML = html;
-      }
-      function calPrev() {
-        calDate.setMonth(calDate.getMonth() - 1);
-        renderCalendar();
-      }
-      function calNext() {
-        calDate.setMonth(calDate.getMonth() + 1);
-        renderCalendar();
-      }
-
-      function addGrade() {
-        const subject = document.getElementById("gradeSubject").value.trim();
-        const name = document.getElementById("gradeName").value.trim();
-        let value;
-        if (gradeSystem === "en") {
-          value =
-            letterToNum[document.getElementById("gradeLetterInput").value];
-        } else {
-          value = parseFloat(document.getElementById("gradeValue").value);
-          if (gradeSystem === "fr") value = value / 2;
-        }
-        if (!subject || !name || isNaN(value)) return;
-        grades.push({
-          id: Date.now(),
-          subject,
-          name,
-          value,
-          system: gradeSystem,
-        });
-        document.getElementById("gradeSubject").value = "";
-        document.getElementById("gradeName").value = "";
-        document.getElementById("gradeValue").value = "";
-        saveGrades();
-        renderGrades();
-      }
-
-      function saveGrades() {
-        localStorage.setItem("grades", JSON.stringify(grades));
-      }
-      function deleteGrade(id) {
-        if (!confirm("Delete this grade?")) return;
-        grades = grades.filter((g) => g.id !== id);
-        saveGrades();
-        renderGrades();
-      }
-
-      function renderGrades() {
-        const avgEl = document.getElementById("gradeAvg");
-        const avg = grades.length
-          ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(1)
-          : null;
-        avgEl.innerHTML = avg
-          ? `<div style="display:flex;align-items:center;gap:16px"><div style="font-size:2.5rem;font-weight:700;color:${avg >= 7 ? "#22c55e" : avg >= 5.5 ? "#f59e0b" : "#ef4444"}">${avg}</div><div><div style="font-weight:600">Overall Average</div><div style="font-size:.8rem;color:#888">${grades.length} grades</div></div></div>`
-          : '<div style="color:#444">No grades yet</div>';
-        const subjects = [...new Set(grades.map((g) => g.subject))].sort();
-        const list = document.getElementById("gradeList");
-        if (!grades.length) {
-          list.innerHTML =
-            '<div style="color:#444;padding:20px">No grades yet!</div>';
-          return;
-        }
-        list.innerHTML = subjects
-          .map((s) => {
-            const sg = grades
-              .filter((g) => g.subject === s)
-              .sort((a, b) => b.value - a.value);
-            const savg = (
-              sg.reduce((sum, g) => sum + g.value, 0) / sg.length
-            ).toFixed(1);
-            return `<div class="dashboard-card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">${s}</h2><span style="font-size:.9rem;font-weight:700;color:${savg >= 7 ? "#22c55e" : savg >= 5.5 ? "#f59e0b" : "#ef4444"}">avg: ${savg}</span></div>${sg.map((g) => `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)"><div style="font-size:1.2rem;font-weight:700;color:${g.value >= 7 ? "#22c55e" : g.value >= 5.5 ? "#f59e0b" : "#ef4444"};width:36px">${g.value}</div><div style="flex:1;font-size:.88rem">${g.name}</div><button onclick="deleteGrade(${g.id})" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;font-size:.75rem">✕</button></div>`).join("")}</div>`;
-          })
-          .join("");
-      }
-
-      function setGradeSystem(sys) {
-        gradeSystem = sys;
-        ["nl", "en", "fr"].forEach((s) =>
-          document
-            .getElementById(s + "Btn")
-            .classList.toggle("active", sys === s),
-        );
-        const numInput = document.getElementById("gradeValue"),
-          letterInput = document.getElementById("gradeLetterInput");
-        if (sys === "en") {
-          numInput.style.display = "none";
-          letterInput.style.display = "";
-        } else {
-          numInput.style.display = "";
-          letterInput.style.display = "none";
-          numInput.max = sys === "fr" ? "20" : "10";
-          numInput.placeholder = sys === "fr" ? "1-20" : "1-10";
-        }
-      }
-
-      function toggleTheme() {
-        isDark = !isDark;
-        document.body.style.background = isDark ? "#0a0a0a" : "#f5f5f5";
-        document.body.style.color = isDark ? "#f0f0f0" : "#111";
-        document.getElementById("themeBtn").textContent = isDark
-          ? "🌙 Dark"
-          : "☀️ Light";
-      }
-
-      function exportData() {
-        const a = document.createElement("a");
-        a.href =
-          "data:application/json," +
-          encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
-        a.download = "studyrise-export.json";
-        a.click();
-      }
-
-      function clearAll() {
-        if (!confirm("Delete ALL tasks?")) return;
-        tasks = [];
-        saveTasks();
-        renderAll();
-      }
-      function saveName() {
-        localStorage.setItem(
-          "userName",
-          document.getElementById("userName").value,
-        );
-      }
-
-      function toggleNotifications() {
-        if (Notification.permission === "granted") {
-          showToast("Notifications already enabled!");
-        } else {
-          Notification.requestPermission().then((p) => {
-            document.getElementById("notifBtn").textContent =
-              p === "granted" ? "Enabled ✅" : "Blocked ❌";
-          });
-        }
-      }
-
-      function cancelAccount() {
-        if (!confirm("Delete your account and all data?")) return;
-        localStorage.clear();
-        location.reload();
-      }
-
-      function showToast(msg) {
-        const t = document.createElement("div");
-        t.style =
-          "position:fixed;bottom:20px;right:20px;background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;font-size:.88rem;z-index:999";
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 3000);
-      }
-
-      function updateStreak() {
-        const today = new Date().toISOString().slice(0, 10);
-        const todayDone = tasks.filter((t) => t.done).length;
-        let streak = JSON.parse(
-          localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
-        );
-        if (todayDone > 0) {
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yStr = yesterday.toISOString().slice(0, 10);
-          if (streak.lastDate === today) {
-          } else if (streak.lastDate === yStr) {
-            streak.count++;
-            streak.lastDate = today;
-          } else {
-            streak.count = 1;
-            streak.lastDate = today;
+            .join("");
+          const first = new Date(y, m, 1);
+          let startDay = first.getDay() === 0 ? 6 : first.getDay() - 1;
+          for (let i = 0; i < startDay; i++) html += "<div></div>";
+          const dim = new Date(y, m + 1, 0).getDate();
+          for (let d = 1; d <= dim; d++) {
+            const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const isToday = ds === today,
+              hasTask = taskDates.has(ds);
+            html += `<div style="padding:8px 4px;border-radius:8px;font-size:.82rem;
+            font-weight:${isToday ? "700" : "400"};
+            background:${isToday ? "#2563eb" : hasTask ? "rgba(37,99,235,.15)" : "transparent"};
+            color:${isToday ? "#fff" : hasTask ? "#60a5fa" : "#888"};
+            border:${hasTask && !isToday ? "1px solid rgba(37,99,235,.3)" : "1px solid transparent"}">${d}</div>`;
           }
-          localStorage.setItem("streak", JSON.stringify(streak));
+          document.getElementById("calGrid").innerHTML = html;
         }
-        const el = document.getElementById("streakDisplay");
-        if (el)
-          el.textContent = `🔥 ${streak.count} day${streak.count !== 1 ? "s" : ""}`;
-      }
 
-      function renderAll() {
-        renderTasks();
-        renderStats();
-        renderDueToday();
-        renderUpcoming();
-        renderCalendar();
-        renderGrades();
-        updateStreak();
-      }
+        window.calPrev = function () {
+          calDate.setMonth(calDate.getMonth() - 1);
+          renderCalendar();
+        };
+        window.calNext = function () {
+          calDate.setMonth(calDate.getMonth() + 1);
+          renderCalendar();
+        };
 
-      renderAll();
-      checkPro();
+        // =====================================================================
+        // Cijfers — gratis limiet: FREE_GRADE_LIMIT
+        // =====================================================================
+        window.addGrade = function () {
+          if (!_isPro && grades.length >= FREE_GRADE_LIMIT) {
+            showToast(
+              "⚠️ Gratis limiet bereikt (10 cijfers). Upgrade naar Pro voor onbeperkt.",
+            );
+            return;
+          }
+          const subject = document.getElementById("gradeSubject").value.trim();
+          const name = document.getElementById("gradeName").value.trim();
+          let value;
+          if (gradeSystem === "en") {
+            value =
+              letterToNum[document.getElementById("gradeLetterInput").value];
+          } else {
+            value = parseFloat(document.getElementById("gradeValue").value);
+            if (gradeSystem === "fr") value = value / 2;
+          }
+          if (!subject || !name || isNaN(value)) return;
+          grades.push({
+            id: Date.now(),
+            subject,
+            name,
+            value,
+            system: gradeSystem,
+          });
+          document.getElementById("gradeSubject").value = "";
+          document.getElementById("gradeName").value = "";
+          document.getElementById("gradeValue").value = "";
+          saveGrades();
+          renderGrades();
+        };
+
+        function saveGrades() {
+          localStorage.setItem("grades", JSON.stringify(grades));
+        }
+
+        window.deleteGrade = function (id) {
+          if (!confirm("Delete this grade?")) return;
+          grades = grades.filter((g) => g.id !== id);
+          saveGrades();
+          renderGrades();
+        };
+
+        function renderGrades() {
+          const avgEl = document.getElementById("gradeAvg");
+          const avg = grades.length
+            ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(
+                1,
+              )
+            : null;
+          avgEl.innerHTML = avg
+            ? `<div style="display:flex;align-items:center;gap:16px">
+               <div style="font-size:2.5rem;font-weight:700;color:${avg >= 7 ? "#22c55e" : avg >= 5.5 ? "#f59e0b" : "#ef4444"}">${avg}</div>
+               <div><div style="font-weight:600">Overall Average</div>
+               <div style="font-size:.8rem;color:#888">${grades.length} grades</div></div>
+             </div>`
+            : '<div style="color:#444">No grades yet</div>';
+          const subjects = [...new Set(grades.map((g) => g.subject))].sort();
+          const list = document.getElementById("gradeList");
+          if (!grades.length) {
+            list.innerHTML =
+              '<div style="color:#444;padding:20px">No grades yet!</div>';
+            return;
+          }
+          list.innerHTML = subjects
+            .map((s) => {
+              const sg = grades
+                .filter((g) => g.subject === s)
+                .sort((a, b) => b.value - a.value);
+              const savg = (
+                sg.reduce((sum, g) => sum + g.value, 0) / sg.length
+              ).toFixed(1);
+              return `<div class="dashboard-card" style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <h2 style="margin:0">${s}</h2>
+              <span style="font-size:.9rem;font-weight:700;color:${savg >= 7 ? "#22c55e" : savg >= 5.5 ? "#f59e0b" : "#ef4444"}">avg: ${savg}</span>
+            </div>
+            ${sg
+              .map(
+                (g) => `
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+                <div style="font-size:1.2rem;font-weight:700;color:${g.value >= 7 ? "#22c55e" : g.value >= 5.5 ? "#f59e0b" : "#ef4444"};width:36px">${g.value}</div>
+                <div style="flex:1;font-size:.88rem">${g.name}</div>
+                <button onclick="deleteGrade(${g.id})" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;font-size:.75rem">✕</button>
+              </div>`,
+              )
+              .join("")}
+          </div>`;
+            })
+            .join("");
+        }
+
+        window.setGradeSystem = function (sys) {
+          gradeSystem = sys;
+          ["nl", "en", "fr"].forEach((s) =>
+            document
+              .getElementById(s + "Btn")
+              .classList.toggle("active", sys === s),
+          );
+          const numInput = document.getElementById("gradeValue");
+          const letterInput = document.getElementById("gradeLetterInput");
+          if (sys === "en") {
+            numInput.style.display = "none";
+            letterInput.style.display = "";
+          } else {
+            numInput.style.display = "";
+            letterInput.style.display = "none";
+            numInput.max = sys === "fr" ? "20" : "10";
+            numInput.placeholder = sys === "fr" ? "1-20" : "1-10";
+          }
+        };
+
+        // =====================================================================
+        // Instellingen
+        // =====================================================================
+        window.toggleTheme = function () {
+          isDark = !isDark;
+          document.body.style.background = isDark ? "#0a0a0a" : "#f5f5f5";
+          document.body.style.color = isDark ? "#f0f0f0" : "#111";
+          document.getElementById("themeBtn").textContent = isDark
+            ? "🌙 Dark"
+            : "☀️ Light";
+        };
+
+        window.clearAll = function () {
+          if (!confirm("Delete ALL tasks?")) return;
+          tasks = [];
+          saveTasks();
+          renderAll();
+        };
+
+        window.saveName = function () {
+          localStorage.setItem(
+            "userName",
+            document.getElementById("userName").value,
+          );
+        };
+
+        window.toggleNotifications = function () {
+          if (Notification.permission === "granted") {
+            showToast("Notifications already enabled!");
+          } else {
+            Notification.requestPermission().then((p) => {
+              document.getElementById("notifBtn").textContent =
+                p === "granted" ? "Enabled ✅" : "Blocked ❌";
+            });
+          }
+        };
+
+        window.cancelAccount = function () {
+          if (!confirm("Delete your account and all data?")) return;
+          localStorage.clear();
+          location.reload();
+        };
+
+        // =====================================================================
+        // Streak
+        // =====================================================================
+        function updateStreak() {
+          const today = new Date().toISOString().slice(0, 10);
+          const todayDone = tasks.filter((t) => t.done).length;
+          let streak = JSON.parse(
+            localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
+          );
+          if (todayDone > 0) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yStr = yesterday.toISOString().slice(0, 10);
+            if (streak.lastDate === today) {
+              /* al geteld */
+            } else if (streak.lastDate === yStr) {
+              streak.count++;
+              streak.lastDate = today;
+            } else {
+              streak.count = 1;
+              streak.lastDate = today;
+            }
+            localStorage.setItem("streak", JSON.stringify(streak));
+          }
+          const el = document.getElementById("streakDisplay");
+          if (el)
+            el.textContent = `🔥 ${streak.count} day${streak.count !== 1 ? "s" : ""}`;
+        }
+
+        // =====================================================================
+        // Toast
+        // =====================================================================
+        function showToast(msg) {
+          const t = document.createElement("div");
+          t.style =
+            "position:fixed;bottom:20px;right:20px;background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;font-size:.88rem;z-index:9998";
+          t.textContent = msg;
+          document.body.appendChild(t);
+          setTimeout(() => t.remove(), 3500);
+        }
+
+        // =====================================================================
+        // Navigatie
+        // =====================================================================
+        window.showPage = function (id) {
+          document
+            .querySelectorAll("#pages > div")
+            .forEach((p) => (p.style.display = "none"));
+          document.getElementById("page-" + id).style.display = "block";
+          document
+            .querySelectorAll("#sidebar a")
+            .forEach((a) => a.classList.remove("active"));
+          document
+            .querySelector(`#sidebar a[onclick="showPage('${id}')"]`)
+            .classList.add("active");
+        };
+
+        // =====================================================================
+        // Alles renderen
+        // =====================================================================
+        function renderAll() {
+          renderTasks();
+          renderStats();
+          renderDueToday();
+          renderUpcoming();
+          renderCalendar();
+          renderGrades();
+          updateStreak();
+        }
+
+        // =====================================================================
+        // Opstarten
+        // =====================================================================
+        async function init() {
+          const session = await checkAuth();
+          if (!session) return;
+          showPage("dashboard");
+          await loadTasks();
+          await checkPro(); // laadscherm verdwijnt pas als Pro-status bekend is
+        }
+
+        init();
+      })(); // einde IIFE
     </script>
   </body>
 </html>
