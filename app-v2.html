@@ -819,7 +819,7 @@
     <div
       id="cookieBanner"
       style="
-        display: none;
+        display: none !important;
         position: fixed;
         bottom: 24px;
         left: 50%;
@@ -2159,8 +2159,11 @@
         }
 
         function initCookieBanner() {
-          if (!localStorage.getItem("cookies_accepted")) {
-            document.getElementById("cookieBanner").style.display = "flex";
+          const banner = document.getElementById("cookieBanner");
+          if (localStorage.getItem("cookies_accepted")) {
+            banner.style.display = "none";
+          } else {
+            banner.style.display = "flex";
           }
         }
 
