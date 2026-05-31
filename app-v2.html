@@ -448,6 +448,10 @@
     <main id="content">
       <div id="pages">
         <div id="page-dashboard">
+          <div
+            id="dashboardGreeting"
+            style="font-size: 0.9rem; color: #888; margin-bottom: 4px"
+          ></div>
           <h1>Dashboard</h1>
           <input
             type="text"
@@ -721,10 +725,19 @@
           </div>
           <div class="dashboard-card" style="margin-bottom: 16px">
             <h2>Subjects</h2>
-<div style="font-size:0.85rem;color:#888;margin-bottom:12px">Add or remove your own subjects.</div>
-<input type="text" id="newSubjectInput" placeholder="New subject..." style="flex:1;margin:0" onkeydown="if(event.key==='Enter')addSubject()" />
-<button onclick="addSubject()" style="padding:10px 16px">+ Add</button>
+            <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
+              Add or remove your own subjects.
             </div>
+            <input
+              type="text"
+              id="newSubjectInput"
+              placeholder="New subject..."
+              style="flex: 1; margin: 0"
+              onkeydown="if (event.key === 'Enter') addSubject();"
+            />
+            <button onclick="addSubject()" style="padding: 10px 16px">
+              + Add
+            </button>
             <div id="subjectList"></div>
           </div>
           <div class="dashboard-card" style="margin-bottom: 16px">
@@ -938,16 +951,19 @@
           const name = input.value.trim();
           if (!name) return;
           const subjects = getSubjects();
-          if (subjects.includes(name)) { showToast("Subject already exists!"); return; }
+          if (subjects.includes(name)) {
+            showToast("Subject already exists!");
+            return;
+          }
           subjects.push(name);
           saveSubjects(subjects);
           input.value = "";
           renderSubjectSelects();
-          showToast('"'+name+'" added!');
+          showToast('"' + name + '" added!');
         };
 
         window.removeSubject = function (name) {
-          if (!confirm('Remove "'+name+'"?')) return;
+          if (!confirm('Remove "' + name + '"?')) return;
           saveSubjects(getSubjects().filter((s) => s !== name));
           renderSubjectSelects();
         };
@@ -1149,19 +1165,17 @@
           const email = session.user.email;
           await _sb.from("tasks").delete().eq("user-id", email);
           if (tasks.length > 0) {
-            await _sb
-              .from("tasks")
-              .insert(
-                tasks.map((t) => ({
-                  "user-id": email,
-                  title: t.title,
-                  subject: t.subject || "",
-                  date: t.date || "",
-                  priority: t.priority || "medium",
-                  done: t.done || false,
-                  notes: t.notes || "",
-                })),
-              );
+            await _sb.from("tasks").insert(
+              tasks.map((t) => ({
+                "user-id": email,
+                title: t.title,
+                subject: t.subject || "",
+                date: t.date || "",
+                priority: t.priority || "medium",
+                done: t.done || false,
+                notes: t.notes || "",
+              })),
+            );
           }
         }
 
@@ -1559,10 +1573,10 @@
           renderAll();
         };
         window.saveName = function () {
-          localStorage.setItem(
-            "userName",
-            document.getElementById("userName").value,
-          );
+          const name = document.getElementById("userName").value;
+          localStorage.setItem("userName", name);
+          const greeting = document.getElementById("dashboardGreeting");
+          if (greeting && name) greeting.textContent = "Hey, " + name + "!";
         };
         window.cancelAccount = function () {
           if (!confirm("Delete your account and all data?")) return;
@@ -1694,6 +1708,9 @@
           if (!session) return;
           renderSubjectSelects();
           showPage("dashboard");
+          const name = localStorage.getItem("userName");
+          const greeting = document.getElementById("dashboardGreeting");
+          if (greeting && name) greeting.textContent = "Hey, " + name + "!";
           await loadTasks();
           await checkPro();
           if (Notification.permission === "granted") {
