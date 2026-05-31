@@ -869,8 +869,14 @@
           grid-template-columns: repeat(3, 1fr);
           gap: 8px;
         }
+        .stat-card {
+          padding: 12px 14px;
+        }
+        .stat-label {
+          font-size: 0.65rem;
+        }
         .stat-value {
-          font-size: 1.4rem;
+          font-size: 1.3rem;
         }
         .add-task-row {
           flex-direction: column;
@@ -888,15 +894,35 @@
           margin: 16px;
           width: calc(100% - 32px);
         }
-        .cal-grid {
-          gap: 2px;
-        }
         .cal-day {
           height: 26px;
           font-size: 0.65rem;
         }
         .cal-day-label {
           font-size: 0.6rem;
+        }
+        .cal-grid {
+          gap: 2px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .card-title {
+          margin-bottom: 10px;
+        }
+        .dash-item {
+          padding: 8px 10px;
+          font-size: 0.8rem;
+        }
+        .pro-upsell {
+          padding: 16px;
+        }
+        .page-footer {
+          margin-top: 24px;
+          gap: 12px;
+        }
+        #page-dashboard .card:has(#calGrid) {
+          display: none;
         }
       }
     </style>
