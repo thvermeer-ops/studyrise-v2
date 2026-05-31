@@ -6,28 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StudyRise</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
-      :root {
-        --bg: #080808;
-        --surface: #0f0f0f;
-        --surface2: #161616;
-        --border: rgba(255, 255, 255, 0.1);
-        --border-hover: rgba(255, 255, 255, 0.18);
-        --text: #f0f0f0;
-        --text-muted: #a0a0a0;
-        --text-dim: #707070;
-        --blue: #2563eb;
-        --blue-dim: rgba(37, 99, 235, 0.12);
-        --blue-border: rgba(37, 99, 235, 0.35);
-        --green: #22c55e;
-        --yellow: #f59e0b;
-        --red: #ef4444;
-        --radius: 10px;
-        --radius-sm: 6px;
-      }
       * {
         box-sizing: border-box;
         margin: 0;
@@ -36,1031 +18,304 @@
       #pages > div {
         display: none;
       }
-      .pro-only {
-        display: none !important;
-      }
-
       body {
-        font-family: "DM Sans", system-ui, sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        background: #0a0a0a;
+        color: #f0f0f0;
         display: flex;
         min-height: 100vh;
-        font-size: 0.9rem;
       }
-
-      /* ---- Overlay ---- */
-      #overlay {
-        position: fixed;
-        inset: 0;
-        background: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        flex-direction: column;
-        gap: 16px;
-      }
-      .overlay-logo {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text);
-        letter-spacing: -0.02em;
-      }
-      .overlay-dots {
-        display: flex;
-        gap: 6px;
-      }
-      .overlay-dots span {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--blue);
-        animation: pulse 1.2s ease-in-out infinite;
-      }
-      .overlay-dots span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .overlay-dots span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.2;
-        }
-        50% {
-          opacity: 1;
-        }
-      }
-
-      /* ---- Sidebar ---- */
       #sidebar {
-        width: 220px;
-        background: var(--surface);
-        border-right: 1px solid var(--border);
-        padding: 20px 12px;
+        width: 200px;
+        background: #111;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 24px 16px;
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
         display: flex;
         flex-direction: column;
-        gap: 4px;
       }
-      .sidebar-logo {
+      #sidebar ul {
+        list-style: none;
+        margin-top: 24px;
+      }
+      #sidebar li {
+        margin-bottom: 4px;
+      }
+      #sidebar a {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #888;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      #sidebar a:hover {
+        background: #1a1a1a;
+        color: #f0f0f0;
+      }
+      #sidebar a.active {
+        background: rgba(37, 99, 235, 0.15);
+        color: #2563eb;
+      }
+      #content {
+        margin-left: 200px;
+        padding: 32px;
+        flex: 1;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+      h2 {
         font-size: 1rem;
         font-weight: 600;
-        color: var(--text);
-        letter-spacing: -0.02em;
-        padding: 8px 12px 16px;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        color: #888;
       }
-      .sidebar-logo span {
-        color: var(--blue);
-      }
-      #sidebar nav {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 9px 12px;
-        border-radius: var(--radius-sm);
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.15s;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        width: 100%;
-        text-align: left;
-      }
-      .nav-item:hover {
-        background: var(--surface2);
-        color: var(--text);
-      }
-      .nav-item.active {
-        background: var(--blue-dim);
-        color: var(--blue);
-      }
-      .nav-icon {
-        font-size: 0.8rem;
-        width: 16px;
-        text-align: center;
-      }
-      .sidebar-bottom {
-        margin-top: auto;
-        padding: 12px;
-        border-top: 1px solid var(--border);
-      }
-      .streak-label {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-      }
-      #streakDisplay {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--yellow);
-      }
-
-      /* ---- Main content ---- */
-      #content {
-        margin-left: 220px;
-        padding: 36px 40px;
-        flex: 1;
-        max-width: calc(100% - 220px);
-      }
-
-      /* ---- Page header ---- */
-      .page-header {
-        margin-bottom: 28px;
-      }
-      .page-greeting {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-      }
-      .page-header h1 {
-        font-size: 1.4rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-      }
-
-      /* ---- Cards ---- */
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-      }
-      .card + .card {
-        margin-top: 12px;
-      }
-      .card-title {
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: var(--text-muted);
-        margin-bottom: 14px;
-      }
-
-      /* ---- Inputs ---- */
       input[type="text"],
       input[type="date"],
       input[type="number"],
-      select,
-      textarea {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        padding: 9px 12px;
-        color: var(--text);
-        font-size: 0.875rem;
-        font-family: inherit;
+      select {
+        background: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px 14px;
+        color: #f0f0f0;
+        font-size: 0.9rem;
+        margin-right: 8px;
+        margin-bottom: 16px;
         outline: none;
-        transition: border-color 0.15s;
       }
       input[type="text"]:focus,
-      input[type="date"]:focus,
-      input[type="number"]:focus,
-      select:focus,
-      textarea:focus {
-        border-color: var(--blue);
+      select:focus {
+        border-color: #2563eb;
       }
-      select {
-        cursor: pointer;
-      }
-
-      /* ---- Buttons ---- */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 9px 16px;
-        border-radius: var(--radius-sm);
-        font-size: 0.875rem;
-        font-weight: 500;
-        font-family: inherit;
-        cursor: pointer;
-        transition: all 0.15s;
-        border: none;
-      }
-      .btn-primary {
-        background: var(--blue);
+      button {
+        background: #2563eb;
         color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
       }
-      .btn-primary:hover {
+      button:hover {
         background: #1d4ed8;
       }
-      .btn-ghost {
-        background: transparent;
-        color: var(--text-muted);
-        border: 1px solid var(--border);
-      }
-      .btn-ghost:hover {
-        border-color: var(--border-hover);
-        color: var(--text);
-        background: var(--surface2);
-      }
-      .btn-danger {
-        background: transparent;
-        color: var(--red);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-      }
-      .btn-danger:hover {
-        background: rgba(239, 68, 68, 0.08);
-      }
-      .btn-sm {
-        padding: 5px 10px;
-        font-size: 0.775rem;
-      }
-      .btn-blue-text {
-        background: transparent;
-        color: var(--blue);
-        border: 1px solid var(--blue-border);
-      }
-      .btn-blue-text:hover {
-        background: var(--blue-dim);
-      }
-
-      /* ---- Pro badge ---- */
-      .pro-badge {
-        display: inline-block;
-        background: var(--blue);
-        color: #fff;
-        font-size: 0.6rem;
-        font-weight: 600;
-        padding: 2px 5px;
-        border-radius: 3px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        vertical-align: middle;
-        margin-left: 4px;
-      }
-
-      /* ---- Stats grid ---- */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-      .stat-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 16px 20px;
-      }
-      .stat-card.blue {
-        border-color: var(--blue-border);
-      }
-      .stat-card.green {
-        border-color: rgba(34, 197, 94, 0.3);
-      }
-      .stat-card.red {
-        border-color: rgba(239, 68, 68, 0.3);
-      }
-      .stat-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-      }
-      .stat-value {
-        font-size: 1.8rem;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        font-family: "DM Mono", monospace;
-      }
-
-      /* ---- Task list ---- */
-      .task-list {
+      #taskList {
+        list-style: none;
+        margin-top: 16px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        margin-top: 8px;
-      }
-      .task-item {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 12px 14px;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        transition: border-color 0.15s;
-      }
-      .task-item:hover {
-        border-color: var(--border-hover);
-      }
-      .task-item.done .task-name {
-        opacity: 0.4;
-        text-decoration: line-through;
-      }
-      .task-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .task-check {
-        width: 18px;
-        height: 18px;
-        border-radius: 5px;
-        flex-shrink: 0;
-        border: 1.5px solid var(--border-hover);
-        background: transparent;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.15s;
-      }
-      .task-check.checked {
-        background: var(--green);
-        border-color: var(--green);
-      }
-      .task-name {
-        flex: 1;
-        font-size: 0.875rem;
-      }
-      .task-meta {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 1px;
-      }
-      .task-actions {
-        display: flex;
-        gap: 4px;
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-      .priority-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .priority-dot.urgent {
-        background: var(--red);
-      }
-      .priority-dot.medium {
-        background: var(--yellow);
-      }
-      .priority-dot.low {
-        background: var(--green);
-      }
-      .task-notes-area {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid var(--border);
-        display: none;
-      }
-      .task-notes-area textarea {
-        width: 100%;
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        font-size: 0.825rem;
-        resize: none;
-        outline: none;
-        min-height: 52px;
-        padding: 0;
-      }
-
-      /* ---- Filter row ---- */
-      .filter-row {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-bottom: 14px;
-      }
-      .chip {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.775rem;
-        font-weight: 500;
-        border: 1px solid var(--border);
-        background: transparent;
-        color: var(--text-muted);
-        cursor: pointer;
-        transition: all 0.15s;
-        font-family: inherit;
-      }
-      .chip:hover {
-        border-color: var(--border-hover);
-        color: var(--text);
-      }
-      .chip.active {
-        background: var(--blue-dim);
-        border-color: var(--blue-border);
-        color: var(--blue);
-      }
-
-      /* ---- Add task row ---- */
-      .add-task-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-      .add-task-row input[type="text"] {
-        flex: 1;
-        min-width: 160px;
-      }
-
-      /* ---- Limit banner ---- */
-      .limit-banner {
-        display: none;
-        padding: 11px 14px;
-        border-radius: var(--radius-sm);
-        background: var(--blue-dim);
-        border: 1px solid var(--blue-border);
-        font-size: 0.825rem;
-        color: var(--text);
-        margin-bottom: 12px;
-      }
-      .limit-banner a {
-        color: var(--blue);
-        font-weight: 600;
-      }
-
-      /* ---- Dashboard lists ---- */
-      .dash-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 8px;
-      }
-      .dash-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 12px;
-        background: var(--surface2);
-        border-radius: var(--radius-sm);
-        font-size: 0.85rem;
-      }
-      .dash-item .name {
-        flex: 1;
-      }
-      .dash-item .date {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-family: "DM Mono", monospace;
-      }
-      .empty-state {
-        color: var(--text-dim);
-        font-size: 0.85rem;
-        padding: 8px 0;
-      }
-
-      /* ---- Calendar ---- */
-      .cal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
         gap: 8px;
       }
-      .cal-label {
-        white-space: nowrap;
-      }
-      .cal-label {
-        font-size: 0.875rem;
-        font-weight: 600;
-      }
-      .cal-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px;
-      }
-      .cal-day-label {
-        font-size: 0.65rem;
-        color: var(--text-dim);
-        text-align: center;
-        padding: 4px 0;
-        font-weight: 600;
-        text-transform: uppercase;
-      }
-      .cal-day {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        font-size: 0.775rem;
-        color: var(--text-muted);
-        cursor: default;
-        position: relative;
-        padding: 6px 2px;
-        height: 32px;
-      }
-      .cal-day.today {
-        background: var(--blue);
-        color: #fff;
-        font-weight: 600;
-      }
-      .cal-day.has-task {
-        color: #60a5fa;
-      }
-      .cal-day.has-task::after {
-        content: "";
-        position: absolute;
-        bottom: 3px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 3px;
-        height: 3px;
-        border-radius: 50%;
-        background: var(--blue);
-      }
-      .cal-day.today::after {
-        display: none;
-      }
-
-      /* ---- Grades ---- */
-      .grade-subject-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 16px 20px;
-        margin-bottom: 10px;
-      }
-      .grade-subject-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-      }
-      .grade-subject-name {
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-      .grade-avg {
-        font-size: 0.875rem;
-        font-weight: 600;
-        font-family: "DM Mono", monospace;
-      }
-      .grade-row {
+      #taskList li {
+        background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 14px 16px;
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 8px 0;
-        border-top: 1px solid var(--border);
       }
-      .grade-value {
-        font-size: 1rem;
-        font-weight: 600;
-        width: 32px;
-        font-family: "DM Mono", monospace;
+      #taskList li.done {
+        opacity: 0.5;
+        text-decoration: line-through;
       }
-      .grade-name {
-        flex: 1;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
-      .grade-avg-bar {
-        width: 100%;
-        height: 4px;
-        background: var(--surface2);
-        border-radius: 2px;
-        margin-bottom: 16px;
-      }
-      .grade-avg-fill {
-        height: 100%;
-        border-radius: 2px;
-        transition: width 0.4s;
-      }
-      .overall-avg {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      .overall-avg-number {
-        font-size: 2.2rem;
-        font-weight: 600;
-        font-family: "DM Mono", monospace;
-        letter-spacing: -0.03em;
-      }
-
-      /* ---- Settings ---- */
-      .setting-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 13px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .setting-row:last-child {
-        border-bottom: none;
-      }
-      .setting-label {
-        font-weight: 500;
-        font-size: 0.875rem;
-      }
-      .setting-desc {
-        font-size: 0.775rem;
-        color: var(--text-muted);
-        margin-top: 2px;
-      }
-      .subject-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 12px;
-      }
-      .subject-tag {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: 20px;
+      #taskList button {
+        background: transparent;
+        color: #ef4444;
+        border: 1px solid #ef4444;
         padding: 4px 10px;
-        font-size: 0.8rem;
-      }
-      .subject-tag button {
-        background: none;
-        border: none;
-        color: var(--text-dim);
-        cursor: pointer;
         font-size: 0.75rem;
-        padding: 0;
-        line-height: 1;
-        transition: color 0.15s;
-        min-width: unset;
+        margin-left: auto;
       }
-      .subject-tag button:hover {
-        color: var(--red);
-        background: none;
+      #stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
       }
-      .add-subject-row {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
+      .stat-card {
+        background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 20px;
       }
-      .add-subject-row input {
-        flex: 1;
+      .stat-card.blue {
+        border-color: #2563eb;
       }
-
-      /* ---- Edit modal ---- */
-      #editModal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
+      .stat-card.green {
+        border-color: #22c55e;
       }
-      #editModal.open {
-        display: flex;
+      .stat-card.red {
+        border-color: #ef4444;
       }
-      .modal-box {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 24px;
-        width: 100%;
-        max-width: 440px;
-      }
-      .modal-title {
-        font-size: 1rem;
+      .stat-label {
+        font-size: 0.75rem;
         font-weight: 600;
-        margin-bottom: 18px;
-      }
-      .modal-field {
-        margin-bottom: 10px;
-      }
-      .modal-field label {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-bottom: 5px;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .modal-field input,
-      .modal-field select {
-        width: 100%;
-      }
-      .modal-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-      }
-      .modal-actions .btn {
-        flex: 1;
-        justify-content: center;
-      }
-
-      /* ---- Pro upsell ---- */
-      .pro-upsell {
-        text-align: center;
-        padding: 24px 20px;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-      }
-      .pro-upsell-icon {
-        font-size: 1.4rem;
+        letter-spacing: 0.5px;
+        color: #888;
         margin-bottom: 8px;
       }
-      .pro-upsell-title {
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f0f0f0;
+      }
+      .priority-urgent {
+        color: #ef4444;
         font-weight: 600;
-        margin-bottom: 4px;
       }
-      .pro-upsell-desc {
-        font-size: 0.825rem;
-        color: var(--text-muted);
-        margin-bottom: 14px;
+      .priority-medium {
+        color: #f59e0b;
+        font-weight: 600;
       }
-
-      /* ---- Footer ---- */
-      .page-footer {
-        margin-top: 48px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border);
-        display: flex;
-        gap: 16px;
+      .priority-low {
+        color: #22c55e;
+        font-weight: 600;
       }
-      .page-footer a {
-        font-size: 0.75rem;
-        color: var(--text-dim);
-        text-decoration: none;
+      .dashboard-card {
+        background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 16px;
       }
-      .page-footer a:hover {
-        color: var(--text-muted);
-      }
-
-      /* ---- Priority colors ---- */
-      .p-urgent {
-        color: var(--red);
-      }
-      .p-medium {
-        color: var(--yellow);
-      }
-      .p-low {
-        color: var(--green);
-      }
-      /* ---- Mobile ---- */
-      #mobile-nav {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        padding: 8px 0 env(safe-area-inset-bottom, 8px);
-        z-index: 100;
-        justify-content: space-around;
-      }
-      .mobile-nav-item {
+      .dashboard-card ul {
+        list-style: none;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        padding: 6px 16px;
-        border-radius: var(--radius-sm);
-        color: var(--muted);
-        font-size: 0.65rem;
-        font-weight: 500;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        font-family: inherit;
-        transition: color 0.15s;
-        flex: 1;
+        gap: 8px;
+        margin-top: 12px;
       }
-      .mobile-nav-item.active {
-        color: var(--blue);
+      .dashboard-card li {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
       }
-      .mobile-nav-icon {
-        font-size: 1.1rem;
+      .footer-links {
+        margin-top: 40px;
+        font-size: 0.75rem;
+        color: #444;
+        text-align: center;
       }
-
-      @media (max-width: 768px) {
-        #sidebar {
-          display: none !important;
-        }
-        #content {
-          margin-left: 0;
-          padding: 20px 16px 80px;
-          max-width: 100%;
-        }
-        #mobile-nav {
-          display: flex;
-        }
-        .stats-grid {
-          grid-template-columns: repeat(3, 1fr);
-          gap: 8px;
-        }
-        .stat-card {
-          padding: 12px 14px;
-        }
-        .stat-label {
-          font-size: 0.65rem;
-        }
-        .stat-value {
-          font-size: 1.3rem;
-        }
-        .add-task-row {
-          flex-direction: column;
-        }
-        .add-task-row input,
-        .add-task-row select {
-          width: 100%;
-          margin-right: 0;
-        }
-        .add-task-row .btn {
-          width: 100%;
-          justify-content: center;
-        }
-        .modal-box {
-          margin: 16px;
-          width: calc(100% - 32px);
-        }
-        .cal-day {
-          height: 26px;
-          font-size: 0.65rem;
-        }
-        .cal-day-label {
-          font-size: 0.6rem;
-        }
-        .cal-grid {
-          gap: 2px;
-        }
-        .card {
-          padding: 14px;
-        }
-        .card-title {
-          margin-bottom: 10px;
-        }
-        .dash-item {
-          padding: 8px 10px;
-          font-size: 0.8rem;
-        }
-        .pro-upsell {
-          padding: 16px;
-        }
-        .page-footer {
-          margin-top: 24px;
-          gap: 12px;
-        }
-        #page-dashboard .card:has(#calGrid) {
-          display: none;
-        }
+      .footer-links a {
+        color: #666;
+        text-decoration: none;
+      }
+      .filter-btn {
+        background: #1a1a1a;
+        color: #888;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px 14px;
+        font-size: 0.8rem;
+      }
+      .filter-btn.active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+      }
+      #page-grades input {
+        width: auto;
+        margin-bottom: 8px;
       }
     </style>
   </head>
   <body>
-    <div
-      id="cookieBanner"
-      style="
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #0f0f0f;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 16px 20px;
-        max-width: 480px;
-        width: calc(100% - 48px);
-        z-index: 9997;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      "
-    >
+    <nav id="sidebar">
       <div
-        style="flex: 1; font-size: 0.825rem; color: #a0a0a0; line-height: 1.5"
-      >
-        We use cookies to keep you logged in and save your preferences. No
-        tracking or ads.
-        <a href="cookies.html" style="color: #2563eb; text-decoration: none">
-          Learn more</a
-        >
-      </div>
-      <button
-        onclick="acceptCookies()"
         style="
-          background: #2563eb;
-          color: #fff;
-          border: none;
-          border-radius: 8px;
-          padding: 8px 16px;
-          font-size: 0.825rem;
-          font-weight: 500;
-          cursor: pointer;
-          white-space: nowrap;
-          font-family: inherit;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #f0f0f0;
+          padding: 0 12px;
         "
       >
-        Got it
-      </button>
-    </div>
-    <div id="overlay">
-      <div class="overlay-logo">
-        Study<span style="color: #2563eb">Rise</span>
+        StudyRise
       </div>
-      <div class="overlay-dots"><span></span><span></span><span></span></div>
-    </div>
-
-    <div id="editModal">
-      <div class="modal-box">
-        <div class="modal-title">Edit task</div>
-        <div class="modal-field">
-          <label>Title</label
-          ><input type="text" id="editTitle" placeholder="Task title..." />
+      <ul>
+        <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+        <li><a href="#" onclick="showPage('tasks')">Tasks</a></li>
+        <li><a href="#" onclick="showPage('grades')">Grades</a></li>
+        <li><a href="#" onclick="showPage('settings')">Settings</a></li>
+      </ul>
+      <div
+        style="
+          margin-top: auto;
+          padding: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        "
+      >
+        <div style="font-size: 0.75rem; color: #888; margin-bottom: 4px">
+          Current Streak
         </div>
-        <div class="modal-field">
-          <label>Subject</label
-          ><select id="editSubject"></select>
+        <div
+          id="streakDisplay"
+          style="font-size: 1.3rem; font-weight: 700; color: #f59e0b"
+        >
+          🔥 0 days
         </div>
-        <div class="modal-field">
-          <label>Due date</label><input type="date" id="editDate" />
-        </div>
-        <div class="modal-field">
-          <label>Priority</label>
-          <select id="editPriority">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="urgent">Urgent</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="closeEditModal()">
-            Cancel
-          </button>
-          <button class="btn btn-primary" onclick="saveEdit()">
-            Save changes
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <nav id="sidebar">
-      <div class="sidebar-logo">Study<span>Rise</span></div>
-      <nav>
-        <button class="nav-item active" onclick="showPage('dashboard')">
-          <span class="nav-icon">◈</span> Dashboard
-        </button>
-        <button class="nav-item" onclick="showPage('tasks')">
-          <span class="nav-icon">✓</span> Tasks
-        </button>
-        <button class="nav-item" onclick="showPage('grades')">
-          <span class="nav-icon">◎</span> Grades
-        </button>
-        <button class="nav-item" onclick="showPage('settings')">
-          <span class="nav-icon">⚙</span> Settings
-        </button>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="streak-label">Streak</div>
-        <div id="streakDisplay">0 days</div>
       </div>
     </nav>
 
     <main id="content">
+      <div id="topbar"></div>
       <div id="pages">
         <!-- DASHBOARD -->
         <div id="page-dashboard">
-          <div class="page-header">
-            <div class="page-greeting" id="dashboardGreeting"></div>
-            <h1>Dashboard</h1>
-          </div>
-
+          <h1>Dashboard</h1>
           <input
             type="text"
             id="searchInput"
             placeholder="Search tasks..."
             oninput="searchTasks(this.value)"
-            style="width: 100%; margin-bottom: 20px"
+            style="width: 100%; margin-bottom: 24px"
           />
-
-          <div id="stats" class="stats-grid pro-only">
+          <div id="stats" class="pro-only" style="display: none">
+            <div
+              class="pro-lock"
+              style="
+                background: #111;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 24px;
+                text-align: center;
+              "
+            >
+              <div style="font-size: 1.5rem; margin-bottom: 8px">📊</div>
+              <div style="font-weight: 600; margin-bottom: 4px">Statistics</div>
+              <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
+                Upgrade to Pro to see your stats
+              </div>
+              <button
+                onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
+                style="
+                  background: #2563eb;
+                  padding: 8px 20px;
+                  font-size: 0.85rem;
+                "
+              >
+                Upgrade to Pro ⚡
+              </button>
+            </div>
             <div class="stat-card blue">
-              <div class="stat-label">Total</div>
+              <div class="stat-label">Total Tasks</div>
               <div class="stat-value" id="stat-total">0</div>
             </div>
             <div class="stat-card green">
-              <div class="stat-label">Done</div>
+              <div class="stat-label">Completed</div>
               <div class="stat-value" id="stat-done">0</div>
             </div>
             <div class="stat-card red">
@@ -1068,250 +323,268 @@
               <div class="stat-value" id="stat-pending">0</div>
             </div>
           </div>
-          <div id="stats-lock" class="pro-upsell" style="margin-bottom: 12px">
-            <div class="pro-upsell-icon">📊</div>
-            <div class="pro-upsell-title">
-              Statistics <span class="pro-badge">Pro</span>
-            </div>
-            <div class="pro-upsell-desc">
-              See your task completion stats with Pro
-            </div>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
+          <div class="dashboard-card">
+            <h2>Due Today</h2>
+            <ul id="dueTodayList"></ul>
+          </div>
+          <div class="dashboard-card">
+            <h2>Upcoming — Next 7 Days</h2>
+            <ul id="upcomingList"></ul>
+          </div>
+          <div class="dashboard-card">
+            <h2>Calendar</h2>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+              "
             >
-              Upgrade to Pro
-            </button>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Due today</div>
-            <div id="dueTodayList" class="dash-list"></div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Upcoming — next 7 days</div>
-            <div id="upcomingList" class="dash-list"></div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Calendar</div>
-            <div class="cal-header">
-              <button class="btn btn-ghost btn-sm" onclick="calPrev()">
-                &#8249;
-              </button>
-              <span id="calLabel" class="cal-label"></span>
-              <button class="btn btn-ghost btn-sm" onclick="calNext()">
-                &#8250;
-              </button>
+              <button class="filter-btn" onclick="calPrev()">‹</button>
+              <span
+                id="calLabel"
+                style="font-size: 0.95rem; font-weight: 700; color: #f0f0f0"
+              ></span>
+              <button class="filter-btn" onclick="calNext()">›</button>
             </div>
-            <div id="calGrid" class="cal-grid"></div>
+            <div
+              id="calGrid"
+              style="
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+                text-align: center;
+              "
+            ></div>
           </div>
-
-          <div class="page-footer">
-            <a href="privacy.html">Privacy</a>
-            <a href="cookies.html">Cookies</a>
-            <a href="terms.html">Terms</a>
-            <a href="contact.html">Contact</a>
+          <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a> ·
+            <a href="cookies.html">Cookie Policy</a>
           </div>
         </div>
 
         <!-- TASKS -->
         <div id="page-tasks">
-          <div class="page-header"><h1>Tasks</h1></div>
-
-          <div id="filterBtns" class="filter-row"></div>
-
+          <h1>Tasks</h1>
           <div
             style="
-              display: flex;
-              gap: 6px;
               margin-bottom: 16px;
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+            "
+          >
+            <button
+              class="filter-btn active"
+              onclick="filterTasks(this, 'all')"
+            >
+              All
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'Math')">
+              Math
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'Science')">
+              Science
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'English')">
+              English
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'History')">
+              History
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'Art')">
+              Art
+            </button>
+            <button class="filter-btn" onclick="filterTasks(this, 'PE')">
+              PE
+            </button>
+          </div>
+          <div
+            style="
+              margin-bottom: 16px;
+              display: flex;
+              gap: 8px;
               align-items: center;
             "
           >
-            <span style="font-size: 0.75rem; color: var(--text-muted)"
-              >Sort:</span
-            >
-            <button class="chip" onclick="sortTasks('date')">Date</button>
-            <button class="chip" onclick="sortTasks('priority')">
+            <span style="font-size: 0.8rem; color: #888">Sort by:</span>
+            <button class="filter-btn" onclick="sortTasks('date')">Date</button>
+            <button class="filter-btn" onclick="sortTasks('priority')">
               Priority
             </button>
-            <button class="chip" onclick="sortTasks('urgency')">Urgency</button>
-            <button class="chip" onclick="sortTasks('subject')">Subject</button>
-          </div>
-
-          <div class="add-task-row">
-            <input type="text" id="taskInput" placeholder="Task title..." />
-            <select id="taskSubject"></select>
-            <input type="date" id="taskDate" />
-            <select id="taskPriority">
-              <option value="low">Low</option>
-              <option value="medium" selected>Medium</option>
-              <option value="urgent">Urgent</option>
-            </select>
-            <button class="btn btn-primary" onclick="addTask()">
-              Add task
+            <button class="filter-btn" onclick="sortTasks('subject')">
+              Subject
             </button>
           </div>
-
-          <div id="task-limit-banner" class="limit-banner">
-            Free limit reached (5 tasks).
-            <a href="https://vermeerist.gumroad.com/l/srygsx" target="_blank"
-              >Upgrade to Pro</a
-            >
-            for unlimited.
-          </div>
-
-          <div id="taskList" class="task-list"></div>
+          <input type="text" id="taskInput" placeholder="Task title..." />
+          <select id="taskSubject">
+            <option>Math</option>
+            <option>Science</option>
+            <option>English</option>
+            <option>History</option>
+            <option>Art</option>
+            <option>PE</option>
+            <option>Other</option>
+          </select>
+          <input type="date" id="taskDate" />
+          <select id="taskPriority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="urgent">Urgent</option>
+          </select>
+          <button onclick="addTask()">Add</button>
+          <ul id="taskList"></ul>
         </div>
 
         <!-- GRADES -->
         <div id="page-grades">
-          <div class="page-header"><h1>Grades</h1></div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Add grade</div>
+          <h1>Grades</h1>
+          <div class="dashboard-card" style="margin-bottom: 16px">
             <div
               style="
                 display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
+                justify-content: space-between;
                 align-items: center;
+                margin-bottom: 12px;
               "
             >
-              <button
-                class="chip active"
-                id="nlBtn"
-                onclick="setGradeSystem('nl')"
-              >
-                NL 1–10
-              </button>
-              <button class="chip" id="enBtn" onclick="setGradeSystem('en')">
-                EN A–F
-              </button>
-              <button class="chip" id="frBtn" onclick="setGradeSystem('fr')">
-                FR 1–20
-              </button>
+              <h2>Add Grade</h2>
+              <div style="display: flex; gap: 4px">
+                <button
+                  class="filter-btn active"
+                  id="nlBtn"
+                  onclick="setGradeSystem('nl')"
+                >
+                  🇳🇱 1-10
+                </button>
+                <button
+                  class="filter-btn"
+                  id="enBtn"
+                  onclick="setGradeSystem('en')"
+                >
+                  🇬🇧 A-F
+                </button>
+                <button
+                  class="filter-btn"
+                  id="frBtn"
+                  onclick="setGradeSystem('fr')"
+                >
+                  🇫🇷 1-20
+                </button>
+              </div>
             </div>
             <div
               style="
                 display: grid;
-                grid-template-columns: 1fr 1fr 90px;
+                grid-template-columns: 1fr 1fr 100px;
                 gap: 8px;
                 margin-top: 12px;
               "
             >
-              <select id="gradeSubject"></select>
+              <input type="text" id="gradeSubject" placeholder="Subject..." />
               <input type="text" id="gradeName" placeholder="Test name..." />
               <input
                 type="number"
                 id="gradeValue"
-                placeholder="1–10"
+                placeholder="1-10"
                 min="1"
                 max="10"
                 step="0.1"
               />
               <select id="gradeLetterInput" style="display: none">
-                <option>A+</option>
-                <option>A</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B</option>
-                <option>B-</option>
-                <option>C+</option>
-                <option>C</option>
-                <option>C-</option>
-                <option>D</option>
-                <option>F</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="B-">B-</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="C-">C-</option>
+                <option value="D">D</option>
+                <option value="F">F</option>
               </select>
             </div>
-            <button
-              class="btn btn-primary"
-              onclick="addGrade()"
-              style="width: 100%; margin-top: 12px; justify-content: center"
-            >
-              Add grade
+            <button onclick="addGrade()" style="margin-top: 8px; width: 100%">
+              Add Grade
             </button>
           </div>
-
-          <div id="gradeAvg" class="card" style="margin-bottom: 12px"></div>
+          <div
+            id="gradeAvg"
+            class="dashboard-card"
+            style="margin-bottom: 16px"
+          ></div>
           <div id="gradeList"></div>
         </div>
 
         <!-- SETTINGS -->
         <div id="page-settings">
-          <div class="page-header"><h1>Settings</h1></div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Appearance</div>
-            <div class="setting-row">
+          <h1>Settings</h1>
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Appearance</h2>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+              "
+            >
               <div>
-                <div class="setting-label">Theme</div>
-                <div class="setting-desc">Toggle dark / light mode</div>
+                <div style="font-weight: 500">Dark Mode</div>
+                <div style="font-size: 0.8rem; color: #888">
+                  Toggle dark/light theme
+                </div>
               </div>
-              <button
-                class="btn btn-ghost btn-sm"
-                onclick="toggleTheme()"
-                id="themeBtn"
-              >
-                Dark
+              <button class="filter-btn" onclick="toggleTheme()" id="themeBtn">
+                🌙 Dark
               </button>
             </div>
           </div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Profile</div>
-            <div class="setting-row">
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Profile</h2>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+              "
+            >
               <div>
-                <div class="setting-label">Your name</div>
-                <div class="setting-desc">Shown on the dashboard</div>
+                <div style="font-weight: 500">Your Name</div>
+                <div style="font-size: 0.8rem; color: #888">
+                  Shown in the app
+                </div>
               </div>
-              <div style="display: flex; gap: 6px; align-items: center">
-                <input
-                  type="text"
-                  id="userName"
-                  placeholder="Your name..."
-                  style="width: 130px"
-                />
-                <button class="btn btn-primary btn-sm" onclick="saveName()">
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Subjects</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted)">
-              Add or remove subjects. These appear in task dropdowns and
-              filters.
-            </div>
-            <div class="add-subject-row">
               <input
                 type="text"
-                id="newSubjectInput"
-                placeholder="New subject..."
-                onkeydown="if (event.key === 'Enter') addSubject();"
+                id="userName"
+                placeholder="Your name..."
+                style="width: 150px; margin: 0"
+                onchange="saveName()"
               />
-              <button class="btn btn-primary btn-sm" onclick="addSubject()">
-                + Add
-              </button>
             </div>
-            <div id="subjectList" class="subject-tags"></div>
           </div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Notifications</div>
-            <div class="setting-row">
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Notifications</h2>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+              "
+            >
               <div>
-                <div class="setting-label">Deadline reminders</div>
-                <div class="setting-desc">
-                  Get notified 2 days and 1 day before a deadline
+                <div style="font-weight: 500">Enable Notifications</div>
+                <div style="font-size: 0.8rem; color: #888">
+                  Get reminded of deadlines
                 </div>
               </div>
               <button
-                class="btn btn-ghost btn-sm"
+                class="filter-btn"
                 onclick="toggleNotifications()"
                 id="notifBtn"
               >
@@ -1319,78 +592,111 @@
               </button>
             </div>
           </div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Data</div>
-            <div class="setting-row">
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Data</h2>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+              "
+            >
               <div>
-                <div class="setting-label">
-                  Export tasks <span class="pro-badge">Pro</span>
+                <div style="font-weight: 500">Export Tasks</div>
+                <div style="font-size: 0.8rem; color: #888">
+                  Download your tasks as JSON
                 </div>
-                <div class="setting-desc">Download all tasks as JSON</div>
               </div>
               <button
-                class="btn btn-ghost btn-sm pro-only"
+                class="filter-btn pro-only"
                 onclick="exportData()"
+                style="display: none"
               >
                 Export
               </button>
-              <span
-                id="export-lock"
-                style="font-size: 0.775rem; color: var(--text-muted)"
-                >Pro only</span
+              <span class="pro-lock" style="font-size: 0.8rem; color: #888"
+                >🔒 Pro only</span
               >
             </div>
-            <div class="setting-row">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+              "
+            >
               <div>
-                <div class="setting-label">Clear all tasks</div>
-                <div class="setting-desc">Permanently delete all tasks</div>
+                <div style="font-weight: 500">Clear All Tasks</div>
+                <div style="font-size: 0.8rem; color: #888">
+                  Permanently delete all tasks
+                </div>
               </div>
-              <button class="btn btn-danger btn-sm" onclick="clearAll()">
+              <button
+                class="filter-btn"
+                style="color: #ef4444; border-color: #ef4444"
+                onclick="clearAll()"
+              >
                 Clear
               </button>
             </div>
           </div>
-
-          <div class="card" style="margin-bottom: 12px">
-            <div class="card-title">Account</div>
-            <div class="setting-row">
-              <div>
-                <div class="setting-label">Cancel subscription</div>
-                <div class="setting-desc">Send a cancellation request</div>
-              </div>
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Account</h2>
+            <div
+              style="
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+              "
+            >
               <button
-                class="btn btn-ghost btn-sm"
+                class="filter-btn"
+                style="width: 100%; color: #ef4444; border-color: #ef4444"
                 onclick="
                   window.location.href =
                     'mailto:studyrise6@gmail.com?subject=Cancel subscription'
                 "
               >
-                Cancel
+                Cancel Subscription
               </button>
             </div>
-            <div class="setting-row">
-              <div>
-                <div class="setting-label">Delete account</div>
-                <div class="setting-desc">Remove all your data permanently</div>
-              </div>
-              <button class="btn btn-danger btn-sm" onclick="cancelAccount()">
-                Delete
+            <div style="padding: 12px 0">
+              <button
+                class="filter-btn"
+                style="width: 100%; color: #ef4444; border-color: #ef4444"
+                onclick="cancelAccount()"
+              >
+                Delete Account
               </button>
             </div>
           </div>
-
-          <div class="card">
-            <div class="card-title">About</div>
-            <div class="setting-row">
-              <div class="setting-label">Version</div>
-              <span
-                style="
-                  font-size: 0.8rem;
-                  color: var(--text-muted);
-                  font-family: &quot;DM Mono&quot;, monospace;
-                "
-                >2.0.0</span
+          <div class="dashboard-card">
+            <h2>About</h2>
+            <div
+              style="
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <span style="color: #888">Version</span><span>1.0.0</span>
+            </div>
+            <div
+              style="padding: 12px 0; font-size: 0.75rem; text-align: center"
+            >
+              <a href="privacy.html" style="color: #666; text-decoration: none"
+                >Privacy Policy</a
+              >
+              ·
+              <a href="cookies.html" style="color: #666; text-decoration: none"
+                >Cookie Policy</a
+              >
+              ·
+              <a href="terms.html" style="color: #666; text-decoration: none"
+                >Terms</a
               >
             </div>
           </div>
@@ -1399,931 +705,537 @@
     </main>
 
     <script>
-      (function () {
-        const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
-        const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let _isPro = false;
-        const FREE_TASK_LIMIT = 5;
-        const FREE_GRADE_LIMIT = 10;
-        const DEFAULT_SUBJECTS = [
-          "Math",
-          "Science",
-          "English",
-          "History",
-          "Art",
-          "PE",
-          "Other",
-        ];
-
-        // ---- Subjects ----
-        function getSubjects() {
-          const s = localStorage.getItem("subjects");
-          return s ? JSON.parse(s) : [...DEFAULT_SUBJECTS];
+      const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
+      const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      async function checkAuth() {
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) {
+          window.location.href = "login.html";
+          return;
         }
-        function saveSubjects(s) {
-          localStorage.setItem("subjects", JSON.stringify(s));
+        localStorage.setItem("sr_user", session.user.email);
+      }
+      checkAuth();
+      function showPage(id) {
+        document
+          .querySelectorAll("#pages > div")
+          .forEach((p) => (p.style.display = "none"));
+        document.getElementById("page-" + id).style.display = "block";
+        document
+          .querySelectorAll("#sidebar a")
+          .forEach((a) => a.classList.remove("active"));
+        document
+          .querySelector(`#sidebar a[onclick="showPage('${id}')"]`)
+          .classList.add("active");
+      }
+      showPage("dashboard");
+
+      let tasks = [];
+
+      async function loadTasks() {
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) return;
+        const { data } = await _sb
+          .from("tasks")
+          .select("*")
+          .eq("user-id", session.user.email);
+        if (data && data.length > 0) {
+          tasks = data.map((t) => ({
+            id: t.id,
+            title: t.title,
+            subject: t.subject,
+            date: t.date,
+            priority: t.priority,
+            done: t.done,
+            notes: t.notes || "",
+          }));
+        } else {
+          tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
         }
+        renderAll();
+      }
+      loadTasks();
+      let grades = JSON.parse(localStorage.getItem("grades") || "[]");
+      let currentFilter = "all";
+      let currentSort = "date";
+      let calDate = new Date();
+      let gradeSystem = "nl";
+      let isDark = true;
+      let isPro = false;
 
-        function renderSubjectSelects() {
-          const subjects = getSubjects();
-          ["taskSubject", "editSubject", "gradeSubject"].forEach((id) => {
-            const sel = document.getElementById(id);
-            if (!sel) return;
-            const cur = sel.value;
-            sel.innerHTML = subjects
-              .map((s) => '<option value="' + s + '">' + s + "</option>")
-              .join("");
-            if (cur && subjects.includes(cur)) sel.value = cur;
-          });
-          const fb = document.getElementById("filterBtns");
-          if (fb) {
-            fb.innerHTML =
-              '<button class="chip active" onclick="filterTasks(this,\'all\')">All</button>' +
-              subjects
-                .map(
-                  (s) =>
-                    '<button class="chip" onclick="filterTasks(this,\'' +
-                    s +
-                    "')\">" +
-                    s +
-                    "</button>",
-                )
-                .join("");
-          }
-          renderSubjectList();
-        }
-
-        function renderSubjectList() {
-          const subjects = getSubjects();
-          const list = document.getElementById("subjectList");
-          if (!list) return;
-          list.innerHTML = subjects
-            .map(
-              (s) =>
-                '<div class="subject-tag">' +
-                s +
-                "<button onclick=\"removeSubject('" +
-                s +
-                "')\">&#10005;</button></div>",
-            )
-            .join("");
-        }
-
-        window.addSubject = function () {
-          const input = document.getElementById("newSubjectInput");
-          const name = input.value.trim();
-          if (!name) return;
-          const subjects = getSubjects();
-          if (subjects.includes(name)) {
-            showToast("Subject already exists!");
-            return;
-          }
-          subjects.push(name);
-          saveSubjects(subjects);
-          input.value = "";
-          renderSubjectSelects();
-          showToast('"' + name + '" added!');
-        };
-
-        window.removeSubject = function (name) {
-          if (!confirm('Remove "' + name + '"?')) return;
-          saveSubjects(getSubjects().filter((s) => s !== name));
-          renderSubjectSelects();
-        };
-
-        // ---- Auth ----
-        async function checkAuth() {
-          const {
-            data: { session },
-          } = await _sb.auth.getSession();
-          if (!session) {
-            window.location.href = "login.html";
-            return null;
-          }
-          localStorage.setItem("sr_user", session.user.email);
-          return session;
-        }
-
-        // ---- Pro ----
-        async function checkPro() {
-          const email = localStorage.getItem("sr_user");
-          if (!email) {
-            hideOverlay();
-            return;
-          }
-          try {
-            const res = await fetch(
-              "https://studyflow-backend1.onrender.com/check-pro?email=" +
-                encodeURIComponent(email),
-            );
-            const data = await res.json();
-            _isPro = data.isPro === true;
-          } catch (e) {
-            _isPro = false;
-          }
-          applyProUI();
-          hideOverlay();
-        }
-
-        function hideOverlay() {
-          const o = document.getElementById("overlay");
-          if (o) o.remove();
-        }
-
-        function applyProUI() {
-          document
-            .querySelectorAll(".pro-only")
-            .forEach((el) =>
-              el.style.setProperty(
-                "display",
-                _isPro ? "" : "none",
-                "important",
-              ),
-            );
-          const exportBtn = document.querySelector(
-            ".pro-only[onclick='exportData()']",
+      async function checkPro() {
+        const email = localStorage.getItem("sr_user");
+        if (!email) return;
+        try {
+          const res = await fetch(
+            `https://studyflow-backend1.onrender.com/check-pro?email=${encodeURIComponent(email)}`,
           );
-          if (exportBtn && _isPro)
-            exportBtn.style.setProperty("display", "inline-flex", "important");
-          document
-            .getElementById("stats")
-            .style.setProperty(
-              "display",
-              _isPro ? "grid" : "none",
-              "important",
-            );
-          document.getElementById("stats-lock").style.display = _isPro
-            ? "none"
-            : "";
-          const el = document.getElementById("export-lock");
-          if (el) el.style.display = _isPro ? "none" : "";
-          updateTaskLimitBanner();
+          const data = await res.json();
+          isPro = data.isPro;
+          applyProUI();
+        } catch (e) {
+          isPro = false;
         }
+      }
 
-        function updateTaskLimitBanner() {
-          const b = document.getElementById("task-limit-banner");
-          if (b)
-            b.style.display =
-              !_isPro && tasks.length >= FREE_TASK_LIMIT ? "" : "none";
+      function applyProUI() {
+        const proElements = document.querySelectorAll(".pro-only");
+        proElements.forEach((el) => {
+          el.style.display = isPro ? "" : "none";
+        });
+        const lockElements = document.querySelectorAll(".pro-lock");
+        lockElements.forEach((el) => {
+          el.style.display = isPro ? "none" : "";
+        });
+      }
+      const letterToNum = {
+        "A+": 10,
+        A: 9.3,
+        "A-": 9,
+        "B+": 8.3,
+        B: 8,
+        "B-": 7.7,
+        "C+": 7.3,
+        C: 7,
+        "C-": 6.7,
+        D: 5,
+        F: 3,
+      };
+
+      function addTask() {
+        const title = document.getElementById("taskInput").value.trim();
+        if (!title) return;
+        if (!isPro && tasks.length >= 5) {
+          showToast(
+            "⚠️ Free plan limit reached! Upgrade to Pro for unlimited tasks.",
+          );
+          return;
         }
+        tasks.push({
+          id: Date.now(),
+          title,
+          subject: document.getElementById("taskSubject").value,
+          date: document.getElementById("taskDate").value,
+          priority: document.getElementById("taskPriority").value,
+          done: false,
+        });
+        document.getElementById("taskInput").value = "";
+        saveTasks();
+        renderAll();
+      }
 
-        window.exportData = function () {
-          if (!_isPro) {
-            showToast("Export is a Pro feature.");
-            return;
+      function renderTasks() {
+        const list = document.getElementById("taskList");
+        const filtered =
+          currentFilter === "all"
+            ? tasks
+            : tasks.filter((t) => t.subject === currentFilter);
+        const sorted = [...filtered].sort((a, b) => {
+          if (currentSort === "priority") {
+            const p = { urgent: 0, medium: 1, low: 2 };
+            return p[a.priority] - p[b.priority];
           }
-          const a = document.createElement("a");
-          a.href =
-            "data:application/json," +
-            encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
-          a.download = "studyrise-export.json";
-          a.click();
-        };
+          if (currentSort === "subject")
+            return a.subject.localeCompare(b.subject);
+          return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
+        });
+        list.innerHTML = sorted
+          .map(
+            (t) => `
+        <li class="${t.done ? "done" : ""}">
+          <span onclick="toggleTask(${t.id})" style="width:20px;height:20px;border-radius:6px;border:2px solid ${t.done ? "#22c55e" : "rgba(255,255,255,.2)"};background:${t.done ? "#22c55e" : "transparent"};display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">${t.done ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}</span>
+          <strong>${t.title}</strong> — ${t.subject} — ${t.date || "No date"} — <span class="priority-${t.priority}">${t.priority}</span>
+          <button onclick="deleteTask(${t.id})">✕</button>
+        </li>`,
+          )
+          .join("");
+      }
 
-        // ---- State ----
-        let tasks = [];
-        let grades = JSON.parse(localStorage.getItem("grades") || "[]");
-        let currentFilter = "all";
-        let currentSort = "date";
-        let calDate = new Date();
-        let gradeSystem = "nl";
-        let isDark = true;
-        let editingTaskId = null;
-        const letterToNum = {
-          "A+": 10,
-          A: 9.3,
-          "A-": 9,
-          "B+": 8.3,
-          B: 8,
-          "B-": 7.7,
-          "C+": 7.3,
-          C: 7,
-          "C-": 6.7,
-          D: 5,
-          F: 3,
-        };
-
-        // ---- Tasks ----
-        window.addTask = function () {
-          const title = document.getElementById("taskInput").value.trim();
-          if (!title) return;
-          if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
-            showToast(
-              "Free limit reached. Upgrade to Pro for unlimited tasks.",
-            );
-            return;
-          }
-          tasks.push({
-            id: Date.now(),
-            title,
-            subject: document.getElementById("taskSubject").value,
-            date: document.getElementById("taskDate").value,
-            priority: document.getElementById("taskPriority").value,
-            done: false,
-            notes: "",
-          });
-          document.getElementById("taskInput").value = "";
-          saveTasks();
-          renderAll();
-        };
-
-        window.toggleTask = function (id) {
-          const t = tasks.find((t) => t.id === id);
-          if (t) t.done = !t.done;
-          saveTasks();
-          renderAll();
-        };
-
-        window.deleteTask = function (id) {
-          if (!confirm("Delete this task?")) return;
-          tasks = tasks.filter((t) => t.id !== id);
-          saveTasks();
-          renderAll();
-        };
-
-        window.openEditModal = function (id) {
-          const t = tasks.find((t) => t.id === id);
-          if (!t) return;
-          editingTaskId = id;
-          document.getElementById("editTitle").value = t.title;
-          renderSubjectSelects();
-          document.getElementById("editSubject").value = t.subject;
-          document.getElementById("editDate").value = t.date || "";
-          document.getElementById("editPriority").value = t.priority;
-          document.getElementById("editModal").classList.add("open");
-        };
-
-        window.closeEditModal = function () {
-          document.getElementById("editModal").classList.remove("open");
-          editingTaskId = null;
-        };
-
-        window.saveEdit = function () {
-          const t = tasks.find((t) => t.id === editingTaskId);
-          if (!t) return;
-          const newTitle = document.getElementById("editTitle").value.trim();
-          if (newTitle) t.title = newTitle;
-          t.subject = document.getElementById("editSubject").value;
-          t.date = document.getElementById("editDate").value;
-          t.priority = document.getElementById("editPriority").value;
-          closeEditModal();
-          saveTasks();
-          renderAll();
-          showToast("Task saved!");
-        };
-
-        window.toggleNotes = function (id) {
-          const el = document.getElementById("notes-" + id);
-          if (el)
-            el.style.display = el.style.display === "none" ? "block" : "none";
-        };
-
-        window.saveNote = function (id, value) {
-          const t = tasks.find((t) => t.id === id);
-          if (t) {
-            t.notes = value;
-            saveTasks();
-          }
-        };
-
-        async function saveTasks() {
-          localStorage.setItem("tasks", JSON.stringify(tasks));
-          const {
-            data: { session },
-          } = await _sb.auth.getSession();
-          if (!session) return;
-          const email = session.user.email;
-          await _sb.from("tasks").delete().eq("user-id", email);
-          if (tasks.length > 0) {
-            await _sb.from("tasks").insert(
-              tasks.map((t) => ({
-                "user-id": email,
-                title: t.title,
-                subject: t.subject || "",
-                date: t.date || "",
-                priority: t.priority || "medium",
-                done: t.done || false,
-                notes: t.notes || "",
-              })),
-            );
-          }
+      function toggleTask(id) {
+        const t = tasks.find((t) => t.id === id);
+        if (t) t.done = !t.done;
+        saveTasks();
+        renderAll();
+      }
+      function deleteTask(id) {
+        if (!confirm("Delete this task?")) return;
+        tasks = tasks.filter((t) => t.id !== id);
+        saveTasks();
+        renderAll();
+      }
+      async function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        const {
+          data: { session },
+        } = await _sb.auth.getSession();
+        if (!session) return;
+        const email = session.user.email;
+        await _sb.from("tasks").delete().eq("user-id", email);
+        if (tasks.length > 0) {
+          const rows = tasks.map((t) => ({
+            "user-id": email,
+            title: t.title,
+            subject: t.subject || "",
+            date: t.date || "",
+            priority: t.priority || "medium",
+            done: t.done || false,
+            notes: t.notes || "",
+          }));
+          await _sb.from("tasks").insert(rows);
         }
+      }
+      function filterTasks(btn, filter) {
+        currentFilter = filter;
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderTasks();
+      }
+      function sortTasks(sort) {
+        currentSort = sort;
+        renderTasks();
+      }
 
-        async function loadTasks() {
-          const {
-            data: { session },
-          } = await _sb.auth.getSession();
-          if (!session) return;
-          const { data } = await _sb
-            .from("tasks")
-            .select("*")
-            .eq("user-id", session.user.email);
-          tasks =
-            data && data.length > 0
-              ? data.map((t) => ({
-                  id: t.id,
-                  title: t.title,
-                  subject: t.subject,
-                  date: t.date,
-                  priority: t.priority,
-                  done: t.done,
-                  notes: t.notes || "",
-                }))
-              : JSON.parse(localStorage.getItem("tasks") || "[]");
-          renderAll();
+      function renderStats() {
+        const done = tasks.filter((t) => t.done).length;
+        document.getElementById("stat-total").textContent = tasks.length;
+        document.getElementById("stat-done").textContent = done;
+        document.getElementById("stat-pending").textContent =
+          tasks.length - done;
+      }
+
+      function renderDueToday() {
+        const today = new Date().toISOString().slice(0, 10);
+        const due = tasks.filter((t) => t.date === today && !t.done);
+        const list = document.getElementById("dueTodayList");
+        list.innerHTML = due.length
+          ? due
+              .map(
+                (t) =>
+                  `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
+              )
+              .join("")
+          : "<li>Nothing due today! 🎉</li>";
+      }
+
+      function renderUpcoming() {
+        const today = new Date();
+        const in7 = new Date();
+        in7.setDate(today.getDate() + 7);
+        const upcoming = tasks
+          .filter((t) => {
+            if (!t.date || t.done) return false;
+            const d = new Date(t.date);
+            return d > today && d <= in7;
+          })
+          .sort((a, b) => (a.date > b.date ? 1 : -1));
+        const list = document.getElementById("upcomingList");
+        list.innerHTML = upcoming.length
+          ? upcoming
+              .map(
+                (t) =>
+                  `<li><span class="priority-${t.priority}">●</span> <strong>${t.title}</strong> — ${t.subject} — ${t.date}</li>`,
+              )
+              .join("")
+          : '<li style="color:#444">No upcoming tasks 🎉</li>';
+      }
+
+      function searchTasks(query) {
+        const q = query.toLowerCase();
+        const list = document.getElementById("dueTodayList");
+        if (!query) {
+          renderDueToday();
+          return;
         }
-
-        function renderTasks() {
-          const list = document.getElementById("taskList");
-          const filtered =
-            currentFilter === "all"
-              ? tasks
-              : tasks.filter((t) => t.subject === currentFilter);
-          const sorted = [...filtered].sort((a, b) => {
-            if (currentSort === "priority") {
-              const p = { urgent: 0, medium: 1, low: 2 };
-              return p[a.priority] - p[b.priority];
-            }
-            if (currentSort === "subject")
-              return a.subject.localeCompare(b.subject);
-            if (currentSort === "urgency") {
-              const p = { urgent: 0, medium: 1, low: 2 };
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              const daysA = a.date
-                ? Math.ceil((new Date(a.date) - today) / (1000 * 60 * 60 * 24))
-                : 999;
-              const daysB = b.date
-                ? Math.ceil((new Date(b.date) - today) / (1000 * 60 * 60 * 24))
-                : 999;
-              const scoreA = daysA * 3 + p[a.priority];
-              const scoreB = daysB * 3 + p[b.priority];
-              return scoreA - scoreB;
-            }
-            return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
-          });
-          const check =
-            '<svg width="9" height="7" viewBox="0 0 9 7"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
-          list.innerHTML = sorted
+        const filtered = tasks.filter(
+          (t) =>
+            t.title.toLowerCase().includes(q) ||
+            t.subject.toLowerCase().includes(q),
+        );
+        list.innerHTML =
+          filtered
             .map(
               (t) =>
-                '<div class="task-item' +
-                (t.done ? " done" : "") +
-                '">' +
-                '<div class="task-row">' +
-                '<div class="task-check' +
-                (t.done ? " checked" : "") +
-                '" onclick="toggleTask(' +
-                t.id +
-                ')">' +
-                (t.done ? check : "") +
-                "</div>" +
-                '<div class="priority-dot ' +
-                t.priority +
-                '"></div>' +
-                '<div style="flex:1">' +
-                '<div class="task-name">' +
-                t.title +
-                "</div>" +
-                '<div class="task-meta">' +
-                t.subject +
-                (t.date ? " &middot; " + t.date : "") +
-                "</div>" +
-                "</div>" +
-                '<div class="task-actions">' +
-                '<button class="btn btn-ghost btn-sm" onclick="toggleNotes(' +
-                t.id +
-                ')" title="Notes">&#128221;</button>' +
-                '<button class="btn btn-blue-text btn-sm" onclick="openEditModal(' +
-                t.id +
-                ')" title="Edit">Edit</button>' +
-                '<button class="btn btn-danger btn-sm" onclick="deleteTask(' +
-                t.id +
-                ')" title="Delete">&#10005;</button>' +
-                "</div></div>" +
-                '<div class="task-notes-area" id="notes-' +
-                t.id +
-                '">' +
-                '<textarea placeholder="Add notes..." onchange="saveNote(' +
-                t.id +
-                ', this.value)">' +
-                (t.notes || "") +
-                "</textarea>" +
-                "</div>" +
-                "</div>",
+                `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
             )
-            .join("");
-          updateTaskLimitBanner();
-        }
+            .join("") || "<li>No results found</li>";
+      }
 
-        window.filterTasks = function (btn, filter) {
-          currentFilter = filter;
+      function renderCalendar() {
+        const y = calDate.getFullYear(),
+          m = calDate.getMonth();
+        document.getElementById("calLabel").textContent =
+          calDate.toLocaleDateString("en", { month: "long", year: "numeric" });
+        const taskDates = new Set(
+          tasks.filter((t) => !t.done).map((t) => t.date),
+        );
+        const today = new Date().toISOString().slice(0, 10);
+        const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+        let html = days
+          .map(
+            (d) =>
+              `<div style="font-size:.7rem;color:#555;padding:6px 0;font-weight:600">${d}</div>`,
+          )
+          .join("");
+        const first = new Date(y, m, 1);
+        let startDay = first.getDay() === 0 ? 6 : first.getDay() - 1;
+        for (let i = 0; i < startDay; i++) html += "<div></div>";
+        const dim = new Date(y, m + 1, 0).getDate();
+        for (let d = 1; d <= dim; d++) {
+          const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const isToday = ds === today,
+            hasTask = taskDates.has(ds);
+          html += `<div style="padding:8px 4px;border-radius:8px;font-size:.82rem;font-weight:${isToday ? "700" : "400"};background:${isToday ? "#2563eb" : hasTask ? "rgba(37,99,235,.15)" : "transparent"};color:${isToday ? "#fff" : hasTask ? "#60a5fa" : "#888"};border:${hasTask && !isToday ? "1px solid rgba(37,99,235,.3)" : "1px solid transparent"}">${d}</div>`;
+        }
+        document.getElementById("calGrid").innerHTML = html;
+      }
+      function calPrev() {
+        calDate.setMonth(calDate.getMonth() - 1);
+        renderCalendar();
+      }
+      function calNext() {
+        calDate.setMonth(calDate.getMonth() + 1);
+        renderCalendar();
+      }
+
+      function addGrade() {
+        const subject = document.getElementById("gradeSubject").value.trim();
+        const name = document.getElementById("gradeName").value.trim();
+        let value;
+        if (gradeSystem === "en") {
+          value =
+            letterToNum[document.getElementById("gradeLetterInput").value];
+        } else {
+          value = parseFloat(document.getElementById("gradeValue").value);
+          if (gradeSystem === "fr") value = value / 2;
+        }
+        if (!subject || !name || isNaN(value)) return;
+        grades.push({
+          id: Date.now(),
+          subject,
+          name,
+          value,
+          system: gradeSystem,
+        });
+        document.getElementById("gradeSubject").value = "";
+        document.getElementById("gradeName").value = "";
+        document.getElementById("gradeValue").value = "";
+        saveGrades();
+        renderGrades();
+      }
+
+      function saveGrades() {
+        localStorage.setItem("grades", JSON.stringify(grades));
+      }
+      function deleteGrade(id) {
+        if (!confirm("Delete this grade?")) return;
+        grades = grades.filter((g) => g.id !== id);
+        saveGrades();
+        renderGrades();
+      }
+
+      function renderGrades() {
+        const avgEl = document.getElementById("gradeAvg");
+        const avg = grades.length
+          ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(1)
+          : null;
+        avgEl.innerHTML = avg
+          ? `<div style="display:flex;align-items:center;gap:16px"><div style="font-size:2.5rem;font-weight:700;color:${avg >= 7 ? "#22c55e" : avg >= 5.5 ? "#f59e0b" : "#ef4444"}">${avg}</div><div><div style="font-weight:600">Overall Average</div><div style="font-size:.8rem;color:#888">${grades.length} grades</div></div></div>`
+          : '<div style="color:#444">No grades yet</div>';
+        const subjects = [...new Set(grades.map((g) => g.subject))].sort();
+        const list = document.getElementById("gradeList");
+        if (!grades.length) {
+          list.innerHTML =
+            '<div style="color:#444;padding:20px">No grades yet!</div>';
+          return;
+        }
+        list.innerHTML = subjects
+          .map((s) => {
+            const sg = grades
+              .filter((g) => g.subject === s)
+              .sort((a, b) => b.value - a.value);
+            const savg = (
+              sg.reduce((sum, g) => sum + g.value, 0) / sg.length
+            ).toFixed(1);
+            return `<div class="dashboard-card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">${s}</h2><span style="font-size:.9rem;font-weight:700;color:${savg >= 7 ? "#22c55e" : savg >= 5.5 ? "#f59e0b" : "#ef4444"}">avg: ${savg}</span></div>${sg.map((g) => `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)"><div style="font-size:1.2rem;font-weight:700;color:${g.value >= 7 ? "#22c55e" : g.value >= 5.5 ? "#f59e0b" : "#ef4444"};width:36px">${g.value}</div><div style="flex:1;font-size:.88rem">${g.name}</div><button onclick="deleteGrade(${g.id})" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;font-size:.75rem">✕</button></div>`).join("")}</div>`;
+          })
+          .join("");
+      }
+
+      function setGradeSystem(sys) {
+        gradeSystem = sys;
+        ["nl", "en", "fr"].forEach((s) =>
           document
-            .querySelectorAll(".chip")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          renderTasks();
-        };
-        window.sortTasks = function (sort) {
-          currentSort = sort;
-          renderTasks();
-        };
-
-        // ---- Stats ----
-        function renderStats() {
-          const done = tasks.filter((t) => t.done).length;
-          document.getElementById("stat-total").textContent = tasks.length;
-          document.getElementById("stat-done").textContent = done;
-          document.getElementById("stat-pending").textContent =
-            tasks.length - done;
+            .getElementById(s + "Btn")
+            .classList.toggle("active", sys === s),
+        );
+        const numInput = document.getElementById("gradeValue"),
+          letterInput = document.getElementById("gradeLetterInput");
+        if (sys === "en") {
+          numInput.style.display = "none";
+          letterInput.style.display = "";
+        } else {
+          numInput.style.display = "";
+          letterInput.style.display = "none";
+          numInput.max = sys === "fr" ? "20" : "10";
+          numInput.placeholder = sys === "fr" ? "1-20" : "1-10";
         }
+      }
 
-        // ---- Dashboard ----
-        function renderDueToday() {
-          const today = new Date().toISOString().slice(0, 10);
-          const due = tasks.filter((t) => t.date === today && !t.done);
-          const el = document.getElementById("dueTodayList");
-          el.innerHTML = due.length
-            ? due
-                .map(
-                  (t) =>
-                    '<div class="dash-item"><div class="priority-dot ' +
-                    t.priority +
-                    '"></div><div class="name">' +
-                    t.title +
-                    "</div><div>" +
-                    t.subject +
-                    "</div></div>",
-                )
-                .join("")
-            : '<div class="empty-state">Nothing due today &#127881;</div>';
-        }
+      function toggleTheme() {
+        isDark = !isDark;
+        document.body.style.background = isDark ? "#0a0a0a" : "#f5f5f5";
+        document.body.style.color = isDark ? "#f0f0f0" : "#111";
+        document.getElementById("themeBtn").textContent = isDark
+          ? "🌙 Dark"
+          : "☀️ Light";
+      }
 
-        function renderUpcoming() {
-          const today = new Date();
-          const in7 = new Date();
-          in7.setDate(today.getDate() + 7);
-          const up = tasks
-            .filter((t) => {
-              if (!t.date || t.done) return false;
-              const d = new Date(t.date);
-              return d > today && d <= in7;
-            })
-            .sort((a, b) => (a.date > b.date ? 1 : -1));
-          const el = document.getElementById("upcomingList");
-          el.innerHTML = up.length
-            ? up
-                .map(
-                  (t) =>
-                    '<div class="dash-item"><div class="priority-dot ' +
-                    t.priority +
-                    '"></div><div class="name">' +
-                    t.title +
-                    ' <span style="color:var(--text-muted);font-size:0.8em">&middot; ' +
-                    t.subject +
-                    '</span></div><div class="date">' +
-                    t.date +
-                    "</div></div>",
-                )
-                .join("")
-            : '<div class="empty-state">No upcoming tasks &#127881;</div>';
-        }
+      function exportData() {
+        const a = document.createElement("a");
+        a.href =
+          "data:application/json," +
+          encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
+        a.download = "studyrise-export.json";
+        a.click();
+      }
 
-        window.searchTasks = function (query) {
-          if (!query) {
-            renderDueToday();
-            return;
-          }
-          const q = query.toLowerCase();
-          const f = tasks.filter(
-            (t) =>
-              t.title.toLowerCase().includes(q) ||
-              t.subject.toLowerCase().includes(q),
-          );
-          const el = document.getElementById("dueTodayList");
-          el.innerHTML = f.length
-            ? f
-                .map(
-                  (t) =>
-                    '<div class="dash-item"><div class="priority-dot ' +
-                    t.priority +
-                    '"></div><div class="name">' +
-                    t.title +
-                    "</div><div>" +
-                    t.subject +
-                    "</div></div>",
-                )
-                .join("")
-            : '<div class="empty-state">No results found</div>';
-        };
+      function clearAll() {
+        if (!confirm("Delete ALL tasks?")) return;
+        tasks = [];
+        saveTasks();
+        renderAll();
+      }
+      function saveName() {
+        localStorage.setItem(
+          "userName",
+          document.getElementById("userName").value,
+        );
+      }
 
-        // ---- Calendar ----
-        function renderCalendar() {
-          const y = calDate.getFullYear(),
-            m = calDate.getMonth();
-          document.getElementById("calLabel").textContent =
-            calDate.toLocaleDateString("en", {
-              month: "long",
-              year: "numeric",
-            });
-          const taskDates = new Set(
-            tasks.filter((t) => !t.done).map((t) => t.date),
-          );
-          const today = new Date().toISOString().slice(0, 10);
-          const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-          let html = days
-            .map((d) => '<div class="cal-day-label">' + d + "</div>")
-            .join("");
-          let startDay = new Date(y, m, 1).getDay();
-          startDay = startDay === 0 ? 6 : startDay - 1;
-          for (let i = 0; i < startDay; i++)
-            html += '<div class="cal-day"></div>';
-          const dim = new Date(y, m + 1, 0).getDate();
-          for (let d = 1; d <= dim; d++) {
-            const ds =
-              y +
-              "-" +
-              String(m + 1).padStart(2, "0") +
-              "-" +
-              String(d).padStart(2, "0");
-            const isToday = ds === today,
-              hasTask = taskDates.has(ds);
-            html +=
-              '<div class="cal-day' +
-              (isToday ? " today" : hasTask ? " has-task" : "") +
-              '">' +
-              d +
-              "</div>";
-          }
-          document.getElementById("calGrid").innerHTML = html;
-        }
-        window.calPrev = function () {
-          calDate.setMonth(calDate.getMonth() - 1);
-          renderCalendar();
-        };
-        window.calNext = function () {
-          calDate.setMonth(calDate.getMonth() + 1);
-          renderCalendar();
-        };
-
-        // ---- Grades ----
-        window.addGrade = function () {
-          if (!_isPro && grades.length >= FREE_GRADE_LIMIT) {
-            showToast("Free limit reached (10 grades). Upgrade to Pro.");
-            return;
-          }
-          const subject = document.getElementById("gradeSubject").value.trim();
-          const name = document.getElementById("gradeName").value.trim();
-          let value;
-          if (gradeSystem === "en") {
-            value =
-              letterToNum[document.getElementById("gradeLetterInput").value];
-          } else {
-            value = parseFloat(document.getElementById("gradeValue").value);
-            if (gradeSystem === "fr") value = value / 2;
-          }
-          if (!subject || !name || isNaN(value)) return;
-          grades.push({
-            id: Date.now(),
-            subject,
-            name,
-            value,
-            system: gradeSystem,
+      function toggleNotifications() {
+        if (Notification.permission === "granted") {
+          showToast("Notifications already enabled!");
+        } else {
+          Notification.requestPermission().then((p) => {
+            document.getElementById("notifBtn").textContent =
+              p === "granted" ? "Enabled ✅" : "Blocked ❌";
           });
-          document.getElementById("gradeSubject").value = "";
-          document.getElementById("gradeName").value = "";
-          document.getElementById("gradeValue").value = "";
-          saveGrades();
-          renderGrades();
-        };
-
-        function saveGrades() {
-          localStorage.setItem("grades", JSON.stringify(grades));
         }
+      }
 
-        window.deleteGrade = function (id) {
-          if (!confirm("Delete this grade?")) return;
-          grades = grades.filter((g) => g.id !== id);
-          saveGrades();
-          renderGrades();
-        };
+      function cancelAccount() {
+        if (!confirm("Delete your account and all data?")) return;
+        localStorage.clear();
+        location.reload();
+      }
 
-        function gradeColor(v) {
-          return v >= 7
+      function showToast(msg) {
+        const t = document.createElement("div");
+        t.style =
+          "position:fixed;bottom:20px;right:20px;background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;font-size:.88rem;z-index:999";
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+      }
+
+      function updateStreak() {
+        const today = new Date().toISOString().slice(0, 10);
+        const todayDone = tasks.filter((t) => t.done).length;
+        let streak = JSON.parse(
+          localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
+        );
+        if (todayDone > 0) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yStr = yesterday.toISOString().slice(0, 10);
+          if (streak.lastDate === today) {
+          } else if (streak.lastDate === yStr) {
+            streak.count++;
+            streak.lastDate = today;
+          } else {
+            streak.count = 1;
+            streak.lastDate = today;
+          }
+          localStorage.setItem("streak", JSON.stringify(streak));
+        }
+        const el = document.getElementById("streakDisplay");
+        if (el)
+          el.textContent = `🔥 ${streak.count} day${streak.count !== 1 ? "s" : ""}`;
+      }
+
+      function renderWeekStats() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const monday = new Date(today);
+        monday.setDate(
+          today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1),
+        );
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        const weekTasks = tasks.filter((t) => {
+          if (!t.date) return false;
+          const d = new Date(t.date);
+          return d >= monday && d <= sunday;
+        });
+        const done = weekTasks.filter((t) => t.done).length;
+        const total = weekTasks.length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const el = document.getElementById("weekStatsContent");
+        if (!el) return;
+        el.innerHTML =
+          '<div style="flex:1;min-width:120px">' +
+          '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Tasks this week</div>' +
+          "<div style=\"font-size:1.6rem;font-weight:600;font-family:'DM Mono',monospace\">" +
+          done +
+          ' <span style="font-size:1rem;color:var(--text-muted)">/ ' +
+          total +
+          "</span></div>" +
+          "</div>" +
+          '<div style="flex:1;min-width:120px">' +
+          '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Completion</div>' +
+          "<div style=\"font-size:1.6rem;font-weight:600;font-family:'DM Mono',monospace;color:" +
+          (pct >= 80
             ? "var(--green)"
-            : v >= 5.5
+            : pct >= 50
               ? "var(--yellow)"
-              : "var(--red)";
-        }
+              : "var(--text)") +
+          '">' +
+          pct +
+          "%</div>" +
+          "</div>" +
+          '<div style="width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-top:4px">' +
+          '<div style="height:100%;border-radius:3px;background:' +
+          (pct >= 80
+            ? "var(--green)"
+            : pct >= 50
+              ? "var(--yellow)"
+              : "var(--blue)") +
+          ";width:" +
+          pct +
+          '%;transition:width 0.4s"></div>' +
+          "</div>";
+      }
 
-        function renderGrades() {
-          const avgEl = document.getElementById("gradeAvg");
-          const avg = grades.length
-            ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(
-                1,
-              )
-            : null;
-          avgEl.innerHTML = avg
-            ? '<div class="overall-avg"><div class="overall-avg-number" style="color:' +
-              gradeColor(parseFloat(avg)) +
-              '">' +
-              avg +
-              '</div><div><div style="font-weight:600">Overall average</div><div style="font-size:0.8rem;color:var(--text-muted)">' +
-              grades.length +
-              " grade" +
-              (grades.length !== 1 ? "s" : "") +
-              "</div></div></div>"
-            : '<div class="empty-state">No grades yet</div>';
+      function renderAll() {
+        renderTasks();
+        renderStats();
+        renderDueToday();
+        renderUpcoming();
+        renderCalendar();
+        renderGrades();
+        updateStreak();
+        renderWeekStats();
+      }
 
-          const subjects = [...new Set(grades.map((g) => g.subject))].sort();
-          const list = document.getElementById("gradeList");
-          if (!grades.length) {
-            list.innerHTML = "";
-            return;
-          }
-          list.innerHTML = subjects
-            .map((s) => {
-              const sg = grades
-                .filter((g) => g.subject === s)
-                .sort((a, b) => b.value - a.value);
-              const savg = (
-                sg.reduce((sum, g) => sum + g.value, 0) / sg.length
-              ).toFixed(1);
-              const pct = Math.round((parseFloat(savg) / 10) * 100);
-              return (
-                '<div class="grade-subject-card">' +
-                '<div class="grade-subject-header"><div class="grade-subject-name">' +
-                s +
-                '</div><div class="grade-avg" style="color:' +
-                gradeColor(parseFloat(savg)) +
-                '">' +
-                savg +
-                "</div></div>" +
-                '<div class="grade-avg-bar"><div class="grade-avg-fill" style="width:' +
-                pct +
-                "%;background:" +
-                gradeColor(parseFloat(savg)) +
-                '"></div></div>' +
-                sg
-                  .map(
-                    (g) =>
-                      '<div class="grade-row"><div class="grade-value" style="color:' +
-                      gradeColor(g.value) +
-                      '">' +
-                      g.value +
-                      '</div><div class="grade-name">' +
-                      g.name +
-                      '</div><button class="btn btn-danger btn-sm" onclick="deleteGrade(' +
-                      g.id +
-                      ')" style="padding:3px 8px;font-size:0.7rem">&#10005;</button></div>',
-                  )
-                  .join("") +
-                "</div>"
-              );
-            })
-            .join("");
-        }
-
-        window.setGradeSystem = function (sys) {
-          gradeSystem = sys;
-          ["nl", "en", "fr"].forEach((s) =>
-            document
-              .getElementById(s + "Btn")
-              .classList.toggle("active", sys === s),
-          );
-          const n = document.getElementById("gradeValue"),
-            l = document.getElementById("gradeLetterInput");
-          if (sys === "en") {
-            n.style.display = "none";
-            l.style.display = "";
-          } else {
-            n.style.display = "";
-            l.style.display = "none";
-            n.max = sys === "fr" ? "20" : "10";
-            n.placeholder = sys === "fr" ? "1–20" : "1–10";
-          }
-        };
-
-        // ---- Settings ----
-        window.toggleTheme = function () {
-          isDark = !isDark;
-          document.body.style.background = isDark ? "#080808" : "#f4f4f5";
-          document.body.style.color = isDark ? "#f0f0f0" : "#111";
-          document.getElementById("themeBtn").textContent = isDark
-            ? "Dark"
-            : "Light";
-        };
-
-        window.saveName = function () {
-          const name = document.getElementById("userName").value.trim();
-          localStorage.setItem("userName", name);
-          const g = document.getElementById("dashboardGreeting");
-          if (g) g.textContent = name ? "Hey, " + name + "!" : "";
-          showToast("Name saved!");
-        };
-
-        window.clearAll = function () {
-          if (!confirm("Delete ALL tasks?")) return;
-          tasks = [];
-          saveTasks();
-          renderAll();
-        };
-
-        window.cancelAccount = function () {
-          if (!confirm("Delete your account and all data?")) return;
-          localStorage.clear();
-          location.reload();
-        };
-
-        // ---- Notifications ----
-        window.toggleNotifications = async function () {
-          if (!("Notification" in window)) {
-            showToast("Your browser doesn't support notifications.");
-            return;
-          }
-          if (Notification.permission === "granted") {
-            showToast("Notifications already enabled!");
-            scheduleNotifications();
-            return;
-          }
-          const p = await Notification.requestPermission();
-          const btn = document.getElementById("notifBtn");
-          if (p === "granted") {
-            btn.textContent = "Enabled";
-            await registerServiceWorker();
-            scheduleNotifications();
-            showToast("Notifications enabled!");
-          } else {
-            btn.textContent = "Blocked";
-            showToast("Notifications blocked in browser settings.");
-          }
-        };
-
-        async function registerServiceWorker() {
-          if (!("serviceWorker" in navigator)) return;
-          try {
-            const reg = await navigator.serviceWorker.register(
-              "/studyrise-v2/sw.js",
-            );
-            if ("periodicSync" in reg) {
-              const status = await navigator.permissions.query({
-                name: "periodic-background-sync",
-              });
-              if (status.state === "granted")
-                await reg.periodicSync.register("check-deadlines", {
-                  minInterval: 24 * 60 * 60 * 1000,
-                });
-            }
-            navigator.serviceWorker.addEventListener("message", (e) => {
-              if (e.data && e.data.type === "REQUEST_TASKS")
-                scheduleNotifications();
-            });
-          } catch (err) {
-            console.warn("SW failed:", err);
-          }
-        }
-
-        function scheduleNotifications() {
-          if (Notification.permission !== "granted") return;
-          const today = new Date().toISOString().slice(0, 10);
-          if (localStorage.getItem("notif_last_check") === today) return;
-          localStorage.setItem("notif_last_check", today);
-          if (
-            "serviceWorker" in navigator &&
-            navigator.serviceWorker.controller
-          ) {
-            navigator.serviceWorker.controller.postMessage({
-              type: "SCHEDULE_NOTIFICATIONS",
-              tasks: tasks,
-            });
-          }
-        }
-
-        // ---- Streak ----
-        function updateStreak() {
-          const today = new Date().toISOString().slice(0, 10);
-          if (tasks.filter((t) => t.done).length > 0) {
-            let streak = JSON.parse(
-              localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
-            );
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yStr = yesterday.toISOString().slice(0, 10);
-            if (streak.lastDate !== today) {
-              streak.count = streak.lastDate === yStr ? streak.count + 1 : 1;
-              streak.lastDate = today;
-              localStorage.setItem("streak", JSON.stringify(streak));
-            }
-            const el = document.getElementById("streakDisplay");
-            if (el)
-              el.textContent =
-                "🔥 " + streak.count + " day" + (streak.count !== 1 ? "s" : "");
-          }
-        }
-
-        // ---- Toast ----
-        function showToast(msg) {
-          const t = document.createElement("div");
-          t.style =
-            "position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#f0f0f0;border:1px solid rgba(255,255,255,0.1);padding:11px 18px;border-radius:8px;font-size:0.85rem;z-index:9998;box-shadow:0 4px 20px rgba(0,0,0,0.4)";
-          t.textContent = msg;
-          document.body.appendChild(t);
-          setTimeout(() => {
-            t.style.opacity = "0";
-            t.style.transition = "opacity 0.3s";
-            setTimeout(() => t.remove(), 300);
-          }, 3000);
-        }
-
-        // ---- Navigation ----
-        window.showPage = function (id) {
-          document
-            .querySelectorAll("#pages > div")
-            .forEach((p) => (p.style.display = "none"));
-          document.getElementById("page-" + id).style.display = "block";
-          document
-            .querySelectorAll(".nav-item")
-            .forEach((a) => a.classList.remove("active"));
-          document.querySelectorAll(".nav-item").forEach((a) => {
-            if (a.textContent.toLowerCase().includes(id))
-              a.classList.add("active");
-          });
-          document
-            .querySelectorAll(".mobile-nav-item")
-            .forEach((a) => a.classList.remove("active"));
-          document.querySelectorAll(".mobile-nav-item").forEach((a) => {
-            if (a.textContent.toLowerCase().includes(id))
-              a.classList.add("active");
-          });
-        };
-
-        function renderAll() {
-          renderTasks();
-          renderStats();
-          renderDueToday();
-          renderUpcoming();
-          renderCalendar();
-          renderGrades();
-          updateStreak();
-        }
-
-        // ---- Init ----
-        async function init() {
-          const session = await checkAuth();
-          if (!session) return;
-          renderSubjectSelects();
-          showPage("dashboard");
-          const name = localStorage.getItem("userName");
-          const g = document.getElementById("dashboardGreeting");
-          if (g && name) g.textContent = "Hey, " + name + "!";
-          const userNameInput = document.getElementById("userName");
-          if (userNameInput && name) userNameInput.value = name;
-          await loadTasks();
-          await checkPro();
-          if (Notification.permission === "granted") {
-            await registerServiceWorker();
-            scheduleNotifications();
-          }
-          const btn = document.getElementById("notifBtn");
-          if (btn)
-            btn.textContent =
-              Notification.permission === "granted" ? "Enabled" : "Enable";
-        }
-
-        function initCookieBanner() {
-          const banner = document.getElementById("cookieBanner");
-          if (localStorage.getItem("cookies_accepted")) {
-            banner.style.display = "none";
-          } else {
-            banner.style.display = "flex";
-          }
-        }
-
-        window.acceptCookies = function () {
-          localStorage.setItem("cookies_accepted", "true");
-          document.getElementById("cookieBanner").style.display = "none";
-        };
-
-        initCookieBanner();
-        init();
-      })();
+      renderAll();
+      checkPro();
     </script>
-
-    <nav id="mobile-nav">
-      <button class="mobile-nav-item active" onclick="showPage('dashboard')">
-        <span class="mobile-nav-icon">◈</span>Dashboard
-      </button>
-      <button class="mobile-nav-item" onclick="showPage('tasks')">
-        <span class="mobile-nav-icon">✓</span>Tasks
-      </button>
-      <button class="mobile-nav-item" onclick="showPage('grades')">
-        <span class="mobile-nav-icon">◎</span>Grades
-      </button>
-      <button class="mobile-nav-item" onclick="showPage('settings')">
-        <span class="mobile-nav-icon">⚙</span>Settings
-      </button>
-    </nav>
   </body>
 </html>
