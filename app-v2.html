@@ -18,7 +18,6 @@
       #pages > div {
         display: none;
       }
-      /* Pro-only elementen zijn standaard VERBORGEN via CSS — niet via JS */
       .pro-only {
         display: none !important;
       }
@@ -127,20 +126,12 @@
         border-radius: 8px;
         padding: 14px 16px;
         display: flex;
-        align-items: center;
-        gap: 12px;
+        flex-direction: column;
+        gap: 8px;
       }
-      #taskList li.done {
+      #taskList li.done .task-title {
         opacity: 0.5;
         text-decoration: line-through;
-      }
-      #taskList button {
-        background: transparent;
-        color: #ef4444;
-        border: 1px solid #ef4444;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        margin-left: auto;
       }
       #stats {
         display: grid;
@@ -257,11 +248,166 @@
         font-size: 0.9rem;
         color: #888;
       }
+      .task-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .task-actions {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .task-actions button {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+      }
+      .btn-edit {
+        background: transparent;
+        color: #60a5fa;
+        border: 1px solid #60a5fa;
+      }
+      .btn-edit:hover {
+        background: rgba(96, 165, 250, 0.1);
+      }
+      .btn-delete {
+        background: transparent;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+      }
+      .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.1);
+      }
+      .btn-notes {
+        background: transparent;
+        color: #888;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .btn-notes:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .task-notes {
+        background: #1a1a1a;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-top: 4px;
+        display: none;
+      }
+      .task-notes textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: #ccc;
+        font-size: 0.85rem;
+        font-family: inherit;
+        resize: none;
+        outline: none;
+        min-height: 60px;
+      }
+      #editModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+      #editModal.open {
+        display: flex;
+      }
+      .modal-box {
+        background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 28px;
+        width: 100%;
+        max-width: 460px;
+      }
+      .modal-box h2 {
+        color: #f0f0f0;
+        margin-bottom: 20px;
+      }
+      .modal-box input,
+      .modal-box select {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 12px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .modal-btns button {
+        flex: 1;
+      }
+      .btn-cancel {
+        background: #1a1a1a;
+        color: #888;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .btn-cancel:hover {
+        background: #222;
+      }
+      #subjectList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .subject-tag {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+      }
+      .subject-tag .remove-btn {
+        background: transparent;
+        color: #666;
+        border: none;
+        padding: 0;
+        font-size: 0.8rem;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: unset;
+      }
+      .subject-tag .remove-btn:hover {
+        color: #ef4444;
+        background: transparent;
+      }
     </style>
   </head>
   <body>
-    <!-- Laadscherm: verbergt de app totdat Pro-status bekend is -->
     <div id="pro-loading-overlay">StudyRise laden...</div>
+
+    <div id="editModal">
+      <div class="modal-box">
+        <h2>Taak bewerken</h2>
+        <input type="text" id="editTitle" placeholder="Taak titel..." />
+        <select id="editSubject"></select>
+        <input type="date" id="editDate" />
+        <select id="editPriority">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="urgent">Urgent</option>
+        </select>
+        <div class="modal-btns">
+          <button class="btn-cancel" onclick="closeEditModal()">
+            Annuleren
+          </button>
+          <button onclick="saveEdit()">Opslaan</button>
+        </div>
+      </div>
+    </div>
 
     <nav id="sidebar">
       <div
@@ -294,14 +440,13 @@
           id="streakDisplay"
           style="font-size: 1.3rem; font-weight: 700; color: #f59e0b"
         >
-          🔥 0 days
+          0 days
         </div>
       </div>
     </nav>
 
     <main id="content">
       <div id="pages">
-        <!-- DASHBOARD -->
         <div id="page-dashboard">
           <h1>Dashboard</h1>
           <input
@@ -311,8 +456,6 @@
             oninput="searchTasks(this.value)"
             style="width: 100%; margin-bottom: 24px"
           />
-
-          <!-- Stats: standaard verborgen via CSS .pro-only -->
           <div id="stats" class="pro-only">
             <div class="stat-card blue">
               <div class="stat-label">Total Tasks</div>
@@ -327,8 +470,6 @@
               <div class="stat-value" id="stat-pending">0</div>
             </div>
           </div>
-
-          <!-- Stats upsell voor gratis gebruikers -->
           <div
             id="stats-lock"
             class="dashboard-card"
@@ -343,18 +484,17 @@
             </div>
             <button
               onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
-              style="background: #2563eb; padding: 8px 20px; font-size: 0.85rem"
+              style="padding: 8px 20px; font-size: 0.85rem"
             >
-              Upgrade to Pro ⚡
+              Upgrade to Pro
             </button>
           </div>
-
           <div class="dashboard-card">
             <h2>Due Today</h2>
             <ul id="dueTodayList"></ul>
           </div>
           <div class="dashboard-card">
-            <h2>Upcoming — Next 7 Days</h2>
+            <h2>Upcoming - Next 7 Days</h2>
             <ul id="upcomingList"></ul>
           </div>
           <div class="dashboard-card">
@@ -367,12 +507,12 @@
                 margin-bottom: 12px;
               "
             >
-              <button class="filter-btn" onclick="calPrev()">‹</button>
+              <button class="filter-btn" onclick="calPrev()">&#8249;</button>
               <span
                 id="calLabel"
                 style="font-size: 0.95rem; font-weight: 700; color: #f0f0f0"
               ></span>
-              <button class="filter-btn" onclick="calNext()">›</button>
+              <button class="filter-btn" onclick="calNext()">&#8250;</button>
             </div>
             <div
               id="calGrid"
@@ -390,42 +530,17 @@
           </div>
         </div>
 
-        <!-- TASKS -->
         <div id="page-tasks">
           <h1>Tasks</h1>
           <div
+            id="filterBtns"
             style="
               margin-bottom: 16px;
               display: flex;
               gap: 8px;
               flex-wrap: wrap;
             "
-          >
-            <button
-              class="filter-btn active"
-              onclick="filterTasks(this, 'all')"
-            >
-              All
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'Math')">
-              Math
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'Science')">
-              Science
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'English')">
-              English
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'History')">
-              History
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'Art')">
-              Art
-            </button>
-            <button class="filter-btn" onclick="filterTasks(this, 'PE')">
-              PE
-            </button>
-          </div>
+          ></div>
           <div
             style="
               margin-bottom: 16px;
@@ -444,15 +559,7 @@
             </button>
           </div>
           <input type="text" id="taskInput" placeholder="Task title..." />
-          <select id="taskSubject">
-            <option>Math</option>
-            <option>Science</option>
-            <option>English</option>
-            <option>History</option>
-            <option>Art</option>
-            <option>PE</option>
-            <option>Other</option>
-          </select>
+          <select id="taskSubject"></select>
           <input type="date" id="taskDate" />
           <select id="taskPriority">
             <option value="low">Low</option>
@@ -460,7 +567,6 @@
             <option value="urgent">Urgent</option>
           </select>
           <button onclick="addTask()">Add</button>
-          <!-- Taak-limiet melding voor gratis gebruikers -->
           <div
             id="task-limit-banner"
             style="
@@ -485,7 +591,6 @@
           <ul id="taskList"></ul>
         </div>
 
-        <!-- GRADES -->
         <div id="page-grades">
           <h1>Grades</h1>
           <div class="dashboard-card" style="margin-bottom: 16px">
@@ -504,21 +609,21 @@
                   id="nlBtn"
                   onclick="setGradeSystem('nl')"
                 >
-                  🇳🇱 1-10
+                  NL 1-10
                 </button>
                 <button
                   class="filter-btn"
                   id="enBtn"
                   onclick="setGradeSystem('en')"
                 >
-                  🇬🇧 A-F
+                  EN A-F
                 </button>
                 <button
                   class="filter-btn"
                   id="frBtn"
                   onclick="setGradeSystem('fr')"
                 >
-                  🇫🇷 1-20
+                  FR 1-20
                 </button>
               </div>
             </div>
@@ -566,7 +671,6 @@
           <div id="gradeList"></div>
         </div>
 
-        <!-- SETTINGS -->
         <div id="page-settings">
           <h1>Settings</h1>
           <div class="dashboard-card" style="margin-bottom: 16px">
@@ -586,7 +690,7 @@
                 </div>
               </div>
               <button class="filter-btn" onclick="toggleTheme()" id="themeBtn">
-                🌙 Dark
+                Dark
               </button>
             </div>
           </div>
@@ -614,6 +718,25 @@
                 onchange="saveName()"
               />
             </div>
+          </div>
+          <div class="dashboard-card" style="margin-bottom: 16px">
+            <h2>Vakken</h2>
+            <div style="font-size: 0.85rem; color: #888; margin-bottom: 12px">
+              Voeg je eigen vakken toe of verwijder ze.
+            </div>
+            <div style="display: flex; gap: 8px">
+              <input
+                type="text"
+                id="newSubjectInput"
+                placeholder="Nieuw vak..."
+                style="flex: 1; margin: 0"
+                onkeydown="if (event.key === 'Enter') addSubject();"
+              />
+              <button onclick="addSubject()" style="padding: 10px 16px">
+                + Toevoegen
+              </button>
+            </div>
+            <div id="subjectList"></div>
           </div>
           <div class="dashboard-card" style="margin-bottom: 16px">
             <h2>Notifications</h2>
@@ -663,7 +786,7 @@
                 Export
               </button>
               <span id="export-lock" style="font-size: 0.8rem; color: #888"
-                >🔒 Pro only</span
+                >Pro only</span
               >
             </div>
             <div
@@ -751,22 +874,99 @@
     </main>
 
     <script>
-      // =====================================================================
-      // IIFE: alles staat in een closure zodat isPro NIET via de console
-      // te manipuleren is. Probeer maar: isPro geeft ReferenceError.
-      // =====================================================================
       (function () {
         const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
         const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
         const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // isPro is PRIVE — niet bereikbaar via de console
         let _isPro = false;
-
         const FREE_TASK_LIMIT = 5;
         const FREE_GRADE_LIMIT = 10;
+        const DEFAULT_SUBJECTS = [
+          "Math",
+          "Science",
+          "English",
+          "History",
+          "Art",
+          "PE",
+          "Other",
+        ];
 
-        // ---- Auth check ----
+        // ---- Vakken ----
+        function getSubjects() {
+          const s = localStorage.getItem("subjects");
+          return s ? JSON.parse(s) : [...DEFAULT_SUBJECTS];
+        }
+        function saveSubjects(s) {
+          localStorage.setItem("subjects", JSON.stringify(s));
+        }
+
+        function renderSubjectSelects() {
+          const subjects = getSubjects();
+          ["taskSubject", "editSubject"].forEach((id) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const cur = sel.value;
+            sel.innerHTML = subjects
+              .map((s) => '<option value="' + s + '">' + s + "</option>")
+              .join("");
+            if (cur && subjects.includes(cur)) sel.value = cur;
+          });
+          const fb = document.getElementById("filterBtns");
+          if (fb)
+            fb.innerHTML =
+              '<button class="filter-btn active" onclick="filterTasks(this,\'all\')">All</button>' +
+              subjects
+                .map(
+                  (s) =>
+                    '<button class="filter-btn" onclick="filterTasks(this,\'' +
+                    s +
+                    "')\">" +
+                    s +
+                    "</button>",
+                )
+                .join("");
+          renderSubjectList();
+        }
+
+        function renderSubjectList() {
+          const subjects = getSubjects();
+          const list = document.getElementById("subjectList");
+          if (!list) return;
+          list.innerHTML = subjects
+            .map(
+              (s) =>
+                '<div class="subject-tag">' +
+                s +
+                '<button class="remove-btn" onclick="removeSubject(\'' +
+                s +
+                "')\">x</button></div>",
+            )
+            .join("");
+        }
+
+        window.addSubject = function () {
+          const input = document.getElementById("newSubjectInput");
+          const name = input.value.trim();
+          if (!name) return;
+          const subjects = getSubjects();
+          if (subjects.includes(name)) {
+            showToast("Vak bestaat al!");
+            return;
+          }
+          subjects.push(name);
+          saveSubjects(subjects);
+          input.value = "";
+          renderSubjectSelects();
+          showToast('Vak "' + name + '" toegevoegd!');
+        };
+
+        window.removeSubject = function (name) {
+          if (!confirm('Vak "' + name + '" verwijderen?')) return;
+          saveSubjects(getSubjects().filter((s) => s !== name));
+          renderSubjectSelects();
+        };
+
+        // ---- Auth ----
         async function checkAuth() {
           const {
             data: { session },
@@ -779,7 +979,7 @@
           return session;
         }
 
-        // ---- Pro check — altijd server-side, nooit alleen localStorage ----
+        // ---- Pro ----
         async function checkPro() {
           const email = localStorage.getItem("sr_user");
           if (!email) {
@@ -792,7 +992,7 @@
                 encodeURIComponent(email),
             );
             const data = await res.json();
-            _isPro = data.isPro === true; // strict boolean check
+            _isPro = data.isPro === true;
           } catch (e) {
             _isPro = false;
           }
@@ -801,17 +1001,20 @@
         }
 
         function hideOverlay() {
-          const overlay = document.getElementById("pro-loading-overlay");
-          if (overlay) overlay.remove();
+          const o = document.getElementById("pro-loading-overlay");
+          if (o) o.remove();
         }
 
-        // ---- Pro UI toepassen ----
         function applyProUI() {
-          // .pro-only: via CSS standaard verborgen, alleen tonen als Pro
-          document.querySelectorAll(".pro-only").forEach((el) => {
-            el.style.setProperty("display", _isPro ? "" : "none", "important");
-          });
-          // Stats blok
+          document
+            .querySelectorAll(".pro-only")
+            .forEach((el) =>
+              el.style.setProperty(
+                "display",
+                _isPro ? "" : "none",
+                "important",
+              ),
+            );
           document
             .getElementById("stats")
             .style.setProperty(
@@ -822,24 +1025,21 @@
           document.getElementById("stats-lock").style.display = _isPro
             ? "none"
             : "";
-          // Export lock
-          const exportLock = document.getElementById("export-lock");
-          if (exportLock) exportLock.style.display = _isPro ? "none" : "";
-          // Taak limiet banner
+          const el = document.getElementById("export-lock");
+          if (el) el.style.display = _isPro ? "none" : "";
           updateTaskLimitBanner();
         }
 
         function updateTaskLimitBanner() {
-          const banner = document.getElementById("task-limit-banner");
-          if (banner)
-            banner.style.display =
+          const b = document.getElementById("task-limit-banner");
+          if (b)
+            b.style.display =
               !_isPro && tasks.length >= FREE_TASK_LIMIT ? "" : "none";
         }
 
-        // ---- Exportfunctie: checkt Pro server-side voor gebruik ----
         window.exportData = function () {
           if (!_isPro) {
-            showToast("⚠️ Export is een Pro feature. Upgrade op gumroad.com");
+            showToast("Export is een Pro feature.");
             return;
           }
           const a = document.createElement("a");
@@ -850,9 +1050,7 @@
           a.click();
         };
 
-        // =====================================================================
-        // App state
-        // =====================================================================
+        // ---- State ----
         let tasks = [];
         let grades = JSON.parse(localStorage.getItem("grades") || "[]");
         let currentFilter = "all";
@@ -860,7 +1058,7 @@
         let calDate = new Date();
         let gradeSystem = "nl";
         let isDark = true;
-
+        let editingTaskId = null;
         const letterToNum = {
           "A+": 10,
           A: 9.3,
@@ -875,16 +1073,12 @@
           F: 3,
         };
 
-        // =====================================================================
-        // Taken
-        // =====================================================================
+        // ---- Taken ----
         window.addTask = function () {
           const title = document.getElementById("taskInput").value.trim();
           if (!title) return;
           if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
-            showToast(
-              "⚠️ Gratis limiet bereikt! Upgrade naar Pro voor onbeperkte taken.",
-            );
+            showToast("Gratis limiet bereikt! Upgrade naar Pro.");
             return;
           }
           tasks.push({
@@ -894,6 +1088,7 @@
             date: document.getElementById("taskDate").value,
             priority: document.getElementById("taskPriority").value,
             done: false,
+            notes: "",
           });
           document.getElementById("taskInput").value = "";
           saveTasks();
@@ -914,6 +1109,51 @@
           renderAll();
         };
 
+        window.openEditModal = function (id) {
+          const t = tasks.find((t) => t.id === id);
+          if (!t) return;
+          editingTaskId = id;
+          document.getElementById("editTitle").value = t.title;
+          renderSubjectSelects();
+          document.getElementById("editSubject").value = t.subject;
+          document.getElementById("editDate").value = t.date || "";
+          document.getElementById("editPriority").value = t.priority;
+          document.getElementById("editModal").classList.add("open");
+        };
+
+        window.closeEditModal = function () {
+          document.getElementById("editModal").classList.remove("open");
+          editingTaskId = null;
+        };
+
+        window.saveEdit = function () {
+          const t = tasks.find((t) => t.id === editingTaskId);
+          if (!t) return;
+          const newTitle = document.getElementById("editTitle").value.trim();
+          if (newTitle) t.title = newTitle;
+          t.subject = document.getElementById("editSubject").value;
+          t.date = document.getElementById("editDate").value;
+          t.priority = document.getElementById("editPriority").value;
+          closeEditModal();
+          saveTasks();
+          renderAll();
+          showToast("Taak opgeslagen!");
+        };
+
+        window.toggleNotes = function (id) {
+          const el = document.getElementById("notes-" + id);
+          if (el)
+            el.style.display = el.style.display === "none" ? "block" : "none";
+        };
+
+        window.saveNote = function (id, value) {
+          const t = tasks.find((t) => t.id === id);
+          if (t) {
+            t.notes = value;
+            saveTasks();
+          }
+        };
+
         async function saveTasks() {
           localStorage.setItem("tasks", JSON.stringify(tasks));
           const {
@@ -923,16 +1163,19 @@
           const email = session.user.email;
           await _sb.from("tasks").delete().eq("user-id", email);
           if (tasks.length > 0) {
-            const rows = tasks.map((t) => ({
-              "user-id": email,
-              title: t.title,
-              subject: t.subject || "",
-              date: t.date || "",
-              priority: t.priority || "medium",
-              done: t.done || false,
-              notes: t.notes || "",
-            }));
-            await _sb.from("tasks").insert(rows);
+            await _sb
+              .from("tasks")
+              .insert(
+                tasks.map((t) => ({
+                  "user-id": email,
+                  title: t.title,
+                  subject: t.subject || "",
+                  date: t.date || "",
+                  priority: t.priority || "medium",
+                  done: t.done || false,
+                  notes: t.notes || "",
+                })),
+              );
           }
         }
 
@@ -945,19 +1188,18 @@
             .from("tasks")
             .select("*")
             .eq("user-id", session.user.email);
-          if (data && data.length > 0) {
-            tasks = data.map((t) => ({
-              id: t.id,
-              title: t.title,
-              subject: t.subject,
-              date: t.date,
-              priority: t.priority,
-              done: t.done,
-              notes: t.notes || "",
-            }));
-          } else {
-            tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-          }
+          tasks =
+            data && data.length > 0
+              ? data.map((t) => ({
+                  id: t.id,
+                  title: t.title,
+                  subject: t.subject,
+                  date: t.date,
+                  priority: t.priority,
+                  done: t.done,
+                  notes: t.notes || "",
+                }))
+              : JSON.parse(localStorage.getItem("tasks") || "[]");
           renderAll();
         }
 
@@ -977,21 +1219,57 @@
             return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
           });
           list.innerHTML = sorted
-            .map(
-              (t) => `
-          <li class="${t.done ? "done" : ""}">
-            <span onclick="toggleTask(${t.id})" style="width:20px;height:20px;border-radius:6px;
-              border:2px solid ${t.done ? "#22c55e" : "rgba(255,255,255,.2)"};
-              background:${t.done ? "#22c55e" : "transparent"};
-              display:inline-flex;align-items:center;justify-content:center;
-              cursor:pointer;flex-shrink:0">
-              ${t.done ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}
-            </span>
-            <strong>${t.title}</strong> — ${t.subject} — ${t.date || "No date"} —
-            <span class="priority-${t.priority}">${t.priority}</span>
-            <button onclick="deleteTask(${t.id})">✕</button>
-          </li>`,
-            )
+            .map((t) => {
+              const check = t.done
+                ? '<svg width="10" height="8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                : "";
+              return (
+                '<li class="' +
+                (t.done ? "done" : "") +
+                '">' +
+                '<div class="task-row">' +
+                '<span onclick="toggleTask(' +
+                t.id +
+                ')" style="width:20px;height:20px;border-radius:6px;border:2px solid ' +
+                (t.done ? "#22c55e" : "rgba(255,255,255,.2)") +
+                ";background:" +
+                (t.done ? "#22c55e" : "transparent") +
+                ';display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">' +
+                check +
+                "</span>" +
+                '<span class="task-title"><strong>' +
+                t.title +
+                "</strong> &mdash; " +
+                t.subject +
+                " &mdash; " +
+                (t.date || "No date") +
+                ' &mdash; <span class="priority-' +
+                t.priority +
+                '">' +
+                t.priority +
+                "</span></span>" +
+                '<div class="task-actions">' +
+                '<button class="btn-notes" onclick="toggleNotes(' +
+                t.id +
+                ')" title="Notities">N</button>' +
+                '<button class="btn-edit" onclick="openEditModal(' +
+                t.id +
+                ')" title="Bewerken">Edit</button>' +
+                '<button class="btn-delete" onclick="deleteTask(' +
+                t.id +
+                ')" title="Verwijder">X</button>' +
+                "</div></div>" +
+                '<div class="task-notes" id="notes-' +
+                t.id +
+                '" style="display:none">' +
+                '<textarea placeholder="Notities toevoegen..." onchange="saveNote(' +
+                t.id +
+                ', this.value)">' +
+                (t.notes || "") +
+                "</textarea>" +
+                "</div></li>"
+              );
+            })
             .join("");
           updateTaskLimitBanner();
         }
@@ -1004,15 +1282,12 @@
           btn.classList.add("active");
           renderTasks();
         };
-
         window.sortTasks = function (sort) {
           currentSort = sort;
           renderTasks();
         };
 
-        // =====================================================================
-        // Statistieken
-        // =====================================================================
+        // ---- Stats ----
         function renderStats() {
           const done = tasks.filter((t) => t.done).length;
           document.getElementById("stat-total").textContent = tasks.length;
@@ -1021,69 +1296,82 @@
             tasks.length - done;
         }
 
-        // =====================================================================
-        // Dashboard
-        // =====================================================================
+        // ---- Dashboard ----
         function renderDueToday() {
           const today = new Date().toISOString().slice(0, 10);
           const due = tasks.filter((t) => t.date === today && !t.done);
-          const list = document.getElementById("dueTodayList");
-          list.innerHTML = due.length
+          document.getElementById("dueTodayList").innerHTML = due.length
             ? due
                 .map(
                   (t) =>
-                    `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
+                    '<li><span class="priority-' +
+                    t.priority +
+                    '">&#9679;</span> ' +
+                    t.title +
+                    " &mdash; " +
+                    t.subject +
+                    "</li>",
                 )
                 .join("")
-            : "<li>Nothing due today! 🎉</li>";
+            : "<li>Nothing due today!</li>";
         }
 
         function renderUpcoming() {
           const today = new Date();
           const in7 = new Date();
           in7.setDate(today.getDate() + 7);
-          const upcoming = tasks
+          const up = tasks
             .filter((t) => {
               if (!t.date || t.done) return false;
               const d = new Date(t.date);
               return d > today && d <= in7;
             })
             .sort((a, b) => (a.date > b.date ? 1 : -1));
-          const list = document.getElementById("upcomingList");
-          list.innerHTML = upcoming.length
-            ? upcoming
+          document.getElementById("upcomingList").innerHTML = up.length
+            ? up
                 .map(
                   (t) =>
-                    `<li><span class="priority-${t.priority}">●</span> <strong>${t.title}</strong> — ${t.subject} — ${t.date}</li>`,
+                    '<li><span class="priority-' +
+                    t.priority +
+                    '">&#9679;</span> <strong>' +
+                    t.title +
+                    "</strong> &mdash; " +
+                    t.subject +
+                    " &mdash; " +
+                    t.date +
+                    "</li>",
                 )
                 .join("")
-            : '<li style="color:#444">No upcoming tasks 🎉</li>';
+            : '<li style="color:#444">No upcoming tasks</li>';
         }
 
         window.searchTasks = function (query) {
           const q = query.toLowerCase();
-          const list = document.getElementById("dueTodayList");
           if (!query) {
             renderDueToday();
             return;
           }
-          const filtered = tasks.filter(
+          const f = tasks.filter(
             (t) =>
               t.title.toLowerCase().includes(q) ||
               t.subject.toLowerCase().includes(q),
           );
-          list.innerHTML =
-            filtered
+          document.getElementById("dueTodayList").innerHTML =
+            f
               .map(
                 (t) =>
-                  `<li><span class="priority-${t.priority}">●</span> ${t.title} — ${t.subject}</li>`,
+                  '<li><span class="priority-' +
+                  t.priority +
+                  '">&#9679;</span> ' +
+                  t.title +
+                  " &mdash; " +
+                  t.subject +
+                  "</li>",
               )
               .join("") || "<li>No results found</li>";
         };
 
-        // =====================================================================
-        // Kalender
-        // =====================================================================
+        // ---- Kalender ----
         function renderCalendar() {
           const y = calDate.getFullYear(),
             m = calDate.getMonth();
@@ -1100,26 +1388,45 @@
           let html = days
             .map(
               (d) =>
-                `<div style="font-size:.7rem;color:#555;padding:6px 0;font-weight:600">${d}</div>`,
+                '<div style="font-size:.7rem;color:#555;padding:6px 0;font-weight:600">' +
+                d +
+                "</div>",
             )
             .join("");
-          const first = new Date(y, m, 1);
-          let startDay = first.getDay() === 0 ? 6 : first.getDay() - 1;
+          let startDay = new Date(y, m, 1).getDay();
+          startDay = startDay === 0 ? 6 : startDay - 1;
           for (let i = 0; i < startDay; i++) html += "<div></div>";
           const dim = new Date(y, m + 1, 0).getDate();
           for (let d = 1; d <= dim; d++) {
-            const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const ds =
+              y +
+              "-" +
+              String(m + 1).padStart(2, "0") +
+              "-" +
+              String(d).padStart(2, "0");
             const isToday = ds === today,
               hasTask = taskDates.has(ds);
-            html += `<div style="padding:8px 4px;border-radius:8px;font-size:.82rem;
-            font-weight:${isToday ? "700" : "400"};
-            background:${isToday ? "#2563eb" : hasTask ? "rgba(37,99,235,.15)" : "transparent"};
-            color:${isToday ? "#fff" : hasTask ? "#60a5fa" : "#888"};
-            border:${hasTask && !isToday ? "1px solid rgba(37,99,235,.3)" : "1px solid transparent"}">${d}</div>`;
+            html +=
+              '<div style="padding:8px 4px;border-radius:8px;font-size:.82rem;font-weight:' +
+              (isToday ? "700" : "400") +
+              ";background:" +
+              (isToday
+                ? "#2563eb"
+                : hasTask
+                  ? "rgba(37,99,235,.15)"
+                  : "transparent") +
+              ";color:" +
+              (isToday ? "#fff" : hasTask ? "#60a5fa" : "#888") +
+              ";border:" +
+              (hasTask && !isToday
+                ? "1px solid rgba(37,99,235,.3)"
+                : "1px solid transparent") +
+              '">' +
+              d +
+              "</div>";
           }
           document.getElementById("calGrid").innerHTML = html;
         }
-
         window.calPrev = function () {
           calDate.setMonth(calDate.getMonth() - 1);
           renderCalendar();
@@ -1129,14 +1436,10 @@
           renderCalendar();
         };
 
-        // =====================================================================
-        // Cijfers — gratis limiet: FREE_GRADE_LIMIT
-        // =====================================================================
+        // ---- Cijfers ----
         window.addGrade = function () {
           if (!_isPro && grades.length >= FREE_GRADE_LIMIT) {
-            showToast(
-              "⚠️ Gratis limiet bereikt (10 cijfers). Upgrade naar Pro voor onbeperkt.",
-            );
+            showToast("Gratis limiet bereikt (10 cijfers). Upgrade naar Pro.");
             return;
           }
           const subject = document.getElementById("gradeSubject").value.trim();
@@ -1163,18 +1466,15 @@
           saveGrades();
           renderGrades();
         };
-
         function saveGrades() {
           localStorage.setItem("grades", JSON.stringify(grades));
         }
-
         window.deleteGrade = function (id) {
           if (!confirm("Delete this grade?")) return;
           grades = grades.filter((g) => g.id !== id);
           saveGrades();
           renderGrades();
         };
-
         function renderGrades() {
           const avgEl = document.getElementById("gradeAvg");
           const avg = grades.length
@@ -1183,11 +1483,13 @@
               )
             : null;
           avgEl.innerHTML = avg
-            ? `<div style="display:flex;align-items:center;gap:16px">
-               <div style="font-size:2.5rem;font-weight:700;color:${avg >= 7 ? "#22c55e" : avg >= 5.5 ? "#f59e0b" : "#ef4444"}">${avg}</div>
-               <div><div style="font-weight:600">Overall Average</div>
-               <div style="font-size:.8rem;color:#888">${grades.length} grades</div></div>
-             </div>`
+            ? '<div style="display:flex;align-items:center;gap:16px"><div style="font-size:2.5rem;font-weight:700;color:' +
+              (avg >= 7 ? "#22c55e" : avg >= 5.5 ? "#f59e0b" : "#ef4444") +
+              '">' +
+              avg +
+              '</div><div><div style="font-weight:600">Overall Average</div><div style="font-size:.8rem;color:#888">' +
+              grades.length +
+              " grades</div></div></div>"
             : '<div style="color:#444">No grades yet</div>';
           const subjects = [...new Set(grades.map((g) => g.subject))].sort();
           const list = document.getElementById("gradeList");
@@ -1204,26 +1506,37 @@
               const savg = (
                 sg.reduce((sum, g) => sum + g.value, 0) / sg.length
               ).toFixed(1);
-              return `<div class="dashboard-card" style="margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-              <h2 style="margin:0">${s}</h2>
-              <span style="font-size:.9rem;font-weight:700;color:${savg >= 7 ? "#22c55e" : savg >= 5.5 ? "#f59e0b" : "#ef4444"}">avg: ${savg}</span>
-            </div>
-            ${sg
-              .map(
-                (g) => `
-              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-                <div style="font-size:1.2rem;font-weight:700;color:${g.value >= 7 ? "#22c55e" : g.value >= 5.5 ? "#f59e0b" : "#ef4444"};width:36px">${g.value}</div>
-                <div style="flex:1;font-size:.88rem">${g.name}</div>
-                <button onclick="deleteGrade(${g.id})" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;font-size:.75rem">✕</button>
-              </div>`,
-              )
-              .join("")}
-          </div>`;
+              return (
+                '<div class="dashboard-card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">' +
+                s +
+                '</h2><span style="font-size:.9rem;font-weight:700;color:' +
+                (savg >= 7 ? "#22c55e" : savg >= 5.5 ? "#f59e0b" : "#ef4444") +
+                '">avg: ' +
+                savg +
+                "</span></div>" +
+                sg
+                  .map(
+                    (g) =>
+                      '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)"><div style="font-size:1.2rem;font-weight:700;color:' +
+                      (g.value >= 7
+                        ? "#22c55e"
+                        : g.value >= 5.5
+                          ? "#f59e0b"
+                          : "#ef4444") +
+                      ';width:36px">' +
+                      g.value +
+                      '</div><div style="flex:1;font-size:.88rem">' +
+                      g.name +
+                      '</div><button onclick="deleteGrade(' +
+                      g.id +
+                      ')" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;font-size:.75rem">X</button></div>',
+                  )
+                  .join("") +
+                "</div>"
+              );
             })
             .join("");
         }
-
         window.setGradeSystem = function (sys) {
           gradeSystem = sys;
           ["nl", "en", "fr"].forEach((s) =>
@@ -1231,111 +1544,97 @@
               .getElementById(s + "Btn")
               .classList.toggle("active", sys === s),
           );
-          const numInput = document.getElementById("gradeValue");
-          const letterInput = document.getElementById("gradeLetterInput");
+          const n = document.getElementById("gradeValue"),
+            l = document.getElementById("gradeLetterInput");
           if (sys === "en") {
-            numInput.style.display = "none";
-            letterInput.style.display = "";
+            n.style.display = "none";
+            l.style.display = "";
           } else {
-            numInput.style.display = "";
-            letterInput.style.display = "none";
-            numInput.max = sys === "fr" ? "20" : "10";
-            numInput.placeholder = sys === "fr" ? "1-20" : "1-10";
+            n.style.display = "";
+            l.style.display = "none";
+            n.max = sys === "fr" ? "20" : "10";
+            n.placeholder = sys === "fr" ? "1-20" : "1-10";
           }
         };
 
-        // =====================================================================
-        // Instellingen
-        // =====================================================================
+        // ---- Instellingen ----
         window.toggleTheme = function () {
           isDark = !isDark;
           document.body.style.background = isDark ? "#0a0a0a" : "#f5f5f5";
           document.body.style.color = isDark ? "#f0f0f0" : "#111";
           document.getElementById("themeBtn").textContent = isDark
-            ? "🌙 Dark"
-            : "☀️ Light";
+            ? "Dark"
+            : "Light";
         };
-
         window.clearAll = function () {
           if (!confirm("Delete ALL tasks?")) return;
           tasks = [];
           saveTasks();
           renderAll();
         };
-
         window.saveName = function () {
           localStorage.setItem(
             "userName",
             document.getElementById("userName").value,
           );
         };
-
-        window.toggleNotifications = async function () {
-          if (!("Notification" in window)) {
-            showToast("❌ Jouw browser ondersteunt geen notificaties.");
-            return;
-          }
-
-          if (Notification.permission === "granted") {
-            showToast("✅ Notificaties zijn al ingeschakeld!");
-            scheduleNotifications();
-            return;
-          }
-
-          const permission = await Notification.requestPermission();
-          const btn = document.getElementById("notifBtn");
-
-          if (permission === "granted") {
-            btn.textContent = "Enabled ✅";
-            await registerServiceWorker();
-            scheduleNotifications();
-            showToast("✅ Notificaties ingeschakeld!");
-          } else {
-            btn.textContent = "Blocked ❌";
-            showToast("❌ Notificaties geblokkeerd in browserinstellingen.");
-          }
+        window.cancelAccount = function () {
+          if (!confirm("Delete your account and all data?")) return;
+          localStorage.clear();
+          location.reload();
         };
 
+        // ---- Notificaties ----
+        window.toggleNotifications = async function () {
+          if (!("Notification" in window)) {
+            showToast("Jouw browser ondersteunt geen notificaties.");
+            return;
+          }
+          if (Notification.permission === "granted") {
+            showToast("Notificaties zijn al ingeschakeld!");
+            scheduleNotifications();
+            return;
+          }
+          const p = await Notification.requestPermission();
+          const btn = document.getElementById("notifBtn");
+          if (p === "granted") {
+            btn.textContent = "Enabled";
+            await registerServiceWorker();
+            scheduleNotifications();
+            showToast("Notificaties ingeschakeld!");
+          } else {
+            btn.textContent = "Blocked";
+            showToast("Notificaties geblokkeerd in browserinstellingen.");
+          }
+        };
         async function registerServiceWorker() {
           if (!("serviceWorker" in navigator)) return;
           try {
             const reg = await navigator.serviceWorker.register(
               "/studyrise-v2/sw.js",
             );
-
-            // Probeer periodieke sync aan te vragen (Chrome/Android)
             if ("periodicSync" in reg) {
               const status = await navigator.permissions.query({
                 name: "periodic-background-sync",
               });
-              if (status.state === "granted") {
+              if (status.state === "granted")
                 await reg.periodicSync.register("check-deadlines", {
                   minInterval: 24 * 60 * 60 * 1000,
                 });
-              }
             }
-
-            // Luister naar verzoeken van de SW om taken te sturen
             navigator.serviceWorker.addEventListener("message", (e) => {
-              if (e.data?.type === "REQUEST_TASKS") {
+              if (e.data && e.data.type === "REQUEST_TASKS")
                 scheduleNotifications();
-              }
             });
           } catch (err) {
-            console.warn("Service Worker registratie mislukt:", err);
+            console.warn("SW registratie mislukt:", err);
           }
         }
-
         function scheduleNotifications() {
           if (Notification.permission !== "granted") return;
-
-          // Voorkom dubbele notificaties op dezelfde dag
           const today = new Date().toISOString().slice(0, 10);
-          const lastCheck = localStorage.getItem("notif_last_check");
-          if (lastCheck === today) return;
+          if (localStorage.getItem("notif_last_check") === today) return;
           localStorage.setItem("notif_last_check", today);
-
-          // Stuur taken naar de Service Worker
           if (
             "serviceWorker" in navigator &&
             navigator.serviceWorker.controller
@@ -1347,44 +1646,29 @@
           }
         }
 
-        window.cancelAccount = function () {
-          if (!confirm("Delete your account and all data?")) return;
-          localStorage.clear();
-          location.reload();
-        };
-
-        // =====================================================================
-        // Streak
-        // =====================================================================
+        // ---- Streak ----
         function updateStreak() {
           const today = new Date().toISOString().slice(0, 10);
-          const todayDone = tasks.filter((t) => t.done).length;
-          let streak = JSON.parse(
-            localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
-          );
-          if (todayDone > 0) {
+          if (tasks.filter((t) => t.done).length > 0) {
+            let streak = JSON.parse(
+              localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
+            );
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const yStr = yesterday.toISOString().slice(0, 10);
-            if (streak.lastDate === today) {
-              /* al geteld */
-            } else if (streak.lastDate === yStr) {
-              streak.count++;
+            if (streak.lastDate !== today) {
+              streak.count = streak.lastDate === yStr ? streak.count + 1 : 1;
               streak.lastDate = today;
-            } else {
-              streak.count = 1;
-              streak.lastDate = today;
+              localStorage.setItem("streak", JSON.stringify(streak));
             }
-            localStorage.setItem("streak", JSON.stringify(streak));
+            const el = document.getElementById("streakDisplay");
+            if (el)
+              el.textContent =
+                streak.count + " day" + (streak.count !== 1 ? "s" : "");
           }
-          const el = document.getElementById("streakDisplay");
-          if (el)
-            el.textContent = `🔥 ${streak.count} day${streak.count !== 1 ? "s" : ""}`;
         }
 
-        // =====================================================================
-        // Toast
-        // =====================================================================
+        // ---- Toast ----
         function showToast(msg) {
           const t = document.createElement("div");
           t.style =
@@ -1394,9 +1678,7 @@
           setTimeout(() => t.remove(), 3500);
         }
 
-        // =====================================================================
-        // Navigatie
-        // =====================================================================
+        // ---- Navigatie ----
         window.showPage = function (id) {
           document
             .querySelectorAll("#pages > div")
@@ -1406,13 +1688,10 @@
             .querySelectorAll("#sidebar a")
             .forEach((a) => a.classList.remove("active"));
           document
-            .querySelector(`#sidebar a[onclick="showPage('${id}')"]`)
+            .querySelector("#sidebar a[onclick=\"showPage('" + id + "')\"]")
             .classList.add("active");
         };
 
-        // =====================================================================
-        // Alles renderen
-        // =====================================================================
         function renderAll() {
           renderTasks();
           renderStats();
@@ -1423,29 +1702,26 @@
           updateStreak();
         }
 
-        // =====================================================================
-        // Opstarten
-        // =====================================================================
+        // ---- Init ----
         async function init() {
           const session = await checkAuth();
           if (!session) return;
+          renderSubjectSelects();
           showPage("dashboard");
           await loadTasks();
           await checkPro();
-          // Service Worker registreren als notificaties al aan staan
           if (Notification.permission === "granted") {
             await registerServiceWorker();
             scheduleNotifications();
           }
-          // Notificatie knop status updaten
           const btn = document.getElementById("notifBtn");
           if (btn)
             btn.textContent =
-              Notification.permission === "granted" ? "Enabled ✅" : "Enable"; // laadscherm verdwijnt pas als Pro-status bekend is
+              Notification.permission === "granted" ? "Enabled" : "Enable";
         }
 
         init();
-      })(); // einde IIFE
+      })();
     </script>
   </body>
 </html>
