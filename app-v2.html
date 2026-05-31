@@ -1090,7 +1090,7 @@
                 margin-top: 12px;
               "
             >
-              <input type="text" id="gradeSubject" placeholder="Subject..." />
+              <select id="gradeSubject"></select>
               <input type="text" id="gradeName" placeholder="Test name..." />
               <input
                 type="number"
@@ -1316,7 +1316,7 @@
 
         function renderSubjectSelects() {
           const subjects = getSubjects();
-          ["taskSubject", "editSubject"].forEach((id) => {
+          ["taskSubject", "editSubject", "gradeSubject"].forEach((id) => {
             const sel = document.getElementById(id);
             if (!sel) return;
             const cur = sel.value;
