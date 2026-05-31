@@ -1270,16 +1270,80 @@
           );
         };
 
-        window.toggleNotifications = function () {
+        window.toggleNotifications = async function () {
+          if (!("Notification" in window)) {
+            showToast("❌ Jouw browser ondersteunt geen notificaties.");
+            return;
+          }
+
           if (Notification.permission === "granted") {
-            showToast("Notifications already enabled!");
+            showToast("✅ Notificaties zijn al ingeschakeld!");
+            scheduleNotifications();
+            return;
+          }
+
+          const permission = await Notification.requestPermission();
+          const btn = document.getElementById("notifBtn");
+
+          if (permission === "granted") {
+            btn.textContent = "Enabled ✅";
+            await registerServiceWorker();
+            scheduleNotifications();
+            showToast("✅ Notificaties ingeschakeld!");
           } else {
-            Notification.requestPermission().then((p) => {
-              document.getElementById("notifBtn").textContent =
-                p === "granted" ? "Enabled ✅" : "Blocked ❌";
-            });
+            btn.textContent = "Blocked ❌";
+            showToast("❌ Notificaties geblokkeerd in browserinstellingen.");
           }
         };
+
+        async function registerServiceWorker() {
+          if (!("serviceWorker" in navigator)) return;
+          try {
+            const reg = await navigator.serviceWorker.register("/sw.js");
+
+            // Probeer periodieke sync aan te vragen (Chrome/Android)
+            if ("periodicSync" in reg) {
+              const status = await navigator.permissions.query({
+                name: "periodic-background-sync",
+              });
+              if (status.state === "granted") {
+                await reg.periodicSync.register("check-deadlines", {
+                  minInterval: 24 * 60 * 60 * 1000,
+                });
+              }
+            }
+
+            // Luister naar verzoeken van de SW om taken te sturen
+            navigator.serviceWorker.addEventListener("message", (e) => {
+              if (e.data?.type === "REQUEST_TASKS") {
+                scheduleNotifications();
+              }
+            });
+          } catch (err) {
+            console.warn("Service Worker registratie mislukt:", err);
+          }
+        }
+
+        function scheduleNotifications() {
+          if (Notification.permission !== "granted") return;
+
+          // Voorkom dubbele notificaties op dezelfde dag
+          const today = new Date().toISOString().slice(0, 10);
+          const lastCheck = localStorage.getItem("notif_last_check");
+          if (lastCheck === today) return;
+          localStorage.setItem("notif_last_check", today);
+
+          // Stuur taken naar de Service Worker
+          if (
+            "serviceWorker" in navigator &&
+            navigator.serviceWorker.controller
+          ) {
+            navigator.serviceWorker.controller.postMessage({
+              type: "SCHEDULE_NOTIFICATIONS",
+              tasks: tasks,
+            });
+          }
+        }
 
         window.cancelAccount = function () {
           if (!confirm("Delete your account and all data?")) return;
@@ -1365,7 +1429,17 @@
           if (!session) return;
           showPage("dashboard");
           await loadTasks();
-          await checkPro(); // laadscherm verdwijnt pas als Pro-status bekend is
+          await checkPro();
+          // Service Worker registreren als notificaties al aan staan
+          if (Notification.permission === "granted") {
+            await registerServiceWorker();
+            scheduleNotifications();
+          }
+          // Notificatie knop status updaten
+          const btn = document.getElementById("notifBtn");
+          if (btn)
+            btn.textContent =
+              Notification.permission === "granted" ? "Enabled ✅" : "Enable"; // laadscherm verdwijnt pas als Pro-status bekend is
         }
 
         init();
