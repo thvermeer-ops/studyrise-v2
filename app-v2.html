@@ -17,8 +17,8 @@
         --border: rgba(255, 255, 255, 0.07);
         --border-hover: rgba(255, 255, 255, 0.13);
         --text: #f0f0f0;
-        --text-muted: #606060;
-        --text-dim: #3a3a3a;
+        --text-muted: #888888;
+        --text-dim: #555555;
         --blue: #2563eb;
         --blue-dim: rgba(37, 99, 235, 0.12);
         --blue-border: rgba(37, 99, 235, 0.35);
@@ -553,7 +553,6 @@
         text-transform: uppercase;
       }
       .cal-day {
-        aspect-ratio: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -562,6 +561,8 @@
         color: var(--text-muted);
         cursor: default;
         position: relative;
+        padding: 6px 2px;
+        height: 32px;
       }
       .cal-day.today {
         background: var(--blue);
@@ -1530,19 +1531,17 @@
           const email = session.user.email;
           await _sb.from("tasks").delete().eq("user-id", email);
           if (tasks.length > 0) {
-            await _sb
-              .from("tasks")
-              .insert(
-                tasks.map((t) => ({
-                  "user-id": email,
-                  title: t.title,
-                  subject: t.subject || "",
-                  date: t.date || "",
-                  priority: t.priority || "medium",
-                  done: t.done || false,
-                  notes: t.notes || "",
-                })),
-              );
+            await _sb.from("tasks").insert(
+              tasks.map((t) => ({
+                "user-id": email,
+                title: t.title,
+                subject: t.subject || "",
+                date: t.date || "",
+                priority: t.priority || "medium",
+                done: t.done || false,
+                notes: t.notes || "",
+              })),
+            );
           }
         }
 
@@ -2040,10 +2039,7 @@
             const el = document.getElementById("streakDisplay");
             if (el)
               el.textContent =
-                "&#128293; " +
-                streak.count +
-                " day" +
-                (streak.count !== 1 ? "s" : "");
+                "🔥 " + streak.count + " day" + (streak.count !== 1 ? "s" : "");
           }
         }
 
