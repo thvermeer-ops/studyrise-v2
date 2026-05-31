@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Policy — StudyRise</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #080808; --surface: #0f0f0f; --border: rgba(255,255,255,0.1); --text: #f0f0f0; --muted: #a0a0a0; --blue: #2563eb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 48px 24px; }
+    .container { max-width: 680px; margin: 0 auto; }
+    .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 0.875rem; margin-bottom: 40px; transition: color 0.15s; }
+    .back:hover { color: var(--text); }
+    .logo { font-size: 1rem; font-weight: 600; margin-bottom: 32px; }
+    .logo span { color: var(--blue); }
+    h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .updated { font-size: 0.8rem; color: var(--muted); margin-bottom: 40px; }
+    h2 { font-size: 1rem; font-weight: 600; margin: 32px 0 10px; }
+    p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.875rem; }
+    th { text-align: left; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); font-weight: 600; color: var(--text); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td { padding: 10px 12px; border: 1px solid var(--border); color: var(--muted); vertical-align: top; line-height: 1.5; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    .footer { font-size: 0.775rem; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="app-v2.html" class="back">&#8592; Back to app</a>
+    <div class="logo">Study<span>Rise</span></div>
+    <h1>Cookie Policy</h1>
+    <div class="updated">Last updated: May 2026</div>
+
+    <h2>What are cookies?</h2>
+    <p>Cookies are small text files stored on your device when you visit a website. StudyRise also uses browser local storage, which works similarly but stores larger amounts of data locally on your device.</p>
+
+    <h2>What we use</h2>
+    <p>StudyRise uses only strictly necessary cookies and local storage. We do not use advertising cookies, tracking cookies, or analytics cookies.</p>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Purpose</th>
+        <th>Duration</th>
+      </tr>
+      <tr>
+        <td>supabase-auth-token</td>
+        <td>Cookie</td>
+        <td>Keeps you logged in to your account</td>
+        <td>Session / 1 week</td>
+      </tr>
+      <tr>
+        <td>tasks</td>
+        <td>Local storage</td>
+        <td>Stores your tasks locally for offline access</td>
+        <td>Until you clear your data</td>
+      </tr>
+      <tr>
+        <td>grades</td>
+        <td>Local storage</td>
+        <td>Stores your grades locally</td>
+        <td>Until you clear your data</td>
+      </tr>
+      <tr>
+        <td>subjects</td>
+        <td>Local storage</td>
+        <td>Stores your custom subjects</td>
+        <td>Until you clear your data</td>
+      </tr>
+      <tr>
+        <td>userName</td>
+        <td>Local storage</td>
+        <td>Stores your display name</td>
+        <td>Until you clear your data</td>
+      </tr>
+      <tr>
+        <td>streak</td>
+        <td>Local storage</td>
+        <td>Tracks your daily usage streak</td>
+        <td>Until you clear your data</td>
+      </tr>
+      <tr>
+        <td>sr_user</td>
+        <td>Local storage</td>
+        <td>Stores your email for Pro verification</td>
+        <td>Until you log out</td>
+      </tr>
+    </table>
+
+    <h2>Third-party cookies</h2>
+    <p>Supabase (our database provider) may set its own cookies for authentication. GitHub Pages (our hosting provider) may collect basic access logs. Neither service uses these for advertising purposes.</p>
+
+    <h2>Managing cookies</h2>
+    <p>You can clear all local data at any time via Settings &rarr; Data &rarr; Clear all tasks, or by deleting your account. You can also clear cookies and local storage through your browser settings, though this will log you out of the app.</p>
+
+    <hr class="divider" />
+    <div class="footer">
+      <a href="app-v2.html">Back to app</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </div>
+  </div>
+</body>
+</html>
