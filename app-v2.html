@@ -1238,870 +1238,880 @@
     </main>
 
     <script>
-            (function () {
-              const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
-              const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
-              const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      (function () {
+        const SUPABASE_URL = "https://tnvdybovafzwryrwdfup.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_5yIF13i4hDxgGKixbb8JYw_AR2PcuZG";
+        const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-              let _isPro = false;
-              const FREE_TASK_LIMIT = 5;
-              const FREE_GRADE_LIMIT = 10;
-              const DEFAULT_SUBJECTS = [
-                "Math",
-                "Science",
-                "English",
-                "History",
-                "Art",
-                "PE",
-                "Other",
-              ];
+        let _isPro = false;
+        const FREE_TASK_LIMIT = 5;
+        const FREE_GRADE_LIMIT = 10;
+        const DEFAULT_SUBJECTS = [
+          "Math",
+          "Science",
+          "English",
+          "History",
+          "Art",
+          "PE",
+          "Other",
+        ];
 
-              // ---- Subjects ----
-              function getSubjects() {
-                const s = localStorage.getItem("subjects");
-                return s ? JSON.parse(s) : [...DEFAULT_SUBJECTS];
-              }
-              function saveSubjects(s) {
-                localStorage.setItem("subjects", JSON.stringify(s));
-              }
+        // ---- Subjects ----
+        function getSubjects() {
+          const s = localStorage.getItem("subjects");
+          return s ? JSON.parse(s) : [...DEFAULT_SUBJECTS];
+        }
+        function saveSubjects(s) {
+          localStorage.setItem("subjects", JSON.stringify(s));
+        }
 
-              function renderSubjectSelects() {
-                const subjects = getSubjects();
-                ["taskSubject", "editSubject"].forEach((id) => {
-                  const sel = document.getElementById(id);
-                  if (!sel) return;
-                  const cur = sel.value;
-                  sel.innerHTML = subjects
-                    .map((s) => '<option value="' + s + '">' + s + "</option>")
-                    .join("");
-                  if (cur && subjects.includes(cur)) sel.value = cur;
-                });
-                const fb = document.getElementById("filterBtns");
-                if (fb) {
-                  fb.innerHTML =
-                    '<button class="chip active" onclick="filterTasks(this,\'all\')">All</button>' +
-                    subjects
-                      .map(
-                        (s) =>
-                          '<button class="chip" onclick="filterTasks(this,\'' +
-                          s +
-                          "')\">" +
-                          s +
-                          "</button>",
-                      )
-                      .join("");
-                }
-                renderSubjectList();
-              }
+        function renderSubjectSelects() {
+          const subjects = getSubjects();
+          ["taskSubject", "editSubject"].forEach((id) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const cur = sel.value;
+            sel.innerHTML = subjects
+              .map((s) => '<option value="' + s + '">' + s + "</option>")
+              .join("");
+            if (cur && subjects.includes(cur)) sel.value = cur;
+          });
+          const fb = document.getElementById("filterBtns");
+          if (fb) {
+            fb.innerHTML =
+              '<button class="chip active" onclick="filterTasks(this,\'all\')">All</button>' +
+              subjects
+                .map(
+                  (s) =>
+                    '<button class="chip" onclick="filterTasks(this,\'' +
+                    s +
+                    "')\">" +
+                    s +
+                    "</button>",
+                )
+                .join("");
+          }
+          renderSubjectList();
+        }
 
-              function renderSubjectList() {
-                const subjects = getSubjects();
-                const list = document.getElementById("subjectList");
-                if (!list) return;
-                list.innerHTML = subjects
-                  .map(
-                    (s) =>
-                      '<div class="subject-tag">' +
-                      s +
-                      "<button onclick=\"removeSubject('" +
-                      s +
-                      "')\">&#10005;</button></div>",
-                  )
-                  .join("");
-              }
+        function renderSubjectList() {
+          const subjects = getSubjects();
+          const list = document.getElementById("subjectList");
+          if (!list) return;
+          list.innerHTML = subjects
+            .map(
+              (s) =>
+                '<div class="subject-tag">' +
+                s +
+                "<button onclick=\"removeSubject('" +
+                s +
+                "')\">&#10005;</button></div>",
+            )
+            .join("");
+        }
 
-              window.addSubject = function () {
-                const input = document.getElementById("newSubjectInput");
-                const name = input.value.trim();
-                if (!name) return;
-                const subjects = getSubjects();
-                if (subjects.includes(name)) {
-                  showToast("Subject already exists!");
-                  return;
-                }
-                subjects.push(name);
-                saveSubjects(subjects);
-                input.value = "";
-                renderSubjectSelects();
-                showToast('"' + name + '" added!');
-              };
+        window.addSubject = function () {
+          const input = document.getElementById("newSubjectInput");
+          const name = input.value.trim();
+          if (!name) return;
+          const subjects = getSubjects();
+          if (subjects.includes(name)) {
+            showToast("Subject already exists!");
+            return;
+          }
+          subjects.push(name);
+          saveSubjects(subjects);
+          input.value = "";
+          renderSubjectSelects();
+          showToast('"' + name + '" added!');
+        };
 
-              window.removeSubject = function (name) {
-                if (!confirm('Remove "' + name + '"?')) return;
-                saveSubjects(getSubjects().filter((s) => s !== name));
-                renderSubjectSelects();
-              };
+        window.removeSubject = function (name) {
+          if (!confirm('Remove "' + name + '"?')) return;
+          saveSubjects(getSubjects().filter((s) => s !== name));
+          renderSubjectSelects();
+        };
 
-              // ---- Auth ----
-              async function checkAuth() {
-                const {
-                  data: { session },
-                } = await _sb.auth.getSession();
-                if (!session) {
-                  window.location.href = "login.html";
-                  return null;
-                }
-                localStorage.setItem("sr_user", session.user.email);
-                return session;
-              }
+        // ---- Auth ----
+        async function checkAuth() {
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) {
+            window.location.href = "login.html";
+            return null;
+          }
+          localStorage.setItem("sr_user", session.user.email);
+          return session;
+        }
 
-              // ---- Pro ----
-              async function checkPro() {
-                const email = localStorage.getItem("sr_user");
-                if (!email) {
-                  hideOverlay();
-                  return;
-                }
-                try {
-                  const res = await fetch(
-                    "https://studyflow-backend1.onrender.com/check-pro?email=" +
-                      encodeURIComponent(email),
-                  );
-                  const data = await res.json();
-                  _isPro = data.isPro === true;
-                } catch (e) {
-                  _isPro = false;
-                }
-                applyProUI();
-                hideOverlay();
-              }
+        // ---- Pro ----
+        async function checkPro() {
+          const email = localStorage.getItem("sr_user");
+          if (!email) {
+            hideOverlay();
+            return;
+          }
+          try {
+            const res = await fetch(
+              "https://studyflow-backend1.onrender.com/check-pro?email=" +
+                encodeURIComponent(email),
+            );
+            const data = await res.json();
+            _isPro = data.isPro === true;
+          } catch (e) {
+            _isPro = false;
+          }
+          applyProUI();
+          hideOverlay();
+        }
 
-              function hideOverlay() {
-                const o = document.getElementById("overlay");
-                if (o) o.remove();
-              }
+        function hideOverlay() {
+          const o = document.getElementById("overlay");
+          if (o) o.remove();
+        }
 
-              function applyProUI() {
-                document.querySelectorAll(".pro-only").forEach(el =>
-        el.style.setProperty("display", _isPro ? "inline-flex" : "none", "important")
-      );
-                  );
-                document
-                  .getElementById("stats")
-                  .style.setProperty(
-                    "display",
-                    _isPro ? "grid" : "none",
-                    "important",
-                  );
-                document.getElementById("stats-lock").style.display = _isPro
-                  ? "none"
-                  : "";
-                const el = document.getElementById("export-lock");
-                if (el) el.style.display = _isPro ? "none" : "";
-                updateTaskLimitBanner();
-              }
+        function applyProUI() {
+          document
+            .querySelectorAll(".pro-only")
+            .forEach((el) =>
+              el.style.setProperty(
+                "display",
+                _isPro ? "" : "none",
+                "important",
+              ),
+            );
+          const exportBtn = document.querySelector(
+            ".pro-only[onclick='exportData()']",
+          );
+          if (exportBtn && _isPro)
+            exportBtn.style.setProperty("display", "inline-flex", "important");
+          document
+            .getElementById("stats")
+            .style.setProperty(
+              "display",
+              _isPro ? "grid" : "none",
+              "important",
+            );
+          document.getElementById("stats-lock").style.display = _isPro
+            ? "none"
+            : "";
+          const el = document.getElementById("export-lock");
+          if (el) el.style.display = _isPro ? "none" : "";
+          updateTaskLimitBanner();
+        }
 
-              function updateTaskLimitBanner() {
-                const b = document.getElementById("task-limit-banner");
-                if (b)
-                  b.style.display =
-                    !_isPro && tasks.length >= FREE_TASK_LIMIT ? "" : "none";
-              }
+        function updateTaskLimitBanner() {
+          const b = document.getElementById("task-limit-banner");
+          if (b)
+            b.style.display =
+              !_isPro && tasks.length >= FREE_TASK_LIMIT ? "" : "none";
+        }
 
-              window.exportData = function () {
-                if (!_isPro) {
-                  showToast("Export is a Pro feature.");
-                  return;
-                }
-                const a = document.createElement("a");
-                a.href =
-                  "data:application/json," +
-                  encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
-                a.download = "studyrise-export.json";
-                a.click();
-              };
+        window.exportData = function () {
+          if (!_isPro) {
+            showToast("Export is a Pro feature.");
+            return;
+          }
+          const a = document.createElement("a");
+          a.href =
+            "data:application/json," +
+            encodeURIComponent(JSON.stringify({ tasks, grades }, null, 2));
+          a.download = "studyrise-export.json";
+          a.click();
+        };
 
-              // ---- State ----
-              let tasks = [];
-              let grades = JSON.parse(localStorage.getItem("grades") || "[]");
-              let currentFilter = "all";
-              let currentSort = "date";
-              let calDate = new Date();
-              let gradeSystem = "nl";
-              let isDark = true;
-              let editingTaskId = null;
-              const letterToNum = {
-                "A+": 10,
-                A: 9.3,
-                "A-": 9,
-                "B+": 8.3,
-                B: 8,
-                "B-": 7.7,
-                "C+": 7.3,
-                C: 7,
-                "C-": 6.7,
-                D: 5,
-                F: 3,
-              };
+        // ---- State ----
+        let tasks = [];
+        let grades = JSON.parse(localStorage.getItem("grades") || "[]");
+        let currentFilter = "all";
+        let currentSort = "date";
+        let calDate = new Date();
+        let gradeSystem = "nl";
+        let isDark = true;
+        let editingTaskId = null;
+        const letterToNum = {
+          "A+": 10,
+          A: 9.3,
+          "A-": 9,
+          "B+": 8.3,
+          B: 8,
+          "B-": 7.7,
+          "C+": 7.3,
+          C: 7,
+          "C-": 6.7,
+          D: 5,
+          F: 3,
+        };
 
-              // ---- Tasks ----
-              window.addTask = function () {
-                const title = document.getElementById("taskInput").value.trim();
-                if (!title) return;
-                if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
-                  showToast(
-                    "Free limit reached. Upgrade to Pro for unlimited tasks.",
-                  );
-                  return;
-                }
-                tasks.push({
-                  id: Date.now(),
-                  title,
-                  subject: document.getElementById("taskSubject").value,
-                  date: document.getElementById("taskDate").value,
-                  priority: document.getElementById("taskPriority").value,
-                  done: false,
-                  notes: "",
-                });
-                document.getElementById("taskInput").value = "";
-                saveTasks();
-                renderAll();
-              };
+        // ---- Tasks ----
+        window.addTask = function () {
+          const title = document.getElementById("taskInput").value.trim();
+          if (!title) return;
+          if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
+            showToast(
+              "Free limit reached. Upgrade to Pro for unlimited tasks.",
+            );
+            return;
+          }
+          tasks.push({
+            id: Date.now(),
+            title,
+            subject: document.getElementById("taskSubject").value,
+            date: document.getElementById("taskDate").value,
+            priority: document.getElementById("taskPriority").value,
+            done: false,
+            notes: "",
+          });
+          document.getElementById("taskInput").value = "";
+          saveTasks();
+          renderAll();
+        };
 
-              window.toggleTask = function (id) {
-                const t = tasks.find((t) => t.id === id);
-                if (t) t.done = !t.done;
-                saveTasks();
-                renderAll();
-              };
+        window.toggleTask = function (id) {
+          const t = tasks.find((t) => t.id === id);
+          if (t) t.done = !t.done;
+          saveTasks();
+          renderAll();
+        };
 
-              window.deleteTask = function (id) {
-                if (!confirm("Delete this task?")) return;
-                tasks = tasks.filter((t) => t.id !== id);
-                saveTasks();
-                renderAll();
-              };
+        window.deleteTask = function (id) {
+          if (!confirm("Delete this task?")) return;
+          tasks = tasks.filter((t) => t.id !== id);
+          saveTasks();
+          renderAll();
+        };
 
-              window.openEditModal = function (id) {
-                const t = tasks.find((t) => t.id === id);
-                if (!t) return;
-                editingTaskId = id;
-                document.getElementById("editTitle").value = t.title;
-                renderSubjectSelects();
-                document.getElementById("editSubject").value = t.subject;
-                document.getElementById("editDate").value = t.date || "";
-                document.getElementById("editPriority").value = t.priority;
-                document.getElementById("editModal").classList.add("open");
-              };
+        window.openEditModal = function (id) {
+          const t = tasks.find((t) => t.id === id);
+          if (!t) return;
+          editingTaskId = id;
+          document.getElementById("editTitle").value = t.title;
+          renderSubjectSelects();
+          document.getElementById("editSubject").value = t.subject;
+          document.getElementById("editDate").value = t.date || "";
+          document.getElementById("editPriority").value = t.priority;
+          document.getElementById("editModal").classList.add("open");
+        };
 
-              window.closeEditModal = function () {
-                document.getElementById("editModal").classList.remove("open");
-                editingTaskId = null;
-              };
+        window.closeEditModal = function () {
+          document.getElementById("editModal").classList.remove("open");
+          editingTaskId = null;
+        };
 
-              window.saveEdit = function () {
-                const t = tasks.find((t) => t.id === editingTaskId);
-                if (!t) return;
-                const newTitle = document.getElementById("editTitle").value.trim();
-                if (newTitle) t.title = newTitle;
-                t.subject = document.getElementById("editSubject").value;
-                t.date = document.getElementById("editDate").value;
-                t.priority = document.getElementById("editPriority").value;
-                closeEditModal();
-                saveTasks();
-                renderAll();
-                showToast("Task saved!");
-              };
+        window.saveEdit = function () {
+          const t = tasks.find((t) => t.id === editingTaskId);
+          if (!t) return;
+          const newTitle = document.getElementById("editTitle").value.trim();
+          if (newTitle) t.title = newTitle;
+          t.subject = document.getElementById("editSubject").value;
+          t.date = document.getElementById("editDate").value;
+          t.priority = document.getElementById("editPriority").value;
+          closeEditModal();
+          saveTasks();
+          renderAll();
+          showToast("Task saved!");
+        };
 
-              window.toggleNotes = function (id) {
-                const el = document.getElementById("notes-" + id);
-                if (el)
-                  el.style.display = el.style.display === "none" ? "block" : "none";
-              };
+        window.toggleNotes = function (id) {
+          const el = document.getElementById("notes-" + id);
+          if (el)
+            el.style.display = el.style.display === "none" ? "block" : "none";
+        };
 
-              window.saveNote = function (id, value) {
-                const t = tasks.find((t) => t.id === id);
-                if (t) {
-                  t.notes = value;
-                  saveTasks();
-                }
-              };
+        window.saveNote = function (id, value) {
+          const t = tasks.find((t) => t.id === id);
+          if (t) {
+            t.notes = value;
+            saveTasks();
+          }
+        };
 
-              async function saveTasks() {
-                localStorage.setItem("tasks", JSON.stringify(tasks));
-                const {
-                  data: { session },
-                } = await _sb.auth.getSession();
-                if (!session) return;
-                const email = session.user.email;
-                await _sb.from("tasks").delete().eq("user-id", email);
-                if (tasks.length > 0) {
-                  await _sb.from("tasks").insert(
-                    tasks.map((t) => ({
-                      "user-id": email,
-                      title: t.title,
-                      subject: t.subject || "",
-                      date: t.date || "",
-                      priority: t.priority || "medium",
-                      done: t.done || false,
-                      notes: t.notes || "",
-                    })),
-                  );
-                }
-              }
+        async function saveTasks() {
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) return;
+          const email = session.user.email;
+          await _sb.from("tasks").delete().eq("user-id", email);
+          if (tasks.length > 0) {
+            await _sb.from("tasks").insert(
+              tasks.map((t) => ({
+                "user-id": email,
+                title: t.title,
+                subject: t.subject || "",
+                date: t.date || "",
+                priority: t.priority || "medium",
+                done: t.done || false,
+                notes: t.notes || "",
+              })),
+            );
+          }
+        }
 
-              async function loadTasks() {
-                const {
-                  data: { session },
-                } = await _sb.auth.getSession();
-                if (!session) return;
-                const { data } = await _sb
-                  .from("tasks")
-                  .select("*")
-                  .eq("user-id", session.user.email);
-                tasks =
-                  data && data.length > 0
-                    ? data.map((t) => ({
-                        id: t.id,
-                        title: t.title,
-                        subject: t.subject,
-                        date: t.date,
-                        priority: t.priority,
-                        done: t.done,
-                        notes: t.notes || "",
-                      }))
-                    : JSON.parse(localStorage.getItem("tasks") || "[]");
-                renderAll();
-              }
+        async function loadTasks() {
+          const {
+            data: { session },
+          } = await _sb.auth.getSession();
+          if (!session) return;
+          const { data } = await _sb
+            .from("tasks")
+            .select("*")
+            .eq("user-id", session.user.email);
+          tasks =
+            data && data.length > 0
+              ? data.map((t) => ({
+                  id: t.id,
+                  title: t.title,
+                  subject: t.subject,
+                  date: t.date,
+                  priority: t.priority,
+                  done: t.done,
+                  notes: t.notes || "",
+                }))
+              : JSON.parse(localStorage.getItem("tasks") || "[]");
+          renderAll();
+        }
 
-              function renderTasks() {
-                const list = document.getElementById("taskList");
-                const filtered =
-                  currentFilter === "all"
-                    ? tasks
-                    : tasks.filter((t) => t.subject === currentFilter);
-                const sorted = [...filtered].sort((a, b) => {
-                  if (currentSort === "priority") {
-                    const p = { urgent: 0, medium: 1, low: 2 };
-                    return p[a.priority] - p[b.priority];
-                  }
-                  if (currentSort === "subject")
-                    return a.subject.localeCompare(b.subject);
-                  return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
-                });
-                const check =
-                  '<svg width="9" height="7" viewBox="0 0 9 7"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
-                list.innerHTML = sorted
-                  .map(
-                    (t) =>
-                      '<div class="task-item' +
-                      (t.done ? " done" : "") +
-                      '">' +
-                      '<div class="task-row">' +
-                      '<div class="task-check' +
-                      (t.done ? " checked" : "") +
-                      '" onclick="toggleTask(' +
-                      t.id +
-                      ')">' +
-                      (t.done ? check : "") +
-                      "</div>" +
-                      '<div class="priority-dot ' +
-                      t.priority +
-                      '"></div>' +
-                      '<div style="flex:1">' +
-                      '<div class="task-name">' +
-                      t.title +
-                      "</div>" +
-                      '<div class="task-meta">' +
-                      t.subject +
-                      (t.date ? " &middot; " + t.date : "") +
-                      "</div>" +
-                      "</div>" +
-                      '<div class="task-actions">' +
-                      '<button class="btn btn-ghost btn-sm" onclick="toggleNotes(' +
-                      t.id +
-                      ')" title="Notes">&#128221;</button>' +
-                      '<button class="btn btn-blue-text btn-sm" onclick="openEditModal(' +
-                      t.id +
-                      ')" title="Edit">Edit</button>' +
-                      '<button class="btn btn-danger btn-sm" onclick="deleteTask(' +
-                      t.id +
-                      ')" title="Delete">&#10005;</button>' +
-                      "</div></div>" +
-                      '<div class="task-notes-area" id="notes-' +
-                      t.id +
-                      '">' +
-                      '<textarea placeholder="Add notes..." onchange="saveNote(' +
-                      t.id +
-                      ', this.value)">' +
-                      (t.notes || "") +
-                      "</textarea>" +
-                      "</div>" +
-                      "</div>",
-                  )
-                  .join("");
-                updateTaskLimitBanner();
-              }
+        function renderTasks() {
+          const list = document.getElementById("taskList");
+          const filtered =
+            currentFilter === "all"
+              ? tasks
+              : tasks.filter((t) => t.subject === currentFilter);
+          const sorted = [...filtered].sort((a, b) => {
+            if (currentSort === "priority") {
+              const p = { urgent: 0, medium: 1, low: 2 };
+              return p[a.priority] - p[b.priority];
+            }
+            if (currentSort === "subject")
+              return a.subject.localeCompare(b.subject);
+            return (a.date || "9999") > (b.date || "9999") ? 1 : -1;
+          });
+          const check =
+            '<svg width="9" height="7" viewBox="0 0 9 7"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+          list.innerHTML = sorted
+            .map(
+              (t) =>
+                '<div class="task-item' +
+                (t.done ? " done" : "") +
+                '">' +
+                '<div class="task-row">' +
+                '<div class="task-check' +
+                (t.done ? " checked" : "") +
+                '" onclick="toggleTask(' +
+                t.id +
+                ')">' +
+                (t.done ? check : "") +
+                "</div>" +
+                '<div class="priority-dot ' +
+                t.priority +
+                '"></div>' +
+                '<div style="flex:1">' +
+                '<div class="task-name">' +
+                t.title +
+                "</div>" +
+                '<div class="task-meta">' +
+                t.subject +
+                (t.date ? " &middot; " + t.date : "") +
+                "</div>" +
+                "</div>" +
+                '<div class="task-actions">' +
+                '<button class="btn btn-ghost btn-sm" onclick="toggleNotes(' +
+                t.id +
+                ')" title="Notes">&#128221;</button>' +
+                '<button class="btn btn-blue-text btn-sm" onclick="openEditModal(' +
+                t.id +
+                ')" title="Edit">Edit</button>' +
+                '<button class="btn btn-danger btn-sm" onclick="deleteTask(' +
+                t.id +
+                ')" title="Delete">&#10005;</button>' +
+                "</div></div>" +
+                '<div class="task-notes-area" id="notes-' +
+                t.id +
+                '">' +
+                '<textarea placeholder="Add notes..." onchange="saveNote(' +
+                t.id +
+                ', this.value)">' +
+                (t.notes || "") +
+                "</textarea>" +
+                "</div>" +
+                "</div>",
+            )
+            .join("");
+          updateTaskLimitBanner();
+        }
 
-              window.filterTasks = function (btn, filter) {
-                currentFilter = filter;
-                document
-                  .querySelectorAll(".chip")
-                  .forEach((b) => b.classList.remove("active"));
-                btn.classList.add("active");
-                renderTasks();
-              };
-              window.sortTasks = function (sort) {
-                currentSort = sort;
-                renderTasks();
-              };
+        window.filterTasks = function (btn, filter) {
+          currentFilter = filter;
+          document
+            .querySelectorAll(".chip")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderTasks();
+        };
+        window.sortTasks = function (sort) {
+          currentSort = sort;
+          renderTasks();
+        };
 
-              // ---- Stats ----
-              function renderStats() {
-                const done = tasks.filter((t) => t.done).length;
-                document.getElementById("stat-total").textContent = tasks.length;
-                document.getElementById("stat-done").textContent = done;
-                document.getElementById("stat-pending").textContent =
-                  tasks.length - done;
-              }
+        // ---- Stats ----
+        function renderStats() {
+          const done = tasks.filter((t) => t.done).length;
+          document.getElementById("stat-total").textContent = tasks.length;
+          document.getElementById("stat-done").textContent = done;
+          document.getElementById("stat-pending").textContent =
+            tasks.length - done;
+        }
 
-              // ---- Dashboard ----
-              function renderDueToday() {
-                const today = new Date().toISOString().slice(0, 10);
-                const due = tasks.filter((t) => t.date === today && !t.done);
-                const el = document.getElementById("dueTodayList");
-                el.innerHTML = due.length
-                  ? due
-                      .map(
-                        (t) =>
-                          '<div class="dash-item"><div class="priority-dot ' +
-                          t.priority +
-                          '"></div><div class="name">' +
-                          t.title +
-                          "</div><div>" +
-                          t.subject +
-                          "</div></div>",
-                      )
-                      .join("")
-                  : '<div class="empty-state">Nothing due today &#127881;</div>';
-              }
-
-              function renderUpcoming() {
-                const today = new Date();
-                const in7 = new Date();
-                in7.setDate(today.getDate() + 7);
-                const up = tasks
-                  .filter((t) => {
-                    if (!t.date || t.done) return false;
-                    const d = new Date(t.date);
-                    return d > today && d <= in7;
-                  })
-                  .sort((a, b) => (a.date > b.date ? 1 : -1));
-                const el = document.getElementById("upcomingList");
-                el.innerHTML = up.length
-                  ? up
-                      .map(
-                        (t) =>
-                          '<div class="dash-item"><div class="priority-dot ' +
-                          t.priority +
-                          '"></div><div class="name">' +
-                          t.title +
-                          ' <span style="color:var(--text-muted);font-size:0.8em">&middot; ' +
-                          t.subject +
-                          '</span></div><div class="date">' +
-                          t.date +
-                          "</div></div>",
-                      )
-                      .join("")
-                  : '<div class="empty-state">No upcoming tasks &#127881;</div>';
-              }
-
-              window.searchTasks = function (query) {
-                if (!query) {
-                  renderDueToday();
-                  return;
-                }
-                const q = query.toLowerCase();
-                const f = tasks.filter(
+        // ---- Dashboard ----
+        function renderDueToday() {
+          const today = new Date().toISOString().slice(0, 10);
+          const due = tasks.filter((t) => t.date === today && !t.done);
+          const el = document.getElementById("dueTodayList");
+          el.innerHTML = due.length
+            ? due
+                .map(
                   (t) =>
-                    t.title.toLowerCase().includes(q) ||
-                    t.subject.toLowerCase().includes(q),
-                );
-                const el = document.getElementById("dueTodayList");
-                el.innerHTML = f.length
-                  ? f
-                      .map(
-                        (t) =>
-                          '<div class="dash-item"><div class="priority-dot ' +
-                          t.priority +
-                          '"></div><div class="name">' +
-                          t.title +
-                          "</div><div>" +
-                          t.subject +
-                          "</div></div>",
-                      )
-                      .join("")
-                  : '<div class="empty-state">No results found</div>';
-              };
+                    '<div class="dash-item"><div class="priority-dot ' +
+                    t.priority +
+                    '"></div><div class="name">' +
+                    t.title +
+                    "</div><div>" +
+                    t.subject +
+                    "</div></div>",
+                )
+                .join("")
+            : '<div class="empty-state">Nothing due today &#127881;</div>';
+        }
 
-              // ---- Calendar ----
-              function renderCalendar() {
-                const y = calDate.getFullYear(),
-                  m = calDate.getMonth();
-                document.getElementById("calLabel").textContent =
-                  calDate.toLocaleDateString("en", {
-                    month: "long",
-                    year: "numeric",
-                  });
-                const taskDates = new Set(
-                  tasks.filter((t) => !t.done).map((t) => t.date),
-                );
-                const today = new Date().toISOString().slice(0, 10);
-                const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-                let html = days
-                  .map((d) => '<div class="cal-day-label">' + d + "</div>")
-                  .join("");
-                let startDay = new Date(y, m, 1).getDay();
-                startDay = startDay === 0 ? 6 : startDay - 1;
-                for (let i = 0; i < startDay; i++)
-                  html += '<div class="cal-day"></div>';
-                const dim = new Date(y, m + 1, 0).getDate();
-                for (let d = 1; d <= dim; d++) {
-                  const ds =
-                    y +
-                    "-" +
-                    String(m + 1).padStart(2, "0") +
-                    "-" +
-                    String(d).padStart(2, "0");
-                  const isToday = ds === today,
-                    hasTask = taskDates.has(ds);
-                  html +=
-                    '<div class="cal-day' +
-                    (isToday ? " today" : hasTask ? " has-task" : "") +
-                    '">' +
-                    d +
-                    "</div>";
-                }
-                document.getElementById("calGrid").innerHTML = html;
-              }
-              window.calPrev = function () {
-                calDate.setMonth(calDate.getMonth() - 1);
-                renderCalendar();
-              };
-              window.calNext = function () {
-                calDate.setMonth(calDate.getMonth() + 1);
-                renderCalendar();
-              };
+        function renderUpcoming() {
+          const today = new Date();
+          const in7 = new Date();
+          in7.setDate(today.getDate() + 7);
+          const up = tasks
+            .filter((t) => {
+              if (!t.date || t.done) return false;
+              const d = new Date(t.date);
+              return d > today && d <= in7;
+            })
+            .sort((a, b) => (a.date > b.date ? 1 : -1));
+          const el = document.getElementById("upcomingList");
+          el.innerHTML = up.length
+            ? up
+                .map(
+                  (t) =>
+                    '<div class="dash-item"><div class="priority-dot ' +
+                    t.priority +
+                    '"></div><div class="name">' +
+                    t.title +
+                    ' <span style="color:var(--text-muted);font-size:0.8em">&middot; ' +
+                    t.subject +
+                    '</span></div><div class="date">' +
+                    t.date +
+                    "</div></div>",
+                )
+                .join("")
+            : '<div class="empty-state">No upcoming tasks &#127881;</div>';
+        }
 
-              // ---- Grades ----
-              window.addGrade = function () {
-                if (!_isPro && grades.length >= FREE_GRADE_LIMIT) {
-                  showToast("Free limit reached (10 grades). Upgrade to Pro.");
-                  return;
-                }
-                const subject = document.getElementById("gradeSubject").value.trim();
-                const name = document.getElementById("gradeName").value.trim();
-                let value;
-                if (gradeSystem === "en") {
-                  value =
-                    letterToNum[document.getElementById("gradeLetterInput").value];
-                } else {
-                  value = parseFloat(document.getElementById("gradeValue").value);
-                  if (gradeSystem === "fr") value = value / 2;
-                }
-                if (!subject || !name || isNaN(value)) return;
-                grades.push({
-                  id: Date.now(),
-                  subject,
-                  name,
-                  value,
-                  system: gradeSystem,
-                });
-                document.getElementById("gradeSubject").value = "";
-                document.getElementById("gradeName").value = "";
-                document.getElementById("gradeValue").value = "";
-                saveGrades();
-                renderGrades();
-              };
+        window.searchTasks = function (query) {
+          if (!query) {
+            renderDueToday();
+            return;
+          }
+          const q = query.toLowerCase();
+          const f = tasks.filter(
+            (t) =>
+              t.title.toLowerCase().includes(q) ||
+              t.subject.toLowerCase().includes(q),
+          );
+          const el = document.getElementById("dueTodayList");
+          el.innerHTML = f.length
+            ? f
+                .map(
+                  (t) =>
+                    '<div class="dash-item"><div class="priority-dot ' +
+                    t.priority +
+                    '"></div><div class="name">' +
+                    t.title +
+                    "</div><div>" +
+                    t.subject +
+                    "</div></div>",
+                )
+                .join("")
+            : '<div class="empty-state">No results found</div>';
+        };
 
-              function saveGrades() {
-                localStorage.setItem("grades", JSON.stringify(grades));
-              }
+        // ---- Calendar ----
+        function renderCalendar() {
+          const y = calDate.getFullYear(),
+            m = calDate.getMonth();
+          document.getElementById("calLabel").textContent =
+            calDate.toLocaleDateString("en", {
+              month: "long",
+              year: "numeric",
+            });
+          const taskDates = new Set(
+            tasks.filter((t) => !t.done).map((t) => t.date),
+          );
+          const today = new Date().toISOString().slice(0, 10);
+          const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+          let html = days
+            .map((d) => '<div class="cal-day-label">' + d + "</div>")
+            .join("");
+          let startDay = new Date(y, m, 1).getDay();
+          startDay = startDay === 0 ? 6 : startDay - 1;
+          for (let i = 0; i < startDay; i++)
+            html += '<div class="cal-day"></div>';
+          const dim = new Date(y, m + 1, 0).getDate();
+          for (let d = 1; d <= dim; d++) {
+            const ds =
+              y +
+              "-" +
+              String(m + 1).padStart(2, "0") +
+              "-" +
+              String(d).padStart(2, "0");
+            const isToday = ds === today,
+              hasTask = taskDates.has(ds);
+            html +=
+              '<div class="cal-day' +
+              (isToday ? " today" : hasTask ? " has-task" : "") +
+              '">' +
+              d +
+              "</div>";
+          }
+          document.getElementById("calGrid").innerHTML = html;
+        }
+        window.calPrev = function () {
+          calDate.setMonth(calDate.getMonth() - 1);
+          renderCalendar();
+        };
+        window.calNext = function () {
+          calDate.setMonth(calDate.getMonth() + 1);
+          renderCalendar();
+        };
 
-              window.deleteGrade = function (id) {
-                if (!confirm("Delete this grade?")) return;
-                grades = grades.filter((g) => g.id !== id);
-                saveGrades();
-                renderGrades();
-              };
+        // ---- Grades ----
+        window.addGrade = function () {
+          if (!_isPro && grades.length >= FREE_GRADE_LIMIT) {
+            showToast("Free limit reached (10 grades). Upgrade to Pro.");
+            return;
+          }
+          const subject = document.getElementById("gradeSubject").value.trim();
+          const name = document.getElementById("gradeName").value.trim();
+          let value;
+          if (gradeSystem === "en") {
+            value =
+              letterToNum[document.getElementById("gradeLetterInput").value];
+          } else {
+            value = parseFloat(document.getElementById("gradeValue").value);
+            if (gradeSystem === "fr") value = value / 2;
+          }
+          if (!subject || !name || isNaN(value)) return;
+          grades.push({
+            id: Date.now(),
+            subject,
+            name,
+            value,
+            system: gradeSystem,
+          });
+          document.getElementById("gradeSubject").value = "";
+          document.getElementById("gradeName").value = "";
+          document.getElementById("gradeValue").value = "";
+          saveGrades();
+          renderGrades();
+        };
 
-              function gradeColor(v) {
-                return v >= 7
-                  ? "var(--green)"
-                  : v >= 5.5
-                    ? "var(--yellow)"
-                    : "var(--red)";
-              }
+        function saveGrades() {
+          localStorage.setItem("grades", JSON.stringify(grades));
+        }
 
-              function renderGrades() {
-                const avgEl = document.getElementById("gradeAvg");
-                const avg = grades.length
-                  ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(
-                      1,
-                    )
-                  : null;
-                avgEl.innerHTML = avg
-                  ? '<div class="overall-avg"><div class="overall-avg-number" style="color:' +
-                    gradeColor(parseFloat(avg)) +
-                    '">' +
-                    avg +
-                    '</div><div><div style="font-weight:600">Overall average</div><div style="font-size:0.8rem;color:var(--text-muted)">' +
-                    grades.length +
-                    " grade" +
-                    (grades.length !== 1 ? "s" : "") +
-                    "</div></div></div>"
-                  : '<div class="empty-state">No grades yet</div>';
+        window.deleteGrade = function (id) {
+          if (!confirm("Delete this grade?")) return;
+          grades = grades.filter((g) => g.id !== id);
+          saveGrades();
+          renderGrades();
+        };
 
-                const subjects = [...new Set(grades.map((g) => g.subject))].sort();
-                const list = document.getElementById("gradeList");
-                if (!grades.length) {
-                  list.innerHTML = "";
-                  return;
-                }
-                list.innerHTML = subjects
-                  .map((s) => {
-                    const sg = grades
-                      .filter((g) => g.subject === s)
-                      .sort((a, b) => b.value - a.value);
-                    const savg = (
-                      sg.reduce((sum, g) => sum + g.value, 0) / sg.length
-                    ).toFixed(1);
-                    const pct = Math.round((parseFloat(savg) / 10) * 100);
-                    return (
-                      '<div class="grade-subject-card">' +
-                      '<div class="grade-subject-header"><div class="grade-subject-name">' +
-                      s +
-                      '</div><div class="grade-avg" style="color:' +
-                      gradeColor(parseFloat(savg)) +
+        function gradeColor(v) {
+          return v >= 7
+            ? "var(--green)"
+            : v >= 5.5
+              ? "var(--yellow)"
+              : "var(--red)";
+        }
+
+        function renderGrades() {
+          const avgEl = document.getElementById("gradeAvg");
+          const avg = grades.length
+            ? (grades.reduce((s, g) => s + g.value, 0) / grades.length).toFixed(
+                1,
+              )
+            : null;
+          avgEl.innerHTML = avg
+            ? '<div class="overall-avg"><div class="overall-avg-number" style="color:' +
+              gradeColor(parseFloat(avg)) +
+              '">' +
+              avg +
+              '</div><div><div style="font-weight:600">Overall average</div><div style="font-size:0.8rem;color:var(--text-muted)">' +
+              grades.length +
+              " grade" +
+              (grades.length !== 1 ? "s" : "") +
+              "</div></div></div>"
+            : '<div class="empty-state">No grades yet</div>';
+
+          const subjects = [...new Set(grades.map((g) => g.subject))].sort();
+          const list = document.getElementById("gradeList");
+          if (!grades.length) {
+            list.innerHTML = "";
+            return;
+          }
+          list.innerHTML = subjects
+            .map((s) => {
+              const sg = grades
+                .filter((g) => g.subject === s)
+                .sort((a, b) => b.value - a.value);
+              const savg = (
+                sg.reduce((sum, g) => sum + g.value, 0) / sg.length
+              ).toFixed(1);
+              const pct = Math.round((parseFloat(savg) / 10) * 100);
+              return (
+                '<div class="grade-subject-card">' +
+                '<div class="grade-subject-header"><div class="grade-subject-name">' +
+                s +
+                '</div><div class="grade-avg" style="color:' +
+                gradeColor(parseFloat(savg)) +
+                '">' +
+                savg +
+                "</div></div>" +
+                '<div class="grade-avg-bar"><div class="grade-avg-fill" style="width:' +
+                pct +
+                "%;background:" +
+                gradeColor(parseFloat(savg)) +
+                '"></div></div>' +
+                sg
+                  .map(
+                    (g) =>
+                      '<div class="grade-row"><div class="grade-value" style="color:' +
+                      gradeColor(g.value) +
                       '">' +
-                      savg +
-                      "</div></div>" +
-                      '<div class="grade-avg-bar"><div class="grade-avg-fill" style="width:' +
-                      pct +
-                      "%;background:" +
-                      gradeColor(parseFloat(savg)) +
-                      '"></div></div>' +
-                      sg
-                        .map(
-                          (g) =>
-                            '<div class="grade-row"><div class="grade-value" style="color:' +
-                            gradeColor(g.value) +
-                            '">' +
-                            g.value +
-                            '</div><div class="grade-name">' +
-                            g.name +
-                            '</div><button class="btn btn-danger btn-sm" onclick="deleteGrade(' +
-                            g.id +
-                            ')" style="padding:3px 8px;font-size:0.7rem">&#10005;</button></div>',
-                        )
-                        .join("") +
-                      "</div>"
-                    );
-                  })
-                  .join("");
-              }
+                      g.value +
+                      '</div><div class="grade-name">' +
+                      g.name +
+                      '</div><button class="btn btn-danger btn-sm" onclick="deleteGrade(' +
+                      g.id +
+                      ')" style="padding:3px 8px;font-size:0.7rem">&#10005;</button></div>',
+                  )
+                  .join("") +
+                "</div>"
+              );
+            })
+            .join("");
+        }
 
-              window.setGradeSystem = function (sys) {
-                gradeSystem = sys;
-                ["nl", "en", "fr"].forEach((s) =>
-                  document
-                    .getElementById(s + "Btn")
-                    .classList.toggle("active", sys === s),
-                );
-                const n = document.getElementById("gradeValue"),
-                  l = document.getElementById("gradeLetterInput");
-                if (sys === "en") {
-                  n.style.display = "none";
-                  l.style.display = "";
-                } else {
-                  n.style.display = "";
-                  l.style.display = "none";
-                  n.max = sys === "fr" ? "20" : "10";
-                  n.placeholder = sys === "fr" ? "1–20" : "1–10";
-                }
-              };
+        window.setGradeSystem = function (sys) {
+          gradeSystem = sys;
+          ["nl", "en", "fr"].forEach((s) =>
+            document
+              .getElementById(s + "Btn")
+              .classList.toggle("active", sys === s),
+          );
+          const n = document.getElementById("gradeValue"),
+            l = document.getElementById("gradeLetterInput");
+          if (sys === "en") {
+            n.style.display = "none";
+            l.style.display = "";
+          } else {
+            n.style.display = "";
+            l.style.display = "none";
+            n.max = sys === "fr" ? "20" : "10";
+            n.placeholder = sys === "fr" ? "1–20" : "1–10";
+          }
+        };
 
-              // ---- Settings ----
-              window.toggleTheme = function () {
-                isDark = !isDark;
-                document.body.style.background = isDark ? "#080808" : "#f4f4f5";
-                document.body.style.color = isDark ? "#f0f0f0" : "#111";
-                document.getElementById("themeBtn").textContent = isDark
-                  ? "Dark"
-                  : "Light";
-              };
+        // ---- Settings ----
+        window.toggleTheme = function () {
+          isDark = !isDark;
+          document.body.style.background = isDark ? "#080808" : "#f4f4f5";
+          document.body.style.color = isDark ? "#f0f0f0" : "#111";
+          document.getElementById("themeBtn").textContent = isDark
+            ? "Dark"
+            : "Light";
+        };
 
-              window.saveName = function () {
-                const name = document.getElementById("userName").value.trim();
-                localStorage.setItem("userName", name);
-                const g = document.getElementById("dashboardGreeting");
-                if (g) g.textContent = name ? "Hey, " + name + "!" : "";
-                showToast("Name saved!");
-              };
+        window.saveName = function () {
+          const name = document.getElementById("userName").value.trim();
+          localStorage.setItem("userName", name);
+          const g = document.getElementById("dashboardGreeting");
+          if (g) g.textContent = name ? "Hey, " + name + "!" : "";
+          showToast("Name saved!");
+        };
 
-              window.clearAll = function () {
-                if (!confirm("Delete ALL tasks?")) return;
-                tasks = [];
-                saveTasks();
-                renderAll();
-              };
+        window.clearAll = function () {
+          if (!confirm("Delete ALL tasks?")) return;
+          tasks = [];
+          saveTasks();
+          renderAll();
+        };
 
-              window.cancelAccount = function () {
-                if (!confirm("Delete your account and all data?")) return;
-                localStorage.clear();
-                location.reload();
-              };
+        window.cancelAccount = function () {
+          if (!confirm("Delete your account and all data?")) return;
+          localStorage.clear();
+          location.reload();
+        };
 
-              // ---- Notifications ----
-              window.toggleNotifications = async function () {
-                if (!("Notification" in window)) {
-                  showToast("Your browser doesn't support notifications.");
-                  return;
-                }
-                if (Notification.permission === "granted") {
-                  showToast("Notifications already enabled!");
-                  scheduleNotifications();
-                  return;
-                }
-                const p = await Notification.requestPermission();
-                const btn = document.getElementById("notifBtn");
-                if (p === "granted") {
-                  btn.textContent = "Enabled";
-                  await registerServiceWorker();
-                  scheduleNotifications();
-                  showToast("Notifications enabled!");
-                } else {
-                  btn.textContent = "Blocked";
-                  showToast("Notifications blocked in browser settings.");
-                }
-              };
+        // ---- Notifications ----
+        window.toggleNotifications = async function () {
+          if (!("Notification" in window)) {
+            showToast("Your browser doesn't support notifications.");
+            return;
+          }
+          if (Notification.permission === "granted") {
+            showToast("Notifications already enabled!");
+            scheduleNotifications();
+            return;
+          }
+          const p = await Notification.requestPermission();
+          const btn = document.getElementById("notifBtn");
+          if (p === "granted") {
+            btn.textContent = "Enabled";
+            await registerServiceWorker();
+            scheduleNotifications();
+            showToast("Notifications enabled!");
+          } else {
+            btn.textContent = "Blocked";
+            showToast("Notifications blocked in browser settings.");
+          }
+        };
 
-              async function registerServiceWorker() {
-                if (!("serviceWorker" in navigator)) return;
-                try {
-                  const reg = await navigator.serviceWorker.register(
-                    "/studyrise-v2/sw.js",
-                  );
-                  if ("periodicSync" in reg) {
-                    const status = await navigator.permissions.query({
-                      name: "periodic-background-sync",
-                    });
-                    if (status.state === "granted")
-                      await reg.periodicSync.register("check-deadlines", {
-                        minInterval: 24 * 60 * 60 * 1000,
-                      });
-                  }
-                  navigator.serviceWorker.addEventListener("message", (e) => {
-                    if (e.data && e.data.type === "REQUEST_TASKS")
-                      scheduleNotifications();
-                  });
-                } catch (err) {
-                  console.warn("SW failed:", err);
-                }
-              }
-
-              function scheduleNotifications() {
-                if (Notification.permission !== "granted") return;
-                const today = new Date().toISOString().slice(0, 10);
-                if (localStorage.getItem("notif_last_check") === today) return;
-                localStorage.setItem("notif_last_check", today);
-                if (
-                  "serviceWorker" in navigator &&
-                  navigator.serviceWorker.controller
-                ) {
-                  navigator.serviceWorker.controller.postMessage({
-                    type: "SCHEDULE_NOTIFICATIONS",
-                    tasks: tasks,
-                  });
-                }
-              }
-
-              // ---- Streak ----
-              function updateStreak() {
-                const today = new Date().toISOString().slice(0, 10);
-                if (tasks.filter((t) => t.done).length > 0) {
-                  let streak = JSON.parse(
-                    localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
-                  );
-                  const yesterday = new Date();
-                  yesterday.setDate(yesterday.getDate() - 1);
-                  const yStr = yesterday.toISOString().slice(0, 10);
-                  if (streak.lastDate !== today) {
-                    streak.count = streak.lastDate === yStr ? streak.count + 1 : 1;
-                    streak.lastDate = today;
-                    localStorage.setItem("streak", JSON.stringify(streak));
-                  }
-                  const el = document.getElementById("streakDisplay");
-                  if (el)
-                    el.textContent =
-                      "🔥 " + streak.count + " day" + (streak.count !== 1 ? "s" : "");
-                }
-              }
-
-              // ---- Toast ----
-              function showToast(msg) {
-                const t = document.createElement("div");
-                t.style =
-                  "position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#f0f0f0;border:1px solid rgba(255,255,255,0.1);padding:11px 18px;border-radius:8px;font-size:0.85rem;z-index:9998;box-shadow:0 4px 20px rgba(0,0,0,0.4)";
-                t.textContent = msg;
-                document.body.appendChild(t);
-                setTimeout(() => {
-                  t.style.opacity = "0";
-                  t.style.transition = "opacity 0.3s";
-                  setTimeout(() => t.remove(), 300);
-                }, 3000);
-              }
-
-              // ---- Navigation ----
-              window.showPage = function (id) {
-                document
-                  .querySelectorAll("#pages > div")
-                  .forEach((p) => (p.style.display = "none"));
-                document.getElementById("page-" + id).style.display = "block";
-                document
-                  .querySelectorAll(".nav-item")
-                  .forEach((a) => a.classList.remove("active"));
-                document.querySelectorAll(".nav-item").forEach((a) => {
-                  if (a.textContent.toLowerCase().includes(id))
-                    a.classList.add("active");
+        async function registerServiceWorker() {
+          if (!("serviceWorker" in navigator)) return;
+          try {
+            const reg = await navigator.serviceWorker.register(
+              "/studyrise-v2/sw.js",
+            );
+            if ("periodicSync" in reg) {
+              const status = await navigator.permissions.query({
+                name: "periodic-background-sync",
+              });
+              if (status.state === "granted")
+                await reg.periodicSync.register("check-deadlines", {
+                  minInterval: 24 * 60 * 60 * 1000,
                 });
-              };
+            }
+            navigator.serviceWorker.addEventListener("message", (e) => {
+              if (e.data && e.data.type === "REQUEST_TASKS")
+                scheduleNotifications();
+            });
+          } catch (err) {
+            console.warn("SW failed:", err);
+          }
+        }
 
-              function renderAll() {
-                renderTasks();
-                renderStats();
-                renderDueToday();
-                renderUpcoming();
-                renderCalendar();
-                renderGrades();
-                updateStreak();
-              }
+        function scheduleNotifications() {
+          if (Notification.permission !== "granted") return;
+          const today = new Date().toISOString().slice(0, 10);
+          if (localStorage.getItem("notif_last_check") === today) return;
+          localStorage.setItem("notif_last_check", today);
+          if (
+            "serviceWorker" in navigator &&
+            navigator.serviceWorker.controller
+          ) {
+            navigator.serviceWorker.controller.postMessage({
+              type: "SCHEDULE_NOTIFICATIONS",
+              tasks: tasks,
+            });
+          }
+        }
 
-              // ---- Init ----
-              async function init() {
-                const session = await checkAuth();
-                if (!session) return;
-                renderSubjectSelects();
-                showPage("dashboard");
-                const name = localStorage.getItem("userName");
-                const g = document.getElementById("dashboardGreeting");
-                if (g && name) g.textContent = "Hey, " + name + "!";
-                const userNameInput = document.getElementById("userName");
-                if (userNameInput && name) userNameInput.value = name;
-                await loadTasks();
-                await checkPro();
-                if (Notification.permission === "granted") {
-                  await registerServiceWorker();
-                  scheduleNotifications();
-                }
-                const btn = document.getElementById("notifBtn");
-                if (btn)
-                  btn.textContent =
-                    Notification.permission === "granted" ? "Enabled" : "Enable";
-              }
+        // ---- Streak ----
+        function updateStreak() {
+          const today = new Date().toISOString().slice(0, 10);
+          if (tasks.filter((t) => t.done).length > 0) {
+            let streak = JSON.parse(
+              localStorage.getItem("streak") || '{"count":0,"lastDate":""}',
+            );
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yStr = yesterday.toISOString().slice(0, 10);
+            if (streak.lastDate !== today) {
+              streak.count = streak.lastDate === yStr ? streak.count + 1 : 1;
+              streak.lastDate = today;
+              localStorage.setItem("streak", JSON.stringify(streak));
+            }
+            const el = document.getElementById("streakDisplay");
+            if (el)
+              el.textContent =
+                "🔥 " + streak.count + " day" + (streak.count !== 1 ? "s" : "");
+          }
+        }
 
-              init();
-            })();
+        // ---- Toast ----
+        function showToast(msg) {
+          const t = document.createElement("div");
+          t.style =
+            "position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#f0f0f0;border:1px solid rgba(255,255,255,0.1);padding:11px 18px;border-radius:8px;font-size:0.85rem;z-index:9998;box-shadow:0 4px 20px rgba(0,0,0,0.4)";
+          t.textContent = msg;
+          document.body.appendChild(t);
+          setTimeout(() => {
+            t.style.opacity = "0";
+            t.style.transition = "opacity 0.3s";
+            setTimeout(() => t.remove(), 300);
+          }, 3000);
+        }
+
+        // ---- Navigation ----
+        window.showPage = function (id) {
+          document
+            .querySelectorAll("#pages > div")
+            .forEach((p) => (p.style.display = "none"));
+          document.getElementById("page-" + id).style.display = "block";
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav-item").forEach((a) => {
+            if (a.textContent.toLowerCase().includes(id))
+              a.classList.add("active");
+          });
+        };
+
+        function renderAll() {
+          renderTasks();
+          renderStats();
+          renderDueToday();
+          renderUpcoming();
+          renderCalendar();
+          renderGrades();
+          updateStreak();
+        }
+
+        // ---- Init ----
+        async function init() {
+          const session = await checkAuth();
+          if (!session) return;
+          renderSubjectSelects();
+          showPage("dashboard");
+          const name = localStorage.getItem("userName");
+          const g = document.getElementById("dashboardGreeting");
+          if (g && name) g.textContent = "Hey, " + name + "!";
+          const userNameInput = document.getElementById("userName");
+          if (userNameInput && name) userNameInput.value = name;
+          await loadTasks();
+          await checkPro();
+          if (Notification.permission === "granted") {
+            await registerServiceWorker();
+            scheduleNotifications();
+          }
+          const btn = document.getElementById("notifBtn");
+          if (btn)
+            btn.textContent =
+              Notification.permission === "granted" ? "Enabled" : "Enable";
+        }
+
+        init();
+      })();
     </script>
   </body>
 </html>
