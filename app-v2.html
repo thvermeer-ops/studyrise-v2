@@ -2175,6 +2175,16 @@
             const reg = await navigator.serviceWorker.register(
               "/studyrise-v2/sw.js",
             );
+
+            // Wacht tot SW geactiveerd is
+            if (reg.installing) {
+              await new Promise((resolve) => {
+                reg.installing.addEventListener("statechange", (e) => {
+                  if (e.target.state === "activated") resolve();
+                });
+              });
+            }
+
             if ("periodicSync" in reg) {
               const status = await navigator.permissions.query({
                 name: "periodic-background-sync",
@@ -2184,9 +2194,9 @@
                   minInterval: 24 * 60 * 60 * 1000,
                 });
             }
+
             navigator.serviceWorker.addEventListener("message", (e) => {
-              if (e.data && e.data.type === "REQUEST_TASKS")
-                scheduleNotifications();
+              if (e.data && e.data.type === "REQUEST_TASKS") sendTasksToSW();
             });
           } catch (err) {
             console.warn("SW failed:", err);
@@ -2198,14 +2208,28 @@
           const today = new Date().toISOString().slice(0, 10);
           if (localStorage.getItem("notif_last_check") === today) return;
           localStorage.setItem("notif_last_check", today);
-          if (
-            "serviceWorker" in navigator &&
-            navigator.serviceWorker.controller
-          ) {
+          sendTasksToSW();
+        }
+
+        function sendTasksToSW() {
+          if (!("serviceWorker" in navigator)) return;
+          if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
               type: "SCHEDULE_NOTIFICATIONS",
               tasks: tasks,
             });
+          } else {
+            // SW nog niet in control, wacht tot hij klaar is
+            navigator.serviceWorker.addEventListener(
+              "controllerchange",
+              () => {
+                navigator.serviceWorker.controller.postMessage({
+                  type: "SCHEDULE_NOTIFICATIONS",
+                  tasks: tasks,
+                });
+              },
+              { once: true },
+            );
           }
         }
 
