@@ -2970,21 +2970,65 @@
         // ---- Focus mode ----
         let focusMode = false;
         window.toggleFocusMode = function () {
-          focusMode = !focusMode;
-          const btn = document.getElementById("focusBtn");
-          if (btn) {
-            btn.style.color = focusMode ? "var(--blue)" : "var(--text-muted)";
-            btn.style.background = focusMode
-              ? "var(--blue-dim)"
-              : "transparent";
-            btn.innerHTML =
-              '<span class="nav-icon">&#9685;</span> ' +
-              (focusMode ? "Exit focus" : "Focus mode");
+          enterFocusMode();
+        };
+
+        function enterFocusMode() {
+          const screen = document.getElementById("focusScreen");
+          if (screen) screen.style.display = "block";
+          document.body.style.overflow = "hidden";
+          renderFocusList();
+        }
+
+        window.exitFocusMode = function () {
+          const screen = document.getElementById("focusScreen");
+          if (screen) screen.style.display = "none";
+          document.body.style.overflow = "";
+        };
+
+        function renderFocusList() {
+          const pending = tasks
+            .filter((t) => !t.done)
+            .sort((a, b) => {
+              const p = { urgent: 0, medium: 1, low: 2 };
+              return p[a.priority] - p[b.priority];
+            });
+          const list = document.getElementById("focusList");
+          const empty = document.getElementById("focusEmpty");
+          if (!pending.length) {
+            if (list) list.innerHTML = "";
+            if (empty) empty.style.display = "block";
+            return;
           }
-          renderTasks();
-          showToast(
-            focusMode ? "Focus mode on — pending tasks only" : "Focus mode off",
-          );
+          if (empty) empty.style.display = "none";
+          const check =
+            '<svg width="9" height="7" viewBox="0 0 9 7"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+          if (list)
+            list.innerHTML = pending
+              .map(
+                (t) => `
+    <div style="background:#0f0f0f;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px 18px;display:flex;align-items:center;gap:12px">
+      <div class="task-check${t.done ? " checked" : ""}" onclick="focusToggle(${t.id})" style="width:22px;height:22px;border-radius:6px;flex-shrink:0;border:1.5px solid rgba(255,255,255,0.2);background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer">
+        ${t.done ? check : ""}
+      </div>
+      <div style="flex:1">
+        <div style="font-size:0.95rem;font-weight:500">${t.title}</div>
+        <div style="font-size:0.775rem;color:#666;margin-top:2px">${t.subject}${t.date ? " · " + t.date : ""}</div>
+      </div>
+      <div class="priority-dot ${t.priority}"></div>
+    </div>`,
+              )
+              .join("");
+        }
+
+        window.focusToggle = function (id) {
+          const t = tasks.find((t) => t.id === id);
+          if (t) {
+            t.done = true;
+            saveTasks();
+            renderFocusList();
+            renderAll();
+          }
         };
 
         // ---- Pomodoro timer ----
@@ -2994,17 +3038,28 @@
         let timerIsBreak = false;
 
         window.toggleTimer = function () {
-          const box = document.getElementById("timerBox");
-          if (box)
-            box.style.display = box.style.display === "none" ? "block" : "none";
+          enterTimerMode();
         };
 
+        function enterTimerMode() {
+          const screen = document.getElementById("timerScreen");
+          if (screen) screen.style.display = "block";
+          document.body.style.overflow = "hidden";
+        }
+
+        window.exitTimerMode = function () {
+          const screen = document.getElementById("timerScreen");
+          if (screen) screen.style.display = "none";
+          document.body.style.overflow = "";
+        };
         window.startTimer = function () {
           const btn = document.getElementById("timerStartBtn");
           if (timerRunning) {
             clearInterval(timerInterval);
             timerRunning = false;
             if (btn) btn.textContent = "Start";
+            const btnScreen = document.getElementById("timerScreenStartBtn");
+            if (btnScreen) btnScreen.textContent = "Start";
           } else {
             timerRunning = true;
             if (btn) btn.textContent = "Pause";
@@ -3051,26 +3106,23 @@
         function updateTimerDisplay() {
           const mins = Math.floor(timerSeconds / 60);
           const secs = timerSeconds % 60;
+          const timeStr =
+            String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+          const phaseStr = timerIsBreak ? "Break time ☕" : "Focus time 📚";
           const display = document.getElementById("timerDisplay");
           const phase = document.getElementById("timerPhase");
-          if (display)
-            display.textContent =
-              String(mins).padStart(2, "0") +
-              ":" +
-              String(secs).padStart(2, "0");
-          if (phase)
-            phase.textContent = timerIsBreak
-              ? "Break time ☕"
-              : "Focus time 📚";
-          if (timerRunning)
-            document.title =
-              String(mins).padStart(2, "0") +
-              ":" +
-              String(secs).padStart(2, "0") +
-              " — StudyRise";
+          const displayScreen = document.getElementById("timerScreenDisplay");
+          const phaseScreen = document.getElementById("timerScreenPhase");
+          const startBtnScreen = document.getElementById("timerScreenStartBtn");
+          if (display) display.textContent = timeStr;
+          if (phase) phase.textContent = phaseStr;
+          if (displayScreen) displayScreen.textContent = timeStr;
+          if (phaseScreen) phaseScreen.textContent = phaseStr;
+          if (startBtnScreen)
+            startBtnScreen.textContent = timerRunning ? "Pause" : "Start";
+          if (timerRunning) document.title = timeStr + " — StudyRise";
           else document.title = "StudyRise";
         }
-
         function updateSidebarUser() {
           const name = localStorage.getItem("userName") || "";
           const avatar = document.getElementById("sidebarAvatar");
@@ -3158,5 +3210,90 @@
         <span class="mobile-nav-icon">⚙</span>Settings
       </button>
     </nav>
+    <div
+      id="timerScreen"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #080808;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      "
+    >
+      <div
+        style="
+          max-width: 360px;
+          width: 100%;
+          text-align: center;
+          padding: 32px 24px;
+        "
+      >
+        <div
+          style="
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 32px;
+          "
+        >
+          Pomodoro timer
+        </div>
+        <div
+          id="timerScreenDisplay"
+          style="
+            font-size: 5rem;
+            font-weight: 600;
+            font-family: &quot;DM Mono&quot;, monospace;
+            color: #f0f0f0;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+          "
+        >
+          25:00
+        </div>
+        <div
+          id="timerScreenPhase"
+          style="font-size: 0.9rem; color: #555; margin-bottom: 48px"
+        >
+          Focus time 📚
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 32px;
+          "
+        >
+          <button
+            class="btn btn-ghost"
+            onclick="resetTimer()"
+            style="padding: 12px 20px"
+          >
+            ↺ Reset
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="startTimer()"
+            id="timerScreenStartBtn"
+            style="padding: 12px 32px; font-size: 1rem"
+          >
+            Start
+          </button>
+        </div>
+        <button
+          class="btn btn-ghost"
+          onclick="exitTimerMode()"
+          style="width: 100%; justify-content: center"
+        >
+          Exit timer
+        </button>
+      </div>
+    </div>
   </body>
 </html>
