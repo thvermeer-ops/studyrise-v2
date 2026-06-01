@@ -926,6 +926,169 @@
           display: none;
         }
       }
+
+      /* ---- Theme colors ---- */
+      .theme-blue {
+        --accent: #2563eb;
+        --accent-dim: rgba(37, 99, 235, 0.12);
+        --accent-border: rgba(37, 99, 235, 0.35);
+      }
+      .theme-green {
+        --accent: #16a34a;
+        --accent-dim: rgba(22, 163, 74, 0.12);
+        --accent-border: rgba(22, 163, 74, 0.35);
+      }
+      .theme-purple {
+        --accent: #7c3aed;
+        --accent-dim: rgba(124, 58, 237, 0.12);
+        --accent-border: rgba(124, 58, 237, 0.35);
+      }
+      .theme-orange {
+        --accent: #ea580c;
+        --accent-dim: rgba(234, 88, 12, 0.12);
+        --accent-border: rgba(234, 88, 12, 0.35);
+      }
+      .theme-red {
+        --accent: #dc2626;
+        --accent-dim: rgba(220, 38, 38, 0.12);
+        --accent-border: rgba(220, 38, 38, 0.35);
+      }
+
+      /* ---- Pro upsell modal ---- */
+      #proModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+      #proModal.open {
+        display: flex;
+      }
+      .pro-modal-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px 28px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      .pro-modal-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+      .pro-modal-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+      .pro-modal-desc {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+      .pro-modal-features {
+        text-align: left;
+        background: var(--surface2);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+      }
+      .pro-modal-feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        padding: 4px 0;
+      }
+      .pro-modal-feature-icon {
+        color: var(--green);
+        font-size: 0.8rem;
+      }
+      .pro-modal-btns {
+        display: flex;
+        gap: 8px;
+      }
+      .pro-modal-btns .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      /* ---- Recurring badge ---- */
+      .recurring-badge {
+        font-size: 0.65rem;
+        background: var(--accent-dim);
+        color: var(--accent);
+        border: 1px solid var(--accent-border);
+        border-radius: 3px;
+        padding: 1px 5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ---- Theme picker ---- */
+      .theme-picker {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .theme-swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.15s;
+      }
+      .theme-swatch.active {
+        border-color: var(--text);
+        transform: scale(1.1);
+      }
+
+      /* ---- Grade trend chart ---- */
+      .trend-chart {
+        margin-top: 12px;
+      }
+      .trend-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .trend-bar-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        width: 60px;
+        text-align: right;
+        flex-shrink: 0;
+        font-family: "DM Mono", monospace;
+      }
+      .trend-bar-wrap {
+        flex: 1;
+        height: 8px;
+        background: var(--surface2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .trend-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s;
+      }
+      .trend-bar-val {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        width: 28px;
+        font-family: "DM Mono", monospace;
+      }
     </style>
   </head>
   <body>
@@ -1010,6 +1173,55 @@
           </button>
           <button class="btn btn-primary" onclick="saveEdit()">
             Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="proModal">
+      <div class="pro-modal-box">
+        <div class="pro-modal-icon">&#9889;</div>
+        <div class="pro-modal-title" id="proModalTitle">Upgrade to Pro</div>
+        <div class="pro-modal-desc" id="proModalDesc">
+          You've reached the free plan limit. Upgrade to Pro to unlock
+          everything.
+        </div>
+        <div class="pro-modal-features">
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Unlimited tasks
+            &amp; grades
+          </div>
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Recurring tasks
+          </div>
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Grade trend
+            charts
+          </div>
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Custom color
+            themes
+          </div>
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Statistics
+            dashboard
+          </div>
+          <div class="pro-modal-feature">
+            <span class="pro-modal-feature-icon">&#10003;</span> Data export
+          </div>
+        </div>
+        <div class="pro-modal-btns">
+          <button class="btn btn-ghost" onclick="closeProModal()">
+            Maybe later
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="
+              window.open('https://vermeerist.gumroad.com/l/srygsx');
+              closeProModal();
+            "
+          >
+            Upgrade &#8212; &euro;5
           </button>
         </div>
       </div>
@@ -1158,6 +1370,12 @@
               <option value="medium" selected>Medium</option>
               <option value="urgent">Urgent</option>
             </select>
+            <select id="taskRecurring">
+              <option value="none">No repeat</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
             <button class="btn btn-primary" onclick="addTask()">
               Add task
             </button>
@@ -1244,6 +1462,16 @@
           </div>
 
           <div id="gradeAvg" class="card" style="margin-bottom: 12px"></div>
+          <div
+            id="gradeTrend"
+            class="card pro-only"
+            style="margin-bottom: 12px"
+          >
+            <div class="card-title">
+              Grade trend <span class="pro-badge">Pro</span>
+            </div>
+            <div id="gradeTrendContent" class="trend-chart"></div>
+          </div>
           <div id="gradeList"></div>
         </div>
 
@@ -1265,6 +1493,46 @@
               >
                 Dark
               </button>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div class="setting-label">
+                  Accent color <span class="pro-badge">Pro</span>
+                </div>
+                <div class="setting-desc">Personalize your app color</div>
+              </div>
+              <div id="themePicker" class="theme-picker">
+                <div
+                  class="theme-swatch active"
+                  style="background: #2563eb"
+                  onclick="setAccent('blue', this)"
+                  title="Blue"
+                ></div>
+                <div
+                  class="theme-swatch"
+                  style="background: #16a34a"
+                  onclick="setAccent('green', this)"
+                  title="Green"
+                ></div>
+                <div
+                  class="theme-swatch"
+                  style="background: #7c3aed"
+                  onclick="setAccent('purple', this)"
+                  title="Purple"
+                ></div>
+                <div
+                  class="theme-swatch"
+                  style="background: #ea580c"
+                  onclick="setAccent('orange', this)"
+                  title="Orange"
+                ></div>
+                <div
+                  class="theme-swatch"
+                  style="background: #dc2626"
+                  onclick="setAccent('red', this)"
+                  title="Red"
+                ></div>
+              </div>
             </div>
           </div>
 
@@ -1532,6 +1800,8 @@
             _isPro = false;
           }
           applyProUI();
+          loadAccentColor();
+          processRecurringTasks();
           hideOverlay();
         }
 
@@ -1623,12 +1893,14 @@
             );
             return;
           }
+          const recurringEl = document.getElementById("taskRecurring");
           tasks.push({
             id: Date.now(),
             title,
             subject: document.getElementById("taskSubject").value,
             date: document.getElementById("taskDate").value,
             priority: document.getElementById("taskPriority").value,
+            recurring: recurringEl ? recurringEl.value : "none",
             done: false,
             notes: "",
           });
@@ -1736,6 +2008,7 @@
                   subject: t.subject,
                   date: t.date,
                   priority: t.priority,
+                  recurring: t.recurring || "none",
                   done: t.done,
                   notes: t.notes || "",
                 }))
@@ -1798,6 +2071,11 @@
                 '<div class="task-meta">' +
                 t.subject +
                 (t.date ? " &middot; " + t.date : "") +
+                (t.recurring && t.recurring !== "none"
+                  ? ' &middot; <span class="recurring-badge">🔁 ' +
+                    t.recurring +
+                    "</span>"
+                  : "") +
                 "</div>" +
                 "</div>" +
                 '<div class="task-actions">' +
@@ -2291,6 +2569,220 @@
           });
         };
 
+        // ---- Pro upsell modal ----
+        window.showProModal = function (title, desc) {
+          if (title)
+            document.getElementById("proModalTitle").textContent = title;
+          if (desc) document.getElementById("proModalDesc").textContent = desc;
+          document.getElementById("proModal").classList.add("open");
+        };
+        window.closeProModal = function () {
+          document.getElementById("proModal").classList.remove("open");
+        };
+
+        // ---- Accent color / themes ----
+        window.setAccent = function (color, el) {
+          if (!_isPro) {
+            showProModal(
+              "Custom Colors",
+              "Upgrade to Pro to personalize your accent color.",
+            );
+            return;
+          }
+          const themes = {
+            blue: "#2563eb",
+            green: "#16a34a",
+            purple: "#7c3aed",
+            orange: "#ea580c",
+            red: "#dc2626",
+          };
+          const hex = themes[color];
+          if (!hex) return;
+          const r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+          document.documentElement.style.setProperty("--accent", hex);
+          document.documentElement.style.setProperty("--blue", hex);
+          document.documentElement.style.setProperty(
+            "--accent-dim",
+            "rgba(" + r + "," + g + "," + b + ",0.12)",
+          );
+          document.documentElement.style.setProperty(
+            "--blue-dim",
+            "rgba(" + r + "," + g + "," + b + ",0.12)",
+          );
+          document.documentElement.style.setProperty(
+            "--accent-border",
+            "rgba(" + r + "," + g + "," + b + ",0.35)",
+          );
+          document.documentElement.style.setProperty(
+            "--blue-border",
+            "rgba(" + r + "," + g + "," + b + ",0.35)",
+          );
+          localStorage.setItem("accent_color", color);
+          document
+            .querySelectorAll(".theme-swatch")
+            .forEach((s) => s.classList.remove("active"));
+          if (el) el.classList.add("active");
+          showToast("Theme updated!");
+        };
+
+        function loadAccentColor() {
+          const saved = localStorage.getItem("accent_color");
+          if (!saved || !_isPro) return;
+          const swatches = document.querySelectorAll(".theme-swatch");
+          swatches.forEach((s) => {
+            if (
+              s.getAttribute("title") &&
+              s.getAttribute("title").toLowerCase() === saved
+            ) {
+              setAccent(saved, s);
+            }
+          });
+        }
+
+        // ---- Grade trend chart ----
+        function renderGradeTrend() {
+          const el = document.getElementById("gradeTrendContent");
+          if (!el || !_isPro) return;
+          const subjects = [...new Set(grades.map((g) => g.subject))].sort();
+          if (!subjects.length) {
+            el.innerHTML =
+              '<div class="empty-state">Add grades to see your trend</div>';
+            return;
+          }
+          el.innerHTML = subjects
+            .map((s) => {
+              const sg = grades.filter((g) => g.subject === s);
+              const avg = sg.reduce((sum, g) => sum + g.value, 0) / sg.length;
+              const pct = Math.min(100, Math.round((avg / 10) * 100));
+              const color =
+                avg >= 7
+                  ? "var(--green)"
+                  : avg >= 5.5
+                    ? "var(--yellow)"
+                    : "var(--red)";
+              return (
+                '<div class="trend-bar-row">' +
+                '<div class="trend-bar-label">' +
+                s +
+                "</div>" +
+                '<div class="trend-bar-wrap"><div class="trend-bar-fill" style="width:' +
+                pct +
+                "%;background:" +
+                color +
+                '"></div></div>' +
+                '<div class="trend-bar-val">' +
+                avg.toFixed(1) +
+                "</div>" +
+                "</div>"
+              );
+            })
+            .join("");
+        }
+
+        // ---- Recurring tasks ----
+        function processRecurringTasks() {
+          if (!_isPro) return;
+          const today = new Date().toISOString().slice(0, 10);
+          const lastProcess = localStorage.getItem("recurring_last_process");
+          if (lastProcess === today) return;
+          localStorage.setItem("recurring_last_process", today);
+          const newTasks = [];
+          tasks.forEach((t) => {
+            if (!t.recurring || t.recurring === "none" || !t.done || !t.date)
+              return;
+            const lastDate = new Date(t.date);
+            let nextDate = new Date(lastDate);
+            if (t.recurring === "daily")
+              nextDate.setDate(nextDate.getDate() + 1);
+            else if (t.recurring === "weekly")
+              nextDate.setDate(nextDate.getDate() + 7);
+            else if (t.recurring === "monthly")
+              nextDate.setMonth(nextDate.getMonth() + 1);
+            const nextStr = nextDate.toISOString().slice(0, 10);
+            const exists = tasks.some(
+              (x) => x.title === t.title && x.date === nextStr,
+            );
+            if (!exists && nextStr >= today) {
+              newTasks.push({
+                id: Date.now() + Math.random(),
+                title: t.title,
+                subject: t.subject,
+                date: nextStr,
+                priority: t.priority,
+                recurring: t.recurring,
+                done: false,
+                notes: "",
+              });
+            }
+          });
+          if (newTasks.length > 0) {
+            tasks.push(...newTasks);
+            saveTasks();
+            showToast(
+              newTasks.length +
+                " recurring task" +
+                (newTasks.length > 1 ? "s" : "") +
+                " added!",
+            );
+          }
+        }
+
+        // ---- Week stats ----
+        function renderWeekStats() {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const monday = new Date(today);
+          monday.setDate(
+            today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1),
+          );
+          const sunday = new Date(monday);
+          sunday.setDate(monday.getDate() + 6);
+          const weekTasks = tasks.filter((t) => {
+            if (!t.date) return false;
+            const d = new Date(t.date);
+            return d >= monday && d <= sunday;
+          });
+          const done = weekTasks.filter((t) => t.done).length;
+          const total = weekTasks.length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          const el = document.getElementById("weekStatsContent");
+          if (!el) return;
+          el.innerHTML =
+            '<div style="flex:1;min-width:120px">' +
+            '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Tasks this week</div>' +
+            "<div style=\"font-size:1.6rem;font-weight:600;font-family:'DM Mono',monospace\">" +
+            done +
+            ' <span style="font-size:1rem;color:var(--text-muted)">/ ' +
+            total +
+            "</span></div>" +
+            "</div>" +
+            '<div style="flex:1;min-width:120px">' +
+            '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Completion</div>' +
+            "<div style=\"font-size:1.6rem;font-weight:600;font-family:'DM Mono',monospace;color:" +
+            (pct >= 80
+              ? "var(--green)"
+              : pct >= 50
+                ? "var(--yellow)"
+                : "var(--text)") +
+            '">' +
+            pct +
+            "%</div>" +
+            "</div>" +
+            '<div style="width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-top:4px">' +
+            '<div style="height:100%;border-radius:3px;background:' +
+            (pct >= 80
+              ? "var(--green)"
+              : pct >= 50
+                ? "var(--yellow)"
+                : "var(--blue)") +
+            ";width:" +
+            pct +
+            '%;transition:width 0.4s"></div>' +
+            "</div>";
+        }
+
         function renderAll() {
           renderTasks();
           renderStats();
@@ -2298,7 +2790,9 @@
           renderUpcoming();
           renderCalendar();
           renderGrades();
+          renderGradeTrend();
           updateStreak();
+          renderWeekStats();
         }
 
         // ---- Init ----
