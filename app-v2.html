@@ -817,6 +817,42 @@
       .p-low {
         color: var(--green);
       }
+      .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+      }
+      .sidebar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--blue-dim);
+        border: 1px solid var(--blue-border);
+        color: var(--blue);
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        text-transform: uppercase;
+      }
+      .sidebar-quick {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--border);
+      }
+      .sidebar-quick-item {
+        flex: 1;
+        padding: 12px;
+        border-right: 1px solid var(--border);
+      }
+      .sidebar-quick-item:last-child {
+        border-right: none;
+      }
       /* ---- Mobile ---- */
       #mobile-nav {
         display: none;
@@ -1243,9 +1279,156 @@
           <span class="nav-icon">⚙</span> Settings
         </button>
       </nav>
-      <div class="sidebar-bottom">
-        <div class="streak-label">Streak</div>
-        <div id="streakDisplay">0 days</div>
+      <div style="padding: 0 12px; margin-top: 8px">
+        <button
+          class="nav-item"
+          onclick="toggleFocusMode()"
+          id="focusBtn"
+          style="width: 100%; color: var(--text-muted)"
+        >
+          <span class="nav-icon">&#9685;</span> Focus mode
+        </button>
+      </div>
+      <div style="padding: 0 12px; margin-top: 4px">
+        <button
+          class="nav-item"
+          onclick="toggleTimer()"
+          style="width: 100%; color: var(--text-muted)"
+        >
+          <span class="nav-icon">&#9200;</span> Pomodoro
+        </button>
+      </div>
+      <div
+        id="timerBox"
+        style="
+          display: none;
+          margin: 8px 12px 0;
+          background: var(--surface2);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 12px;
+          text-align: center;
+        "
+      >
+        <div
+          id="timerDisplay"
+          style="
+            font-size: 1.4rem;
+            font-weight: 600;
+            font-family: &quot;DM Mono&quot;, monospace;
+            color: var(--text);
+            margin-bottom: 4px;
+          "
+        >
+          25:00
+        </div>
+        <div
+          id="timerPhase"
+          style="
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+          "
+        >
+          Focus time
+        </div>
+        <div style="display: flex; gap: 6px">
+          <button
+            class="btn btn-primary btn-sm"
+            onclick="startTimer()"
+            id="timerStartBtn"
+            style="flex: 1; justify-content: center"
+          >
+            Start
+          </button>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="resetTimer()"
+            style="padding: 5px 10px"
+          >
+            &#8635;
+          </button>
+        </div>
+      </div>
+      <div id="sidebarUpgrade" style="padding: 12px; display: none">
+        <div
+          style="
+            background: var(--blue-dim);
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+          "
+        >
+          <div
+            style="
+              font-size: 0.75rem;
+              font-weight: 600;
+              color: var(--blue);
+              margin-bottom: 4px;
+            "
+          >
+            Upgrade to Pro
+          </div>
+          <div
+            style="
+              font-size: 0.7rem;
+              color: var(--text-muted);
+              margin-bottom: 10px;
+              line-height: 1.4;
+            "
+          >
+            Unlimited tasks, recurring tasks &amp; more
+          </div>
+          <button
+            class="btn btn-primary btn-sm"
+            style="width: 100%; justify-content: center"
+            onclick="window.open('https://vermeerist.gumroad.com/l/srygsx')"
+          >
+            Upgrade &#8212; &euro;5
+          </button>
+        </div>
+      </div>
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+        <div style="flex: 1; min-width: 0">
+          <div
+            style="
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: var(--text);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            "
+            id="sidebarName"
+          >
+            Student
+          </div>
+          <div id="sidebarProBadge" style="display: none; margin-top: 2px">
+            <span class="pro-badge">Pro</span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-quick">
+        <div class="sidebar-quick-item">
+          <div class="streak-label">Streak</div>
+          <div
+            id="streakDisplay"
+            style="font-size: 1rem; font-weight: 600; color: var(--yellow)"
+          >
+            0 days
+          </div>
+        </div>
+        <div class="sidebar-quick-item">
+          <div class="streak-label">Due today</div>
+          <div
+            id="sidebarDueToday"
+            style="font-size: 1rem; font-weight: 600; color: var(--text)"
+          >
+            0
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -1838,6 +2021,7 @@
           const el = document.getElementById("export-lock");
           if (el) el.style.display = _isPro ? "none" : "";
           updateTaskLimitBanner();
+          updateSidebarUser();
         }
 
         function updateTaskLimitBanner() {
@@ -2018,10 +2202,11 @@
 
         function renderTasks() {
           const list = document.getElementById("taskList");
-          const filtered =
+          let filtered =
             currentFilter === "all"
               ? tasks
               : tasks.filter((t) => t.subject === currentFilter);
+          if (focusMode) filtered = filtered.filter((t) => !t.done);
           const sorted = [...filtered].sort((a, b) => {
             if (currentSort === "priority") {
               const p = { urgent: 0, medium: 1, low: 2 };
@@ -2782,7 +2967,128 @@
             '%;transition:width 0.4s"></div>' +
             "</div>";
         }
+        // ---- Focus mode ----
+        let focusMode = false;
+        window.toggleFocusMode = function () {
+          focusMode = !focusMode;
+          const btn = document.getElementById("focusBtn");
+          if (btn) {
+            btn.style.color = focusMode ? "var(--blue)" : "var(--text-muted)";
+            btn.style.background = focusMode
+              ? "var(--blue-dim)"
+              : "transparent";
+            btn.innerHTML =
+              '<span class="nav-icon">&#9685;</span> ' +
+              (focusMode ? "Exit focus" : "Focus mode");
+          }
+          renderTasks();
+          showToast(
+            focusMode ? "Focus mode on — pending tasks only" : "Focus mode off",
+          );
+        };
 
+        // ---- Pomodoro timer ----
+        let timerInterval = null;
+        let timerSeconds = 25 * 60;
+        let timerRunning = false;
+        let timerIsBreak = false;
+
+        window.toggleTimer = function () {
+          const box = document.getElementById("timerBox");
+          if (box)
+            box.style.display = box.style.display === "none" ? "block" : "none";
+        };
+
+        window.startTimer = function () {
+          const btn = document.getElementById("timerStartBtn");
+          if (timerRunning) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            if (btn) btn.textContent = "Start";
+          } else {
+            timerRunning = true;
+            if (btn) btn.textContent = "Pause";
+            timerInterval = setInterval(() => {
+              timerSeconds--;
+              updateTimerDisplay();
+              if (timerSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                timerIsBreak = !timerIsBreak;
+                timerSeconds = timerIsBreak ? 5 * 60 : 25 * 60;
+                updateTimerDisplay();
+                if (btn) btn.textContent = "Start";
+                if (Notification.permission === "granted") {
+                  new Notification(
+                    timerIsBreak ? "Break time! ☕" : "Back to work! 📚",
+                    {
+                      body: timerIsBreak
+                        ? "Take a 5 minute break."
+                        : "25 minute focus session started.",
+                    },
+                  );
+                }
+                showToast(
+                  timerIsBreak
+                    ? "Break time! ☕ 5 minutes"
+                    : "Focus time! 📚 25 minutes",
+                );
+              }
+            }, 1000);
+          }
+        };
+
+        window.resetTimer = function () {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          timerIsBreak = false;
+          timerSeconds = 25 * 60;
+          updateTimerDisplay();
+          const btn = document.getElementById("timerStartBtn");
+          if (btn) btn.textContent = "Start";
+        };
+
+        function updateTimerDisplay() {
+          const mins = Math.floor(timerSeconds / 60);
+          const secs = timerSeconds % 60;
+          const display = document.getElementById("timerDisplay");
+          const phase = document.getElementById("timerPhase");
+          if (display)
+            display.textContent =
+              String(mins).padStart(2, "0") +
+              ":" +
+              String(secs).padStart(2, "0");
+          if (phase)
+            phase.textContent = timerIsBreak
+              ? "Break time ☕"
+              : "Focus time 📚";
+          if (timerRunning)
+            document.title =
+              String(mins).padStart(2, "0") +
+              ":" +
+              String(secs).padStart(2, "0") +
+              " — StudyRise";
+          else document.title = "StudyRise";
+        }
+
+        function updateSidebarUser() {
+          const name = localStorage.getItem("userName") || "";
+          const avatar = document.getElementById("sidebarAvatar");
+          const sidebarName = document.getElementById("sidebarName");
+          const proBadge = document.getElementById("sidebarProBadge");
+          const dueToday = document.getElementById("sidebarDueToday");
+          if (avatar) avatar.textContent = name ? name.charAt(0) : "?";
+          if (sidebarName) sidebarName.textContent = name || "Student";
+          if (proBadge) proBadge.style.display = _isPro ? "" : "none";
+          if (dueToday) {
+            const today = new Date().toISOString().slice(0, 10);
+            dueToday.textContent = tasks.filter(
+              (t) => t.date === today && !t.done,
+            ).length;
+          }
+          const upgradeBox = document.getElementById("sidebarUpgrade");
+          if (upgradeBox) upgradeBox.style.display = _isPro ? "none" : "";
+        }
         function renderAll() {
           renderTasks();
           renderStats();
@@ -2793,6 +3099,7 @@
           renderGradeTrend();
           updateStreak();
           renderWeekStats();
+          updateSidebarUser();
         }
 
         // ---- Init ----
