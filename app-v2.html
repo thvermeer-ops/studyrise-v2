@@ -817,6 +817,42 @@
       .p-low {
         color: var(--green);
       }
+      .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+      }
+      .sidebar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--blue-dim);
+        border: 1px solid var(--blue-border);
+        color: var(--blue);
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        text-transform: uppercase;
+      }
+      .sidebar-quick {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--border);
+      }
+      .sidebar-quick-item {
+        flex: 1;
+        padding: 12px;
+        border-right: 1px solid var(--border);
+      }
+      .sidebar-quick-item:last-child {
+        border-right: none;
+      }
       /* ---- Mobile ---- */
       #mobile-nav {
         display: none;
@@ -1243,9 +1279,46 @@
           <span class="nav-icon">⚙</span> Settings
         </button>
       </nav>
-      <div class="sidebar-bottom">
-        <div class="streak-label">Streak</div>
-        <div id="streakDisplay">0 days</div>
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+        <div style="flex: 1; min-width: 0">
+          <div
+            style="
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: var(--text);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            "
+            id="sidebarName"
+          >
+            Student
+          </div>
+          <div id="sidebarProBadge" style="display: none; margin-top: 2px">
+            <span class="pro-badge">Pro</span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-quick">
+        <div class="sidebar-quick-item">
+          <div class="streak-label">Streak</div>
+          <div
+            id="streakDisplay"
+            style="font-size: 1rem; font-weight: 600; color: var(--yellow)"
+          >
+            0 days
+          </div>
+        </div>
+        <div class="sidebar-quick-item">
+          <div class="streak-label">Due today</div>
+          <div
+            id="sidebarDueToday"
+            style="font-size: 1rem; font-weight: 600; color: var(--text)"
+          >
+            0
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -1838,6 +1911,7 @@
           const el = document.getElementById("export-lock");
           if (el) el.style.display = _isPro ? "none" : "";
           updateTaskLimitBanner();
+          updateSidebarUser();
         }
 
         function updateTaskLimitBanner() {
@@ -2782,7 +2856,22 @@
             '%;transition:width 0.4s"></div>' +
             "</div>";
         }
-
+        function updateSidebarUser() {
+          const name = localStorage.getItem("userName") || "";
+          const avatar = document.getElementById("sidebarAvatar");
+          const sidebarName = document.getElementById("sidebarName");
+          const proBadge = document.getElementById("sidebarProBadge");
+          const dueToday = document.getElementById("sidebarDueToday");
+          if (avatar) avatar.textContent = name ? name.charAt(0) : "?";
+          if (sidebarName) sidebarName.textContent = name || "Student";
+          if (proBadge) proBadge.style.display = _isPro ? "" : "none";
+          if (dueToday) {
+            const today = new Date().toISOString().slice(0, 10);
+            dueToday.textContent = tasks.filter(
+              (t) => t.date === today && !t.done,
+            ).length;
+          }
+        }
         function renderAll() {
           renderTasks();
           renderStats();
@@ -2793,6 +2882,7 @@
           renderGradeTrend();
           updateStreak();
           renderWeekStats();
+          updateSidebarUser();
         }
 
         // ---- Init ----
