@@ -1,9 +1,593 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; url=login.html">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyRise — The homework planner built for students</title>
+  <meta name="description" content="Track tasks, grades and deadlines. Built by a student, for students. Free to start.">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070707;
+      --surface: #0f0f0f;
+      --surface2: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f0f0;
+      --muted: #888;
+      --dim: #444;
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --blue-dim: rgba(37,99,235,0.12);
+      --green: #22c55e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(7,7,7,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--blue); color: #fff;
+      padding: 8px 18px; border-radius: 6px;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none; transition: all 0.15s;
+    }
+    .nav-cta:hover { background: #1d4ed8; color: #fff; }
+
+    /* ---- HERO ---- */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(37,99,235,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 700px; }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-dim); border: 1px solid rgba(37,99,235,0.25);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 0.775rem; font-weight: 600; color: var(--blue-light);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--blue-light), #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted);
+      max-width: 480px; margin: 0 auto 40px;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+
+    .hero-btns {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      padding: 13px 28px; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 600;
+      text-decoration: none; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,99,235,0.3); }
+
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 13px 28px; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 500;
+      text-decoration: none; transition: all 0.15s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    /* ---- APP PREVIEW ---- */
+    .preview-wrap {
+      max-width: 900px; margin: 60px auto 0;
+      position: relative; z-index: 1;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+
+    .preview-window {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    .preview-bar {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .preview-dot.red { background: #ef4444; }
+    .preview-dot.yellow { background: #f59e0b; }
+    .preview-dot.green { background: #22c55e; }
+
+    .preview-url {
+      flex: 1; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 4px 10px; font-size: 0.7rem;
+      color: var(--dim); font-family: "DM Mono", monospace;
+      margin: 0 8px;
+    }
+
+    .preview-body {
+      display: grid; grid-template-columns: 180px 1fr;
+      min-height: 360px;
+    }
+
+    .preview-sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 16px 12px;
+    }
+
+    .preview-logo {
+      font-size: 0.85rem; font-weight: 600;
+      padding: 6px 10px 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .preview-logo span { color: var(--blue); }
+
+    .preview-nav-item {
+      padding: 7px 10px; border-radius: 5px;
+      font-size: 0.75rem; color: var(--dim);
+      margin-bottom: 2px; display: flex; align-items: center; gap: 8px;
+    }
+    .preview-nav-item.active {
+      background: var(--blue-dim); color: var(--blue);
+    }
+
+    .preview-content { padding: 20px; }
+
+    .preview-h { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+
+    .preview-stats {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px;
+    }
+    .preview-stat {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+    }
+    .preview-stat-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .preview-stat-val { font-size: 1.4rem; font-weight: 600; font-family: "DM Mono", monospace; }
+
+    .preview-task {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px; font-size: 0.78rem;
+    }
+    .preview-task-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .preview-task-check {
+      width: 14px; height: 14px; border-radius: 4px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    .preview-task-check.done {
+      background: var(--green); border-color: var(--green);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ---- FEATURES ---- */
+    #features {
+      padding: 100px 20px;
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    .section-tag {
+      font-size: 0.75rem; font-weight: 600; color: var(--blue-light);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section-sub { font-size: 1rem; color: var(--muted); margin-bottom: 60px; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-2px); }
+
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: var(--blue-dim); border: 1px solid rgba(37,99,235,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; margin-bottom: 16px;
+    }
+
+    .feature-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+    .feature-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    .feature-pro {
+      display: inline-block; background: var(--blue); color: #fff;
+      font-size: 0.55rem; font-weight: 700; padding: 2px 5px;
+      border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em;
+      vertical-align: middle; margin-left: 6px;
+    }
+
+    /* ---- SOCIAL PROOF ---- */
+    #proof {
+      padding: 80px 20px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .proof-inner { max-width: 800px; margin: 0 auto; }
+    .proof-number { font-size: 3rem; font-weight: 700; font-family: "DM Mono", monospace; color: var(--blue-light); letter-spacing: -0.03em; }
+    .proof-label { font-size: 0.875rem; color: var(--muted); margin-bottom: 48px; }
+
+    .quotes { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .quote {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; text-align: left;
+    }
+    .quote-text { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+    .quote-author { font-size: 0.775rem; font-weight: 600; color: var(--dim); }
+
+    /* ---- PRICING ---- */
+    #pricing {
+      padding: 100px 20px;
+      text-align: center;
+      max-width: 700px; margin: 0 auto;
+    }
+
+    .pricing-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px;
+    }
+
+    .pricing-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px; text-align: left;
+      transition: border-color 0.2s;
+    }
+    .pricing-card.pro {
+      border-color: rgba(37,99,235,0.4);
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(37,99,235,0.04) 100%);
+    }
+
+    .pricing-name { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 12px; }
+    .pricing-price { font-size: 2.5rem; font-weight: 700; font-family: "DM Mono", monospace; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .pricing-note { font-size: 0.775rem; color: var(--muted); margin-bottom: 24px; }
+    .pricing-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    .pricing-feature {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;
+    }
+    .pricing-feature-check { color: var(--green); font-size: 0.8rem; flex-shrink: 0; }
+    .pricing-feature-lock { color: var(--dim); font-size: 0.8rem; flex-shrink: 0; }
+
+    .pricing-btn {
+      display: block; width: 100%; text-align: center;
+      padding: 11px; border-radius: 8px; margin-top: 24px;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none; transition: all 0.15s;
+    }
+    .pricing-btn.free { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .pricing-btn.free:hover { border-color: rgba(255,255,255,0.2); }
+    .pricing-btn.pro-btn { background: var(--blue); color: #fff; }
+    .pricing-btn.pro-btn:hover { background: #1d4ed8; }
+
+    /* ---- CTA ---- */
+    #cta {
+      padding: 100px 20px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .cta-inner { max-width: 500px; margin: 0 auto; }
+    .cta-title { font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .cta-sub { font-size: 1rem; color: var(--muted); margin-bottom: 32px; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    .footer-logo { font-size: 0.875rem; font-weight: 600; }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 0.775rem; color: var(--dim); text-decoration: none; }
+    .footer-links a:hover { color: var(--muted); }
+    .footer-copy { font-size: 0.775rem; color: var(--dim); }
+
+    /* ---- ANIMATIONS ---- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      #hero { padding: 100px 20px 60px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .quotes { grid-template-columns: 1fr; }
+      .pricing-cards { grid-template-columns: 1fr; }
+      .preview-body { grid-template-columns: 1fr; }
+      .preview-sidebar { display: none; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-  <script>window.location.href = 'login.html';</script>
+
+  <nav>
+    <div class="nav-logo">Study<span>Rise</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="app-v2.html">Login</a>
+      <a href="app-v2.html" class="nav-cta">Try for free</a>
+    </div>
+  </nav>
+
+  <section id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div class="hero-tag">&#128218; Built by a student, for students</div>
+      <h1>Stop forgetting homework.<br><em>Start getting it done.</em></h1>
+      <p class="hero-sub">Track every task, deadline and grade in one place. Simple, fast and actually useful.</p>
+      <div class="hero-btns">
+        <a href="app-v2.html" class="btn-primary">Start for free &#8594;</a>
+        <a href="#features" class="btn-ghost">See how it works</a>
+      </div>
+    </div>
+
+    <div class="preview-wrap">
+      <div class="preview-window">
+        <div class="preview-bar">
+          <div class="preview-dot red"></div>
+          <div class="preview-dot yellow"></div>
+          <div class="preview-dot green"></div>
+          <div class="preview-url">studyrise.nl/app-v2.html</div>
+        </div>
+        <div class="preview-body">
+          <div class="preview-sidebar">
+            <div class="preview-logo">Study<span>Rise</span></div>
+            <div class="preview-nav-item active">&#9670; Dashboard</div>
+            <div class="preview-nav-item">&#10003; Tasks</div>
+            <div class="preview-nav-item">&#9678; Grades</div>
+            <div class="preview-nav-item">&#9881; Settings</div>
+          </div>
+          <div class="preview-content">
+            <div class="preview-h">Dashboard</div>
+            <div class="preview-stats">
+              <div class="preview-stat">
+                <div class="preview-stat-label">Total</div>
+                <div class="preview-stat-val" style="color:#60a5fa">8</div>
+              </div>
+              <div class="preview-stat">
+                <div class="preview-stat-label">Done</div>
+                <div class="preview-stat-val" style="color:#22c55e">5</div>
+              </div>
+              <div class="preview-stat">
+                <div class="preview-stat-label">Pending</div>
+                <div class="preview-stat-val" style="color:#ef4444">3</div>
+              </div>
+            </div>
+            <div class="preview-task">
+              <div class="preview-task-check done">
+                <svg width="8" height="6"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              </div>
+              <div class="preview-task-dot" style="background:#22c55e"></div>
+              <div style="flex:1;opacity:0.4;text-decoration:line-through">Math homework chapter 5</div>
+            </div>
+            <div class="preview-task">
+              <div class="preview-task-check"></div>
+              <div class="preview-task-dot" style="background:#ef4444"></div>
+              <div style="flex:1">English essay — due tomorrow</div>
+              <div style="font-size:0.65rem;color:#ef4444;font-weight:600">Urgent</div>
+            </div>
+            <div class="preview-task">
+              <div class="preview-task-check"></div>
+              <div class="preview-task-dot" style="background:#f59e0b"></div>
+              <div style="flex:1">Science lab report</div>
+              <div style="font-size:0.65rem;color:#888">Jun 5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title">Everything you need to stay on top</h2>
+    <p class="section-sub">No fluff, no complicated setup. Just the tools you actually use.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <div class="feature-title">Task planner</div>
+        <div class="feature-desc">Add tasks with deadlines, subjects and priorities. Filter and sort however you want.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Grade tracker</div>
+        <div class="feature-desc">Track grades per subject. See your averages in NL, EN or FR grading systems.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <div class="feature-title">Calendar view</div>
+        <div class="feature-desc">See all your deadlines on a calendar. Never miss a due date again.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔁</div>
+        <div class="feature-title">Recurring tasks <span class="feature-pro">Pro</span></div>
+        <div class="feature-desc">Set tasks to repeat daily, weekly or monthly. Perfect for regular homework.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏱</div>
+        <div class="feature-title">Pomodoro timer <span class="feature-pro">Pro</span></div>
+        <div class="feature-desc">Built-in focus timer. 25 minutes work, 5 minutes break. Stay in the zone.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Focus mode <span class="feature-pro">Pro</span></div>
+        <div class="feature-desc">Full-screen distraction-free view. See only your pending tasks, nothing else.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proof">
+    <div class="proof-inner">
+      <div class="proof-number">500+</div>
+      <div class="proof-label">students already using StudyRise</div>
+      <div class="quotes">
+        <div class="quote">
+          <div class="quote-text">"Finally a planner that doesn't feel like it was made for adults. Super clean and easy to use."</div>
+          <div class="quote-author">Sarah, 16 — Netherlands</div>
+        </div>
+        <div class="quote">
+          <div class="quote-text">"The streak system actually makes me want to open the app every day. My grades improved a lot."</div>
+          <div class="quote-author">Liam, 17 — Belgium</div>
+        </div>
+        <div class="quote">
+          <div class="quote-text">"I love how simple it is. I use it every day to track my homework and it just works."</div>
+          <div class="quote-author">Emma, 15 — Netherlands</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title">Simple, honest pricing</h2>
+    <p class="section-sub">Start free. Upgrade once, own it forever.</p>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price">€0</div>
+        <div class="pricing-note">Forever free</div>
+        <hr class="pricing-divider">
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Up to 5 tasks</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Up to 10 grades</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Calendar view</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Streak tracking</div>
+        <div class="pricing-feature"><span class="pricing-feature-lock">–</span> Recurring tasks</div>
+        <div class="pricing-feature"><span class="pricing-feature-lock">–</span> Pomodoro timer</div>
+        <div class="pricing-feature"><span class="pricing-feature-lock">–</span> Statistics</div>
+        <a href="app-v2.html" class="pricing-btn free">Get started</a>
+      </div>
+      <div class="pricing-card pro">
+        <div class="pricing-name" style="color:var(--blue-light)">Pro</div>
+        <div class="pricing-price">€5</div>
+        <div class="pricing-note">One-time payment — yours forever</div>
+        <hr class="pricing-divider">
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Unlimited tasks</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Unlimited grades</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Recurring tasks</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Pomodoro timer</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Focus mode</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Statistics dashboard</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Grade trend charts</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Custom color themes</div>
+        <div class="pricing-feature"><span class="pricing-feature-check">✓</span> Data export</div>
+        <a href="https://vermeerist.gumroad.com/l/srygsx" class="pricing-btn pro-btn">Get Pro — €5</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta">
+    <div class="cta-inner">
+      <h2 class="cta-title">Ready to actually keep up with school?</h2>
+      <p class="cta-sub">Free to start. No credit card. Takes 30 seconds to set up.</p>
+      <a href="app-v2.html" class="btn-primary" style="font-size:1rem;padding:14px 32px">Start for free &#8594;</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Study<span>Rise</span></div>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="cookies.html">Cookies</a>
+      <a href="terms.html">Terms</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 StudyRise</div>
+  </footer>
+
 </body>
 </html>
