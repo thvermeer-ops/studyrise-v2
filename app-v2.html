@@ -1350,6 +1350,36 @@
           </button>
         </div>
       </div>
+      <div style="padding: 0 12px; margin-top: 8px">
+        <div
+          style="
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-dim);
+            padding: 8px 0 6px 2px;
+          "
+        >
+          Quick add
+        </div>
+        <div style="display: flex; gap: 4px">
+          <input
+            type="text"
+            id="quickTaskInput"
+            placeholder="Task..."
+            style="flex: 1; padding: 7px 10px; font-size: 0.78rem; margin: 0"
+            onkeydown="if (event.key === 'Enter') quickAddTask();"
+          />
+          <button
+            class="btn btn-primary"
+            onclick="quickAddTask()"
+            style="padding: 7px 10px; font-size: 0.78rem"
+          >
+            +
+          </button>
+        </div>
+      </div>
       <div id="sidebarUpgrade" style="padding: 12px; display: none">
         <div
           style="
@@ -3043,7 +3073,7 @@
 
         function enterTimerMode() {
           const screen = document.getElementById("timerScreen");
-          if (screen) screen.style.display = "block";
+          if (screen) screen.style.display = "flex";
           document.body.style.overflow = "hidden";
         }
 
@@ -3123,6 +3153,32 @@
           if (timerRunning) document.title = timeStr + " — StudyRise";
           else document.title = "StudyRise";
         }
+        window.quickAddTask = function () {
+          const input = document.getElementById("quickTaskInput");
+          if (!input || !input.value.trim()) return;
+          if (!_isPro && tasks.length >= FREE_TASK_LIMIT) {
+            showProModal(
+              "Task Limit Reached",
+              "You've used all 5 free tasks. Upgrade to Pro for unlimited tasks.",
+            );
+            return;
+          }
+          tasks.push({
+            id: Date.now(),
+            title: input.value.trim(),
+            subject: getSubjects()[0] || "Other",
+            date: new Date().toISOString().slice(0, 10),
+            priority: "medium",
+            recurring: "none",
+            done: false,
+            notes: "",
+          });
+          input.value = "";
+          saveTasks();
+          renderAll();
+          showToast("Task added!");
+        };
+
         function updateSidebarUser() {
           const name = localStorage.getItem("userName") || "";
           const avatar = document.getElementById("sidebarAvatar");
@@ -3218,7 +3274,6 @@
         inset: 0;
         background: #080808;
         z-index: 5000;
-        display: none;
         align-items: center;
         justify-content: center;
         flex-direction: column;
@@ -3293,6 +3348,81 @@
         >
           Exit timer
         </button>
+      </div>
+    </div>
+    <div
+      id="focusScreen"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #080808;
+        z-index: 5000;
+        overflow-y: auto;
+        padding: 32px 24px;
+      "
+    >
+      <div style="max-width: 600px; margin: 0 auto">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+          "
+        >
+          <div>
+            <div
+              style="
+                font-size: 0.75rem;
+                color: #555;
+                text-transform: uppercase;
+                letter-spacing: 0.07em;
+                margin-bottom: 4px;
+              "
+            >
+              Focus mode
+            </div>
+            <div
+              style="
+                font-size: 1.3rem;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+              "
+            >
+              Get it done.
+            </div>
+          </div>
+          <button class="btn btn-ghost" onclick="exitFocusMode()">
+            Exit focus
+          </button>
+        </div>
+        <div
+          id="focusList"
+          style="display: flex; flex-direction: column; gap: 8px"
+        ></div>
+        <div
+          id="focusEmpty"
+          style="
+            display: none;
+            text-align: center;
+            padding: 60px 0;
+            color: #555;
+          "
+        >
+          <div style="font-size: 2rem; margin-bottom: 12px">🎉</div>
+          <div
+            style="
+              font-size: 1rem;
+              font-weight: 600;
+              margin-bottom: 4px;
+              color: #f0f0f0;
+            "
+          >
+            All done!
+          </div>
+          <div style="font-size: 0.875rem">Nothing left to do.</div>
+        </div>
       </div>
     </div>
   </body>
