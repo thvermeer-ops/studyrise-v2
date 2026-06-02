@@ -3,353 +3,221 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StudyRise — The homework planner built for students</title>
-  <meta name="description" content="Track tasks, grades and deadlines. Built by a student, for students. Free to start.">
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --surface: #111111;
-      --surface-2: #1a1a1a;
-      --border: rgba(255,255,255,0.08);
-      --text: #ededed;
-      --text-2: #888;
-      --text-3: #444;
-      --blue: #2563eb;
-      --blue-light: #3b82f6;
-      --blue-dim: rgba(37,99,235,0.1);
-      --blue-border: rgba(37,99,235,0.25);
-      --green: #16a34a;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: "Geist", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  <title>StudyRise</title>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 24px;
-      background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-    .nav-logo span { color: var(--blue); }
-    .nav-right { display: flex; gap: 12px; align-items: center; }
-    .nav-link { color: var(--text-2); text-decoration: none; font-size: 14px; transition: color 0.15s; }
-    .nav-link:hover { color: var(--text); }
-    .nav-cta { background: var(--blue); color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
-    .nav-cta:hover { background: #1d4ed8; }
-    .nav-links-desktop { display: flex; gap: 20px; align-items: center; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #f0f0f0;
+  line-height: 1.6;
+  background-image: 
+    radial-gradient(ellipse at 20% 20%, rgba(37,99,235,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.06) 0%, transparent 50%);
+}
 
-    /* HERO */
-    #hero {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      text-align: center; padding: 100px 20px 60px; position: relative; overflow: hidden;
-    }
-    .hero-glow { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 500px; background: radial-gradient(ellipse, rgba(37,99,235,0.1) 0%, transparent 70%); pointer-events: none; }
-    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%); }
-    .hero-inner { position: relative; z-index: 1; max-width: 640px; width: 100%; }
-    .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-dim); border: 1px solid var(--blue-border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 500; color: var(--blue-light); margin-bottom: 24px; }
-    h1 { font-size: clamp(1.9rem, 6vw, 3.2rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 18px; }
-    h1 em { font-style: normal; color: var(--blue-light); }
-    .hero-sub { font-size: clamp(0.9rem, 2.5vw, 1rem); color: var(--text-2); max-width: 400px; margin: 0 auto 32px; }
-    .hero-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary { background: var(--blue); color: #fff; padding: 11px 24px; border-radius: 7px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-    .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); padding: 11px 24px; border-radius: 7px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+#hero {
+  text-align: center;
+  padding: 120px 20px;
+  border-bottom: 1px solid #222;
+  background: radial-gradient(ellipse at top, #0f172a 0%, #0a0a0a 70%);
+}
 
-    /* APP PREVIEW */
-    .preview-wrap { max-width: 800px; margin: 48px auto 0; position: relative; z-index: 1; }
-    .preview-window { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04); }
-    .preview-bar { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; gap: 6px; }
-    .dot { width: 9px; height: 9px; border-radius: 50%; }
-    .dot.r { background: #ef4444; } .dot.y { background: #f59e0b; } .dot.g { background: #22c55e; }
-    .preview-url { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; font-size: 11px; color: var(--text-3); font-family: "Geist Mono", monospace; margin: 0 8px; }
-    .preview-body { display: grid; grid-template-columns: 160px 1fr; min-height: 300px; }
-    .preview-sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 14px 10px; }
-    .preview-logo { font-size: 13px; font-weight: 600; padding: 4px 8px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
-    .preview-logo span { color: var(--blue); }
-    .pnav { padding: 6px 8px; border-radius: 4px; font-size: 12px; color: var(--text-3); margin-bottom: 1px; }
-    .pnav.active { background: var(--surface-2); color: var(--text); }
-    .preview-content { padding: 16px; }
-    .preview-h { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-    .preview-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 12px; }
-    .pstat { background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
-    .pstat-l { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
-    .pstat-v { font-size: 20px; font-weight: 600; font-family: "Geist Mono", monospace; }
-    .ptask { background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
-    .pcheck { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-    .pcheck.done { background: var(--green); border-color: var(--green); }
-    .ppip { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+#hero img {
+  margin-bottom: 32px;
+  filter: brightness(0) invert(1);
+}
 
-    /* FEATURES */
-    #features { padding: 80px 20px; max-width: 1000px; margin: 0 auto; }
-    .section-eyebrow { font-size: 11px; font-weight: 600; color: var(--blue-light); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-    .section-title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
-    .section-sub { font-size: 14px; color: var(--text-2); margin-bottom: 48px; }
-    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; transition: border-color 0.2s; }
-    .feature-card:hover { border-color: rgba(255,255,255,0.14); }
-    .feature-icon { width: 32px; height: 32px; border-radius: 7px; background: var(--blue-dim); border: 1px solid var(--blue-border); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-    .feature-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-    .feature-desc { font-size: 12px; color: var(--text-2); line-height: 1.5; }
-    .pro-tag { display: inline-block; background: var(--blue); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle; margin-left: 4px; }
+h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
 
-    /* SOCIAL PROOF */
-    #proof { padding: 64px 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .proof-inner { max-width: 900px; margin: 0 auto; text-align: center; }
-    .proof-num { font-size: 2.5rem; font-weight: 700; font-family: "Geist Mono", monospace; color: var(--blue-light); letter-spacing: -0.03em; }
-    .proof-label { font-size: 13px; color: var(--text-2); margin-bottom: 40px; }
-    .quotes { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-    .quote { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: left; }
-    .quote-text { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; font-style: italic; }
-    .quote-author { font-size: 11px; font-weight: 500; color: var(--text-3); }
+#hero p {
+  font-size: 1.1rem;
+  color: #888;
+  margin-bottom: 40px;
+}
 
-    /* PRICING */
-    #pricing { padding: 80px 20px; text-align: center; }
-    .pricing-inner { max-width: 600px; margin: 0 auto; }
-    .pricing-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 40px; }
-    .pricing-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; text-align: left; }
-    .pricing-card.pro { border-color: var(--blue-border); background: linear-gradient(135deg, var(--surface) 0%, rgba(37,99,235,0.03) 100%); }
-    .pricing-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2); margin-bottom: 10px; }
-    .pricing-price { font-size: 2.2rem; font-weight: 700; font-family: "Geist Mono", monospace; letter-spacing: -0.03em; }
-    .pricing-note { font-size: 11px; color: var(--text-3); margin-bottom: 18px; }
-    .pricing-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-    .pricing-feat { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-2); margin-bottom: 7px; }
-    .feat-check { color: var(--green); font-size: 11px; }
-    .feat-lock { color: var(--text-3); font-size: 11px; }
-    .pricing-btn { display: block; width: 100%; text-align: center; padding: 9px; border-radius: 6px; margin-top: 20px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
-    .pricing-btn.free { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
-    .pricing-btn.free:hover { border-color: rgba(255,255,255,0.2); }
-    .pricing-btn.pro-btn { background: var(--blue); color: #fff; }
-    .pricing-btn.pro-btn:hover { background: #1d4ed8; }
+#hero a {
+  background: #2563eb;
+  color: #ffffff;
+  padding: 14px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
 
-    /* CTA */
-    #cta { padding: 80px 20px; text-align: center; border-top: 1px solid var(--border); }
-    .cta-title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
-    .cta-sub { font-size: 14px; color: var(--text-2); margin-bottom: 28px; }
+#features {
+  padding: 80px 20px;
+  text-align: center;
+  border-bottom: 1px solid #222;
+}
 
-    /* FOOTER */
-    footer { border-top: 1px solid var(--border); padding: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .footer-logo { font-size: 13px; font-weight: 600; }
-    .footer-logo span { color: var(--blue); }
-    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
-    .footer-links a { font-size: 12px; color: var(--text-3); text-decoration: none; }
-    .footer-links a:hover { color: var(--text-2); }
-    .footer-copy { font-size: 12px; color: var(--text-3); }
+#features h2 {
+  font-size: 1.6rem;
+  margin-bottom: 48px;
+  color: #888;
+  font-weight: 400;
+}
 
-    /* MOBILE */
-    @media (max-width: 768px) {
-      nav { padding: 12px 16px; }
-      .nav-links-desktop { display: none; }
-      #hero { padding: 80px 16px 48px; min-height: auto; }
-      .hero-glow { width: 300px; height: 300px; }
-      h1 { font-size: 1.9rem; }
-      .preview-body { grid-template-columns: 1fr; }
-      .preview-sidebar { display: none; }
-      .preview-wrap { margin-top: 32px; }
-      #features { padding: 56px 16px; }
-      .features-grid { grid-template-columns: 1fr; gap: 8px; }
-      #proof { padding: 48px 16px; }
-      .quotes { grid-template-columns: 1fr; gap: 8px; }
-      #pricing { padding: 56px 16px; }
-      .pricing-cards { grid-template-columns: 1fr; }
-      #cta { padding: 56px 16px; }
-      footer { flex-direction: column; text-align: center; padding: 20px 16px; }
-      .footer-links { justify-content: center; }
-    }
+.cards {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-    @media (max-width: 480px) {
-      .hero-btns { flex-direction: column; align-items: center; }
-      .btn-primary, .btn-ghost { width: 100%; justify-content: center; max-width: 280px; }
-      .preview-stats { grid-template-columns: repeat(3,1fr); }
-    }
-  </style>
+.card {
+  background: #111;
+  border: 1px solid #0e0be4;
+  border-radius: 8px;
+  padding: 28px;
+  width: 240px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.icon {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+#pricing {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+#pricing h2 {
+  font-size: 1.6rem;
+  margin-bottom: 48px;
+  color: #888;
+  font-weight: 400;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin: 12px 0 4px;
+}
+
+.card ul {
+  text-align: left;
+  margin: 16px 0;
+  flex: 1;
+}
+.card li {
+  margin-bottom: 8px;
+  list-style: none;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.card a {
+  display: block;
+  text-align: center;
+ background: #2563eb;
+  margin-top: auto;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 16px;
+}
+#hero a:hover, .card a:hover {
+  opacity: 0.85;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+  transition: all 0.2s;
+}
+
+.card:hover {
+  border-color: #2563eb;
+  transition: all 0.2s;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<nav>
-  <div class="nav-logo">Study<span>Rise</span></div>
-  <div class="nav-links-desktop">
-    <a href="#features" class="nav-link">Features</a>
-    <a href="#pricing" class="nav-link">Pricing</a>
-    <a href="login.html" class="nav-link">Login</a>
-  </div>
-  <div class="nav-right">
-    <a href="login.html" class="nav-cta">Try for free</a>
-  </div>
-</nav>
-
 <section id="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-inner">
-    <div class="hero-tag">&#128218; Built by a student, for students</div>
-    <h1>Stop forgetting homework.<br><em>Start getting it done.</em></h1>
-    <p class="hero-sub">Track every task, deadline and grade in one place. Simple, fast and actually useful.</p>
-    <div class="hero-btns">
-      <a href="login.html" class="btn-primary">Start for free &#8594;</a>
-      <a href="#features" class="btn-ghost">See how it works</a>
-    </div>
-  </div>
-  <div class="preview-wrap">
-    <div class="preview-window">
-      <div class="preview-bar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <div class="preview-url">studyrise.nl</div>
-      </div>
-      <div class="preview-body">
-        <div class="preview-sidebar">
-          <div class="preview-logo">Study<span>Rise</span></div>
-          <div class="pnav active">&#9645; Dashboard</div>
-          <div class="pnav">&#10003; Tasks</div>
-          <div class="pnav">&#9646; Grades</div>
-          <div class="pnav">&#9881; Settings</div>
-        </div>
-        <div class="preview-content">
-          <div class="preview-h">Dashboard</div>
-          <div class="preview-stats">
-            <div class="pstat"><div class="pstat-l">Total</div><div class="pstat-v" style="color:#60a5fa">8</div></div>
-            <div class="pstat"><div class="pstat-l">Done</div><div class="pstat-v" style="color:#22c55e">5</div></div>
-            <div class="pstat"><div class="pstat-l">Left</div><div class="pstat-v" style="color:#ef4444">3</div></div>
-          </div>
-          <div class="ptask"><div class="pcheck done"></div><div class="ppip" style="background:#22c55e"></div><div style="flex:1;opacity:.4;text-decoration:line-through">Math — chapter 5</div></div>
-          <div class="ptask"><div class="pcheck"></div><div class="ppip" style="background:#ef4444"></div><div style="flex:1">English essay</div><div style="font-size:10px;color:#ef4444;font-weight:600">Urgent</div></div>
-          <div class="ptask"><div class="pcheck"></div><div class="ppip" style="background:#f59e0b"></div><div style="flex:1">Science lab report</div><div style="font-size:10px;color:#555">Jun 5</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <h1>Study smarter, not harder.</h1>
+  <p>The homework planner built by a student, for students.</p>
+  <a href="https://studyrise.nl/index.html">Try for free →</a>
 </section>
-
 <section id="features">
-  <div class="section-eyebrow">Features</div>
-  <h2 class="section-title">Everything you need to stay on top</h2>
-  <p class="section-sub">No complicated setup. Just the tools students actually use every day.</p>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="feature-title">Task planner</div>
-      <div class="feature-desc">Add tasks with deadlines, subjects and priorities. Filter and sort however you want.</div>
+  <h2>Everything you need to study better</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="icon">📕</div>
+      <h3>Task Planner</h3>
+      <p>Organize all your homework with deadlines and priorities.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <div class="feature-title">Grade tracker</div>
-      <div class="feature-desc">Track grades per subject. Works with Dutch, English and French grading systems.</div>
+    <div class="card">
+      <div class="icon">📝</div>
+      <h3>Grade Tracker</h3>
+      <p>Track your grades and see your averages per subject.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="feature-title">Calendar view</div>
-      <div class="feature-desc">See all your deadlines on a calendar. Never miss a due date again.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-      </div>
-      <div class="feature-title">Recurring tasks <span class="pro-tag">Pro</span></div>
-      <div class="feature-desc">Set tasks to repeat daily, weekly or monthly. Perfect for regular homework.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div class="feature-title">Pomodoro timer <span class="pro-tag">Pro</span></div>
-      <div class="feature-desc">Built-in focus timer. 25 minutes work, 5 minutes break. Stay in the zone.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 12h2M19 12h2M12 3v2M12 19v2"/></svg>
-      </div>
-      <div class="feature-title">Focus mode <span class="pro-tag">Pro</span></div>
-      <div class="feature-desc">Full-screen distraction-free view. See only your pending tasks, nothing else.</div>
+    <div class="card">
+      <div class="icon">❤️‍🔥</div>
+      <h3>Streaks & Badges</h3>
+      <p>Stay motivated by building daily study streaks.</p>
     </div>
   </div>
 </section>
-
-<section id="proof">
-  <div class="proof-inner">
-    <div class="proof-num">500+</div>
-    <div class="proof-label">students already using StudyRise</div>
-    <div class="quotes">
-      <div class="quote">
-        <div class="quote-text">"Finally a planner that doesn't feel like it was made for adults. Super clean and easy to use."</div>
-        <div class="quote-author">Sarah, 16 — Netherlands</div>
-      </div>
-      <div class="quote">
-        <div class="quote-text">"The streak system actually makes me want to open the app every day. My grades went up."</div>
-        <div class="quote-author">Liam, 17 — Belgium</div>
-      </div>
-      <div class="quote">
-        <div class="quote-text">"I use it every single day. Way better than writing things down on paper."</div>
-        <div class="quote-author">Emma, 15 — Netherlands</div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section id="pricing">
-  <div class="pricing-inner">
-    <div class="section-eyebrow">Pricing</div>
-    <h2 class="section-title">Simple, honest pricing</h2>
-    <p class="section-sub">Start free. Upgrade once, own it forever.</p>
-    <div class="pricing-cards">
-      <div class="pricing-card">
-        <div class="pricing-name">Free</div>
-        <div class="pricing-price">&#8364;0</div>
-        <div class="pricing-note">Forever free</div>
-        <hr class="pricing-divider">
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Up to 5 tasks</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Up to 10 grades</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Calendar view</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Streak tracking</div>
-        <div class="pricing-feat"><span class="feat-lock">&#8211;</span> Recurring tasks</div>
-        <div class="pricing-feat"><span class="feat-lock">&#8211;</span> Pomodoro timer</div>
-        <div class="pricing-feat"><span class="feat-lock">&#8211;</span> Statistics</div>
-        <a href="login.html" class="pricing-btn free">Get started</a>
-      </div>
-      <div class="pricing-card pro">
-        <div class="pricing-name" style="color:var(--blue-light)">Pro</div>
-        <div class="pricing-price">&#8364;5</div>
-        <div class="pricing-note">One-time payment — yours forever</div>
-        <hr class="pricing-divider">
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Unlimited tasks</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Unlimited grades</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Recurring tasks</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Pomodoro timer</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Focus mode</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Statistics dashboard</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Grade trend charts</div>
-        <div class="pricing-feat"><span class="feat-check">&#10003;</span> Custom color themes</div>
-        <a href="https://vermeerist.gumroad.com/l/srygsx" class="pricing-btn pro-btn">Get Pro &#8212; &#8364;5</a>
-      </div>
+  <h2>Simple pricing</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Free</h3>
+      <div class="price">€0</div>
+      <p>per month</p>
+      <ul>
+        <li>✅ 5 tasks</li>
+        <li>✅ Grade tracker</li>
+        <li>✅ Calendar view</li>
+      </ul>
+      <a href="https://studyrise.nl/index.html">Get started</a>
+    </div>
+    <div class="card">
+      <h3>Pro</h3>
+      <div class="price">€5</div>
+      <p>per month</p>
+      <ul>
+        <li>✅ Unlimited tasks</li>
+        <li>✅ Analytics</li>
+        <li>✅ Focus timer</li>
+        <li>✅ Goals</li>
+        <li>✅ Week agenda</li>
+      </ul>
+      <a href="https://vermeerist.gumroad.com/l/mbkcgs">Get Pro</a>
     </div>
   </div>
 </section>
-
-<section id="cta">
-  <h2 class="cta-title">Ready to stay on top of school?</h2>
-  <p class="cta-sub">Free to start. No credit card. Takes 30 seconds.</p>
-  <a href="login.html" class="btn-primary" style="font-size:15px;padding:13px 32px">Start for free &#8594;</a>
-</section>
-
-<footer>
-  <div class="footer-logo">Study<span>Rise</span></div>
-  <div class="footer-links">
-    <a href="privacy.html">Privacy</a>
-    <a href="cookies.html">Cookies</a>
-    <a href="terms.html">Terms</a>
-    <a href="contact.html">Contact</a>
-  </div>
-  <div class="footer-copy">&copy; 2026 StudyRise</div>
-</footer>
-
 </body>
 </html>
