@@ -1498,6 +1498,49 @@
       }
 
       /* Responsive */
+
+      /* ---- Goals ---- */
+      .goal-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; }
+      .goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+      .goal-title { font-size: 13px; font-weight: 500; }
+      .goal-pct { font-size: 12px; font-weight: 600; font-family: "Geist Mono", monospace; }
+      .goal-bar { width: 100%; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+      .goal-bar-fill { height: 100%; border-radius: 2px; background: var(--blue); transition: width 0.4s; }
+      .goal-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+      .goal-count { font-size: 11px; color: var(--text-2); }
+      .goal-deadline { font-size: 11px; color: var(--text-3); font-family: "Geist Mono", monospace; }
+
+      /* ---- Exams ---- */
+      .exam-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+      .exam-item:last-child { border-bottom: none; }
+      .exam-date-block { text-align: center; background: var(--surface-2); border-radius: var(--radius-sm); padding: 6px 10px; min-width: 44px; flex-shrink: 0; }
+      .exam-day { font-size: 16px; font-weight: 700; font-family: "Geist Mono", monospace; line-height: 1; }
+      .exam-month { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; }
+      .exam-info { flex: 1; }
+      .exam-name { font-size: 13px; font-weight: 500; }
+      .exam-subject { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+      .exam-days-left { font-size: 11px; font-weight: 600; font-family: "Geist Mono", monospace; padding: 2px 7px; border-radius: 10px; }
+      .exam-days-left.urgent { background: var(--red-2); color: var(--red); }
+      .exam-days-left.soon { background: rgba(202,138,4,0.15); color: var(--yellow); }
+      .exam-days-left.ok { background: var(--green-2); color: var(--green); }
+
+      /* ---- AI suggestions ---- */
+      .ai-suggestion { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: border-color 0.15s; }
+      .ai-suggestion:hover { border-color: var(--blue-border); }
+      .ai-suggestion-text { flex: 1; font-size: 12px; color: var(--text); }
+      .ai-suggestion-add { font-size: 11px; color: var(--blue); font-weight: 500; white-space: nowrap; }
+
+      /* ---- Study sessions ---- */
+      .session-stat { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+      .session-stat:last-child { border-bottom: none; }
+      .session-label { font-size: 12px; color: var(--text-2); }
+      .session-value { font-size: 13px; font-weight: 600; font-family: "Geist Mono", monospace; }
+
+      /* ---- Progress score ---- */
+      .progress-score { display: flex; align-items: center; gap: 16px; padding: 4px 0; }
+      .progress-score-num { font-size: 40px; font-weight: 700; font-family: "Geist Mono", monospace; letter-spacing: -1px; line-height: 1; }
+      .progress-score-label { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
       @media (max-width: 768px) {
         #sidebar {
           display: none !important;
@@ -1806,6 +1849,14 @@
             />
           </svg>
           Settings
+        </button>
+        <button class="nav-item" onclick="showPage('goals')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          Goals
+        </button>
+        <button class="nav-item" onclick="showPage('exams')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Exams
         </button>
       </div>
 
@@ -2417,6 +2468,50 @@
             </div>
           </div>
         </div>
+
+        <!-- GOALS PAGE -->
+        <div id="page-goals">
+          <div class="page-header">
+            <div><div class="page-title">Goals</div><div class="page-subtitle">Set targets and track your progress</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ Add goal</button>
+          </div>
+          <div class="page-body">
+            <div id="goalLimitBanner" class="limit-banner" style="display:none">
+              Free plan limit reached (3 goals). <a href="https://vermeerist.gumroad.com/l/mbkcgs" target="_blank">Upgrade to Pro</a> for unlimited.
+            </div>
+            <div class="card" style="margin-bottom:8px pro-only" id="progressScoreCard">
+              <div class="card-header"><div class="card-title">Weekly progress score <span class="pro-badge">Pro</span></div></div>
+              <div id="progressScoreContent"></div>
+            </div>
+            <div id="goalsList"></div>
+            <div id="goalsEmpty" class="empty-state" style="display:none;padding:40px 0">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              <div style="margin-top:8px">No goals yet. Add one to get started.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXAMS PAGE -->
+        <div id="page-exams">
+          <div class="page-header">
+            <div><div class="page-title">Exams</div><div class="page-subtitle">Keep track of upcoming tests and exams</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openExamModal()">+ Add exam</button>
+          </div>
+          <div class="page-body">
+            <div class="card" style="margin-bottom:8px">
+              <div class="card-header"><div class="card-title">Upcoming</div></div>
+              <div id="examsList" class="task-list"></div>
+            </div>
+            <div class="card pro-only" id="aiSuggestCard" style="margin-bottom:8px">
+              <div class="card-header">
+                <div class="card-title">AI study suggestions <span class="pro-badge">Pro</span></div>
+                <button class="btn btn-secondary btn-sm" onclick="generateAISuggestions()" id="aiSuggestBtn">Generate</button>
+              </div>
+              <div id="aiSuggestContent"><div class="empty-state">Click Generate to get AI-powered study task suggestions based on your exams.</div></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
 
@@ -2501,6 +2596,14 @@
           />
         </svg>
         Settings
+      </button>
+      <button class="mobile-nav-item" onclick="showPage('goals')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Goals
+      </button>
+      <button class="mobile-nav-item" onclick="showPage('exams')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Exams
       </button>
     </nav>
 
@@ -3878,6 +3981,170 @@
         };
 
         // ---- Render all ----
+
+        // ============================================================
+        // GOALS
+        // ============================================================
+        const FREE_GOAL_LIMIT = 3;
+        let goals = JSON.parse(localStorage.getItem("goals_v2") || "[]");
+        function saveGoals() { localStorage.setItem("goals_v2", JSON.stringify(goals)); }
+
+        window.openGoalModal = function() {
+          document.getElementById("goalModal").style.display = "flex";
+          document.getElementById("goalTitle").value = "";
+          document.getElementById("goalTarget").value = "";
+          document.getElementById("goalDeadline").value = "";
+        };
+        window.closeGoalModal = function() { document.getElementById("goalModal").style.display = "none"; };
+
+        window.saveGoal = function() {
+          if (!_isPro && goals.length >= FREE_GOAL_LIMIT) { showProModal("Goal Limit Reached", "Upgrade to Pro for unlimited goals."); return; }
+          const title = document.getElementById("goalTitle").value.trim();
+          const target = parseInt(document.getElementById("goalTarget").value);
+          const deadline = document.getElementById("goalDeadline").value;
+          if (!title || !target) return;
+          goals.push({ id: Date.now(), title, target, deadline, current: 0 });
+          saveGoals(); closeGoalModal(); renderGoals(); showToast("Goal added!");
+        };
+
+        window.deleteGoal = function(id) {
+          if (!confirm("Delete this goal?")) return;
+          goals = goals.filter(g => g.id !== id); saveGoals(); renderGoals();
+        };
+
+        window.incrementGoal = function(id) {
+          const g = goals.find(g => g.id === id);
+          if (g && g.current < g.target) { g.current++; saveGoals(); renderGoals(); }
+        };
+
+        function renderGoals() {
+          const list = document.getElementById("goalsList");
+          const empty = document.getElementById("goalsEmpty");
+          const banner = document.getElementById("goalLimitBanner");
+          if (banner) banner.style.display = (!_isPro && goals.length >= FREE_GOAL_LIMIT) ? "" : "none";
+          if (!goals.length) { if(list) list.innerHTML=""; if(empty) empty.style.display="block"; return; }
+          if (empty) empty.style.display = "none";
+          if (list) list.innerHTML = goals.map(function(g) {
+            var pct = Math.round((g.current / g.target) * 100);
+            var color = pct >= 100 ? "var(--green)" : pct >= 50 ? "var(--blue)" : "var(--yellow)";
+            return '<div class="goal-item">'
+              +'<div class="goal-header"><div class="goal-title">'+g.title+'</div><div class="goal-pct" style="color:'+color+'">'+pct+'%</div></div>'
+              +'<div class="goal-bar"><div class="goal-bar-fill" style="width:'+Math.min(100,pct)+'%;background:'+color+'"></div></div>'
+              +'<div class="goal-meta"><div class="goal-count">'+g.current+' / '+g.target+' tasks</div>'+(g.deadline?'<div class="goal-deadline">Due '+g.deadline+'</div>':"")+'</div>'
+              +'<div style="display:flex;gap:6px;margin-top:10px">'
+              +'<button class="btn btn-secondary btn-sm" onclick="incrementGoal('+g.id+')"'+(g.current>=g.target?' disabled style="opacity:0.4"':'')+'>+1 done</button>'
+              +'<button class="btn btn-danger btn-sm" onclick="deleteGoal('+g.id+')">Delete</button>'
+              +'</div></div>';
+          }).join("");
+        }
+
+        // ============================================================
+        // EXAMS
+        // ============================================================
+        let exams = JSON.parse(localStorage.getItem("exams_v2") || "[]");
+        function saveExams() { localStorage.setItem("exams_v2", JSON.stringify(exams)); }
+
+        window.openExamModal = function() {
+          renderSubjectSelects();
+          document.getElementById("examModal").style.display = "flex";
+          document.getElementById("examName").value = "";
+          document.getElementById("examDate").value = "";
+          document.getElementById("examNotes").value = "";
+        };
+        window.closeExamModal = function() { document.getElementById("examModal").style.display = "none"; };
+
+        window.saveExam = function() {
+          const name = document.getElementById("examName").value.trim();
+          const subject = document.getElementById("examSubject").value;
+          const date = document.getElementById("examDate").value;
+          const notes = document.getElementById("examNotes").value.trim();
+          if (!name || !date) return;
+          exams.push({ id: Date.now(), name, subject, date, notes });
+          saveExams(); closeExamModal(); renderExams(); showToast("Exam added!");
+        };
+
+        window.deleteExam = function(id) {
+          if (!confirm("Delete this exam?")) return;
+          exams = exams.filter(e => e.id !== id); saveExams(); renderExams();
+        };
+
+        function renderExams() {
+          const list = document.getElementById("examsList");
+          if (!list) return;
+          const today = new Date(); today.setHours(0,0,0,0);
+          const upcoming = exams.filter(e => new Date(e.date) >= today).sort((a,b) => a.date > b.date ? 1 : -1);
+          if (!upcoming.length) { list.innerHTML = '<div class="empty-state">No upcoming exams</div>'; return; }
+          list.innerHTML = upcoming.map(function(e) {
+            const d = new Date(e.date);
+            const daysLeft = Math.ceil((d - today) / (1000*60*60*24));
+            const daysClass = daysLeft <= 2 ? "urgent" : daysLeft <= 7 ? "soon" : "ok";
+            const daysText = daysLeft === 0 ? "today" : daysLeft === 1 ? "tomorrow" : daysLeft+"d left";
+            return '<div class="exam-item">'
+              +'<div class="exam-date-block"><div class="exam-day">'+d.getDate()+'</div><div class="exam-month">'+d.toLocaleDateString("en",{month:"short"})+'</div></div>'
+              +'<div class="exam-info"><div class="exam-name">'+e.name+'</div><div class="exam-subject">'+e.subject+(e.notes?' · '+e.notes:"")+'</div></div>'
+              +'<div style="display:flex;align-items:center;gap:6px">'
+              +'<span class="exam-days-left '+daysClass+'">'+daysText+'</span>'
+              +'<button class="btn btn-danger btn-xs" onclick="deleteExam('+e.id+')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'
+              +'</div></div>';
+          }).join("");
+        }
+
+        // ============================================================
+        // AI SUGGESTIONS (Pro)
+        // ============================================================
+        window.generateAISuggestions = async function() {
+          if (!_isPro) { showProModal("AI Suggestions", "Upgrade to Pro to get AI-powered study suggestions."); return; }
+          const btn = document.getElementById("aiSuggestBtn");
+          const cont = document.getElementById("aiSuggestContent");
+          if (btn) btn.textContent = "Loading...";
+          if (cont) cont.innerHTML = '<div class="empty-state">Generating suggestions...</div>';
+          const upcomingExams = exams.filter(e => new Date(e.date) >= new Date()).sort((a,b) => a.date>b.date?1:-1).slice(0,5);
+          const pendingTasks = tasks.filter(t => !t.done).slice(0,10);
+          const prompt = "You are a study assistant. Based on these upcoming exams and tasks, suggest 5 specific study tasks. Be concise.\n\nExams: " + (upcomingExams.map(e => e.name+" ("+e.subject+") on "+e.date).join(", ") || "none") + "\nPending tasks: " + (pendingTasks.map(t => t.title).join(", ") || "none") + "\n\nRespond with exactly 5 short task suggestions, one per line, no numbering, max 60 chars each.";
+          try {
+            const res = await fetch("https://api.anthropic.com/v1/messages", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 300, messages: [{ role: "user", content: prompt }] })
+            });
+            const data = await res.json();
+            const text = (data.content && data.content[0] && data.content[0].text) || "";
+            const suggestions = text.split("\n").filter(s => s.trim()).slice(0,5);
+            if (cont) cont.innerHTML = suggestions.map(function(s) {
+              return '<div class="ai-suggestion" onclick="addAISuggestion(this.dataset.title)" data-title="'+s.trim().replace(/"/g,"&quot;")+'"><div class="ai-suggestion-text">'+s.trim()+'</div><div class="ai-suggestion-add">+ Add task</div></div>';
+            }).join("");
+          } catch(err) {
+            if (cont) cont.innerHTML = '<div class="empty-state">Could not generate suggestions. Try again.</div>';
+          }
+          if (btn) btn.textContent = "Regenerate";
+        };
+
+        window.addAISuggestion = function(title) {
+          if (!_isPro && tasks.length >= FREE_TASK_LIMIT) { showProModal("Task Limit Reached", "Upgrade to Pro."); return; }
+          tasks.push({ id: Date.now(), title, subject: getSubjects()[0]||"Other", date: new Date().toISOString().slice(0,10), priority: "medium", recurring: "none", done: false, notes: "" });
+          saveTasks(); renderAll(); showToast("Task added!");
+        };
+
+        // ============================================================
+        // STUDY SESSIONS (Pro)
+        // ============================================================
+        let studySessions = JSON.parse(localStorage.getItem("study_sessions") || "[]");
+
+        function logStudySession() {
+          if (!_isPro) return;
+          const today = new Date().toISOString().slice(0,10);
+          studySessions.push({ date: today, minutes: 25 });
+          const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+          studySessions = studySessions.filter(s => new Date(s.date) >= cutoff);
+          localStorage.setItem("study_sessions", JSON.stringify(studySessions));
+        }
+
+        function getWeekStudyTime() {
+          const today = new Date(); today.setHours(0,0,0,0);
+          const monday = new Date(today); monday.setDate(today.getDate()-(today.getDay()===0?6:today.getDay()-1));
+          return studySessions.filter(s => new Date(s.date) >= monday).reduce((sum,s) => sum+s.minutes, 0);
+        }
+
         function renderAll() {
           renderTasks();
           renderStats();
@@ -3888,6 +4155,8 @@
           updateStreak();
           renderWeekStats();
           updateSidebarUser();
+          renderGoals();
+          renderExams();
         }
 
         // ---- Cookie banner ----
@@ -3945,5 +4214,34 @@
         init();
       })();
     </script>
+  <!-- Goal modal -->
+  <div id="goalModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px">
+    <div class="modal">
+      <div class="modal-title">Add goal</div>
+      <div class="modal-field"><label>Goal title</label><input type="text" id="goalTitle" placeholder="e.g. Pass math exam..." /></div>
+      <div class="modal-field"><label>Target (tasks to complete)</label><input type="number" id="goalTarget" placeholder="10" min="1" max="100" /></div>
+      <div class="modal-field"><label>Deadline</label><input type="date" id="goalDeadline" /></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeGoalModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGoal()">Add goal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam modal -->
+  <div id="examModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px">
+    <div class="modal">
+      <div class="modal-title">Add exam</div>
+      <div class="modal-field"><label>Exam name</label><input type="text" id="examName" placeholder="e.g. Math chapter 5 test..." /></div>
+      <div class="modal-field"><label>Subject</label><select id="examSubject"></select></div>
+      <div class="modal-field"><label>Date</label><input type="date" id="examDate" /></div>
+      <div class="modal-field"><label>Notes (optional)</label><input type="text" id="examNotes" placeholder="Topics to study..." /></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeExamModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveExam()">Add exam</button>
+      </div>
+    </div>
+  </div>
+
   </body>
 </html>
