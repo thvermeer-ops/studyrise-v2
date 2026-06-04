@@ -1498,6 +1498,120 @@
       }
 
       /* Responsive */
+
+      /* ---- Goals & Exams ---- */
+      .goal-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        margin-bottom: 8px;
+      }
+      .goal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .goal-title {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .goal-pct {
+        font-size: 12px;
+        font-weight: 600;
+        font-family: "Geist Mono", monospace;
+      }
+      .goal-bar {
+        width: 100%;
+        height: 4px;
+        background: var(--surface-3);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .goal-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--blue);
+        transition: width 0.4s;
+      }
+      .goal-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 6px;
+      }
+      .goal-count {
+        font-size: 11px;
+        color: var(--text-2);
+      }
+      .goal-deadline {
+        font-size: 11px;
+        color: var(--text-3);
+        font-family: "Geist Mono", monospace;
+      }
+      .exam-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .exam-item:last-child {
+        border-bottom: none;
+      }
+      .exam-date-block {
+        text-align: center;
+        background: var(--surface-2);
+        border-radius: var(--radius-sm);
+        padding: 6px 10px;
+        min-width: 44px;
+        flex-shrink: 0;
+      }
+      .exam-day {
+        font-size: 16px;
+        font-weight: 700;
+        font-family: "Geist Mono", monospace;
+        line-height: 1;
+      }
+      .exam-month {
+        font-size: 9px;
+        color: var(--text-3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .exam-info {
+        flex: 1;
+      }
+      .exam-name {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .exam-subject {
+        font-size: 11px;
+        color: var(--text-2);
+        margin-top: 1px;
+      }
+      .exam-days-left {
+        font-size: 11px;
+        font-weight: 600;
+        font-family: "Geist Mono", monospace;
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .exam-days-left.urgent {
+        background: var(--red-2);
+        color: var(--red);
+      }
+      .exam-days-left.soon {
+        background: rgba(202, 138, 4, 0.15);
+        color: var(--yellow);
+      }
+      .exam-days-left.ok {
+        background: var(--green-2);
+        color: var(--green);
+      }
+
       @media (max-width: 768px) {
         #sidebar {
           display: none !important;
@@ -1806,6 +1920,43 @@
             />
           </svg>
           Settings
+        </button>
+        <button class="nav-item" onclick="showPage('goals')">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+          Goals
+        </button>
+        <button class="nav-item" onclick="showPage('exams')">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          Exams
         </button>
       </div>
 
@@ -2417,6 +2568,77 @@
             </div>
           </div>
         </div>
+
+        <!-- GOALS PAGE -->
+        <div id="page-goals">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Goals</div>
+              <div class="page-subtitle">
+                Set targets and track your progress
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openGoalModal()">
+              + Add goal
+            </button>
+          </div>
+          <div class="page-body">
+            <div
+              id="goalLimitBanner"
+              class="limit-banner"
+              style="display: none"
+            >
+              Free plan limit (3 goals).
+              <a href="https://vermeerist.gumroad.com/l/mbkcgs" target="_blank"
+                >Upgrade to Pro</a
+              >
+              for unlimited.
+            </div>
+            <div id="goalsList"></div>
+            <div id="goalsEmpty" class="empty-state" style="padding: 40px 0">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+              <div style="margin-top: 8px">
+                No goals yet. Add one to get started.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXAMS PAGE -->
+        <div id="page-exams">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Exams</div>
+              <div class="page-subtitle">
+                Keep track of upcoming tests and exams
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openExamModal()">
+              + Add exam
+            </button>
+          </div>
+          <div class="page-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Upcoming</div>
+              </div>
+              <div id="examsList"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -2501,6 +2723,41 @@
           />
         </svg>
         Settings
+      </button>
+      <button class="mobile-nav-item" onclick="showPage('goals')">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+        Goals
+      </button>
+      <button class="mobile-nav-item" onclick="showPage('exams')">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+        Exams
       </button>
     </nav>
 
@@ -2624,23 +2881,31 @@
               sel.innerHTML +=
                 '<option value="__new__">+ Add subject...</option>';
               if (cur && subjects.includes(cur)) sel.value = cur;
-              sel.onchange = function () {
+              const newSel = sel.cloneNode(true);
+              sel.parentNode.replaceChild(newSel, sel);
+              newSel.value =
+                cur && subjects.includes(cur) ? cur : subjects[0] || "";
+              newSel.addEventListener("change", function () {
                 if (this.value === "__new__") {
                   const name = prompt("New subject name:");
                   if (name && name.trim()) {
                     const updated = getSubjects();
-                    if (!updated.includes(name.trim())) {
-                      updated.push(name.trim());
+                    const trimmed = name.trim();
+                    if (!updated.includes(trimmed)) {
+                      updated.push(trimmed);
                       saveSubjects(updated);
-                      renderSubjectSelects();
-                      showToast('"' + name.trim() + '" added!');
                     }
-                    this.value = name.trim();
+                    renderSubjectSelects();
+                    showToast('"' + trimmed + '" added!');
+                    setTimeout(() => {
+                      const s2 = document.getElementById(id);
+                      if (s2) s2.value = trimmed;
+                    }, 80);
                   } else {
-                    this.value = cur || subjects[0];
+                    this.value = cur || subjects[0] || "";
                   }
                 }
-              };
+              });
             },
           );
           const fb = document.getElementById("filterBtns");
@@ -3523,8 +3788,12 @@
         // ---- Settings ----
         window.toggleTheme = function () {
           isDark = !isDark;
-          document.body.style.background = isDark ? "#0a0a0a" : "#f9fafb";
-          document.body.style.color = isDark ? "#ededed" : "#111";
+          if (isDark) {
+            document.body.classList.remove("light-mode");
+          } else {
+            document.body.classList.add("light-mode");
+          }
+          localStorage.setItem("theme", isDark ? "dark" : "light");
           document.getElementById("themeBtn").textContent = isDark
             ? "Dark"
             : "Light";
@@ -3899,6 +4168,246 @@
         };
 
         // ---- Render all ----
+        // ============================================================
+        // GOALS
+        // ============================================================
+        const FREE_GOAL_LIMIT = 3;
+        let goals = JSON.parse(localStorage.getItem("goals_v2") || "[]");
+        function saveGoals() {
+          localStorage.setItem("goals_v2", JSON.stringify(goals));
+        }
+
+        window.openGoalModal = function () {
+          document.getElementById("goalModal").style.display = "flex";
+          document.getElementById("goalTitle").value = "";
+          document.getElementById("goalTarget").value = "";
+          document.getElementById("goalDeadline").value = "";
+        };
+        window.closeGoalModal = function () {
+          document.getElementById("goalModal").style.display = "none";
+        };
+
+        window.saveGoal = function () {
+          if (!_isPro && goals.length >= FREE_GOAL_LIMIT) {
+            showProModal(
+              "Goal Limit Reached",
+              "Upgrade to Pro for unlimited goals.",
+            );
+            return;
+          }
+          const title = document.getElementById("goalTitle").value.trim();
+          const target = parseInt(document.getElementById("goalTarget").value);
+          const deadline = document.getElementById("goalDeadline").value;
+          if (!title || !target) {
+            showToast("Please fill in title and target");
+            return;
+          }
+          goals.push({ id: Date.now(), title, target, deadline, current: 0 });
+          saveGoals();
+          closeGoalModal();
+          renderGoals();
+          showToast("Goal added!");
+        };
+
+        window.deleteGoal = function (id) {
+          if (!confirm("Delete this goal?")) return;
+          goals = goals.filter((g) => g.id !== id);
+          saveGoals();
+          renderGoals();
+        };
+
+        window.incrementGoal = function (id) {
+          const g = goals.find((g) => g.id === id);
+          if (g && g.current < g.target) {
+            g.current++;
+            saveGoals();
+            renderGoals();
+          }
+        };
+
+        function renderGoals() {
+          const list = document.getElementById("goalsList");
+          const empty = document.getElementById("goalsEmpty");
+          const banner = document.getElementById("goalLimitBanner");
+          if (banner)
+            banner.style.display =
+              !_isPro && goals.length >= FREE_GOAL_LIMIT ? "" : "none";
+          if (!goals.length) {
+            if (list) list.innerHTML = "";
+            if (empty) empty.style.display = "block";
+            return;
+          }
+          if (empty) empty.style.display = "none";
+          if (list)
+            list.innerHTML = goals
+              .map(function (g) {
+                var pct = Math.round((g.current / g.target) * 100);
+                var color =
+                  pct >= 100
+                    ? "var(--green)"
+                    : pct >= 50
+                      ? "var(--blue)"
+                      : "var(--yellow)";
+                return (
+                  '<div class="goal-item">' +
+                  '<div class="goal-header"><div class="goal-title">' +
+                  g.title +
+                  '</div><div class="goal-pct" style="color:' +
+                  color +
+                  '">' +
+                  pct +
+                  "%</div></div>" +
+                  '<div class="goal-bar"><div class="goal-bar-fill" style="width:' +
+                  Math.min(100, pct) +
+                  "%;background:" +
+                  color +
+                  '"></div></div>' +
+                  '<div class="goal-meta"><div class="goal-count">' +
+                  g.current +
+                  " / " +
+                  g.target +
+                  " tasks completed</div>" +
+                  (g.deadline
+                    ? '<div class="goal-deadline">Due ' + g.deadline + "</div>"
+                    : "") +
+                  "</div>" +
+                  '<div style="display:flex;gap:6px;margin-top:10px">' +
+                  '<button class="btn btn-secondary btn-sm" onclick="incrementGoal(' +
+                  g.id +
+                  ')"' +
+                  (g.current >= g.target
+                    ? ' disabled style="opacity:0.4"'
+                    : "") +
+                  ">+1 done</button>" +
+                  '<button class="btn btn-danger btn-sm" onclick="deleteGoal(' +
+                  g.id +
+                  ')">Delete</button>' +
+                  "</div></div>"
+                );
+              })
+              .join("");
+        }
+
+        // ============================================================
+        // EXAMS
+        // ============================================================
+        let exams = JSON.parse(localStorage.getItem("exams_v2") || "[]");
+        function saveExams() {
+          localStorage.setItem("exams_v2", JSON.stringify(exams));
+        }
+
+        window.openExamModal = function () {
+          document.getElementById("examModal").style.display = "flex";
+          // Fill subjects
+          const subjects = getSubjects();
+          const sel = document.getElementById("examSubject");
+          if (sel) {
+            sel.innerHTML = subjects
+              .map((s) => '<option value="' + s + '">' + s + "</option>")
+              .join("");
+            sel.innerHTML +=
+              '<option value="__new__">+ Add subject...</option>';
+            sel.addEventListener("change", function () {
+              if (this.value === "__new__") {
+                const name = prompt("New subject name:");
+                if (name && name.trim()) {
+                  const updated = getSubjects();
+                  if (!updated.includes(name.trim())) {
+                    updated.push(name.trim());
+                    saveSubjects(updated);
+                  }
+                  renderSubjectSelects();
+                  this.value = name.trim();
+                } else {
+                  this.value = subjects[0];
+                }
+              }
+            });
+          }
+          document.getElementById("examName").value = "";
+          document.getElementById("examDate").value = "";
+          document.getElementById("examNotes").value = "";
+        };
+        window.closeExamModal = function () {
+          document.getElementById("examModal").style.display = "none";
+        };
+
+        window.saveExam = function () {
+          const name = document.getElementById("examName").value.trim();
+          const subject = document.getElementById("examSubject").value;
+          const date = document.getElementById("examDate").value;
+          const notes = document.getElementById("examNotes").value.trim();
+          if (!name || !date) {
+            showToast("Please fill in name and date");
+            return;
+          }
+          exams.push({ id: Date.now(), name, subject, date, notes });
+          saveExams();
+          closeExamModal();
+          renderExams();
+          showToast("Exam added!");
+        };
+
+        window.deleteExam = function (id) {
+          if (!confirm("Delete this exam?")) return;
+          exams = exams.filter((e) => e.id !== id);
+          saveExams();
+          renderExams();
+        };
+
+        function renderExams() {
+          const list = document.getElementById("examsList");
+          if (!list) return;
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const upcoming = exams
+            .filter((e) => new Date(e.date) >= today)
+            .sort((a, b) => (a.date > b.date ? 1 : -1));
+          if (!upcoming.length) {
+            list.innerHTML =
+              '<div class="empty-state">No upcoming exams. Click "+ Add exam" to add one.</div>';
+            return;
+          }
+          list.innerHTML = upcoming
+            .map(function (e) {
+              const d = new Date(e.date);
+              const daysLeft = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+              const daysClass =
+                daysLeft <= 2 ? "urgent" : daysLeft <= 7 ? "soon" : "ok";
+              const daysText =
+                daysLeft === 0
+                  ? "today!"
+                  : daysLeft === 1
+                    ? "tomorrow"
+                    : daysLeft + "d left";
+              return (
+                '<div class="exam-item">' +
+                '<div class="exam-date-block"><div class="exam-day">' +
+                d.getDate() +
+                '</div><div class="exam-month">' +
+                d.toLocaleDateString("en", { month: "short" }) +
+                "</div></div>" +
+                '<div class="exam-info"><div class="exam-name">' +
+                e.name +
+                '</div><div class="exam-subject">' +
+                e.subject +
+                (e.notes ? " · " + e.notes : "") +
+                "</div></div>" +
+                '<div style="display:flex;align-items:center;gap:6px">' +
+                '<span class="exam-days-left ' +
+                daysClass +
+                '">' +
+                daysText +
+                "</span>" +
+                '<button class="btn btn-danger btn-xs" onclick="deleteExam(' +
+                e.id +
+                ')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+                "</div></div>"
+              );
+            })
+            .join("");
+        }
+
         function renderAll() {
           renderTasks();
           renderStats();
@@ -3909,6 +4418,8 @@
           updateStreak();
           renderWeekStats();
           updateSidebarUser();
+          renderGoals();
+          renderExams();
         }
 
         // ---- Cookie banner ----
@@ -3942,6 +4453,15 @@
             });
 
           // Load name
+          // Load saved theme
+          const savedTheme = localStorage.getItem("theme");
+          if (savedTheme === "light") {
+            isDark = false;
+            document.body.classList.add("light-mode");
+            const themeBtn = document.getElementById("themeBtn");
+            if (themeBtn) themeBtn.textContent = "Light";
+          }
+
           const name = localStorage.getItem("userName");
           const g = document.getElementById("dashboardGreeting");
           if (g) g.textContent = name ? "Good day, " + name : "Dashboard";
@@ -3966,5 +4486,95 @@
         init();
       })();
     </script>
+    <div
+      id="goalModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      "
+    >
+      <div class="modal">
+        <div class="modal-title">Add goal</div>
+        <div class="modal-field">
+          <label>Title</label
+          ><input
+            type="text"
+            id="goalTitle"
+            placeholder="e.g. Pass math exam..."
+          />
+        </div>
+        <div class="modal-field">
+          <label>Target (number of tasks)</label
+          ><input
+            type="number"
+            id="goalTarget"
+            placeholder="10"
+            min="1"
+            max="100"
+          />
+        </div>
+        <div class="modal-field">
+          <label>Deadline (optional)</label
+          ><input type="date" id="goalDeadline" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeGoalModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveGoal()">Add goal</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="examModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      "
+    >
+      <div class="modal">
+        <div class="modal-title">Add exam</div>
+        <div class="modal-field">
+          <label>Exam name</label
+          ><input
+            type="text"
+            id="examName"
+            placeholder="e.g. Math chapter 5 test..."
+          />
+        </div>
+        <div class="modal-field">
+          <label>Subject</label
+          ><select id="examSubject"></select>
+        </div>
+        <div class="modal-field">
+          <label>Date</label><input type="date" id="examDate" />
+        </div>
+        <div class="modal-field">
+          <label>Notes (optional)</label
+          ><input type="text" id="examNotes" placeholder="Topics to study..." />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeExamModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveExam()">Add exam</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
